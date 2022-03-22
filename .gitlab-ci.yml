@@ -18,9 +18,9 @@ docker-test:
   script:
       - cd src/django_orm
       - docker login $docker_registry -u $docker_username -p $docker_registry_token
-      - docker pull -t $image_name:test
+      - docker pull $image_name:test
       - docker build -t $image_name:test .
-      - docker push -t $image_name:test
+      - docker push $image_name:test
       - docker run $image_name:test pytest
   variables:
     image_name: gitlab.noveogroup.com:4567/trainings-anovoselov/trainings-anovoselov-postgersql
