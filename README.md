@@ -8,3 +8,4 @@ Besides the usage of ORM as a way to have version controlling, we could check fr
 - flyway
 - luquibase
 - [sqitch?](https://sqitch.org/)
+
