@@ -1,5 +1,4 @@
 variables:
-  PIPELINE_RUNNER: python:3.9
   DOCKER_RUNNER: docker:20.10.13-dind-alpine3.15
 
 cache:
@@ -11,7 +10,7 @@ stages:
   - docker-test
 
 docker-test:
-  image: ${PIPELINE_RUNNER}
+  image: ${DOCKER_RUNNER}
   stage: docker-test
   tags: 
     - docker
