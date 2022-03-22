@@ -1,0 +1,11 @@
+variables:
+  PIPELINE_RUNNER: ubuntu:20-04
+
+stages:
+  - test
+
+deploying_golang_builder:
+  image: ${PIPELINE_RUNNER}
+  stage: test
+  script:
+      - echo "testing available runners"
