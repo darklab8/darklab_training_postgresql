@@ -1,9 +1,6 @@
 variables:
   PIPELINE_RUNNER: python:3.9
 
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
 cache:
   paths:
     - src/django_orm/venv
