@@ -1,6 +1,6 @@
 variables:
   PIPELINE_RUNNER: python:3.9
-  DOCKER_RUNNER: 20.10.13-dind-alpine3.15
+  DOCKER_RUNNER: docker:20.10.13-dind-alpine3.15
 
 cache:
   paths:
