@@ -7,21 +7,23 @@ cache:
     - src/django_orm/venv
 
 stages:
-  - test
+  - docker-check
   - docker-test
 
-# Disabled to speed up docker-test
-# test:
-#   image: ${PIPELINE_RUNNER}
-#   stage: test
-#   script:
-#       - cd src/django_orm
-#       - python3 -m venv venv
-#       - source venv/bin/activate
-#       - pip install -r requirements.txt -c constraints.txt
-#       - pytest
-
 docker-test:
+  image: ${PIPELINE_RUNNER}
+  stage: test
+  script:
+      - cd src/django_orm
+      - docker login $docker_registry -u $docker_username -p $docker_registry_token
+      - docker pull -t $image_name:test
+      - docker build -t $image_name:test .
+      - docker push -t $image_name:test
+      - docker run $image_name:test pytest
+  variables:
+    image_name: gitlab.noveogroup.com:4567/trainings-anovoselov/trainings-anovoselov-postgersql
+
+docker-check:
   image: ${DOCKER_RUNNER}
   tags: 
     - docker
