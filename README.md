@@ -1,6 +1,6 @@
 # description
 
-The purpose of the repositor to go through the PostgreSQL training ;)
+The purpose of the repository to go through the PostgreSQL training ;)
 
 # notes:
 
