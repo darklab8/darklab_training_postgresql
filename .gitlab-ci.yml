@@ -1,5 +1,12 @@
 variables:
-  PIPELINE_RUNNER: ubuntu:20.04
+  PIPELINE_RUNNER: python:3.9
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - src/django_orm/venv
 
 stages:
   - test
@@ -8,4 +15,8 @@ test:
   image: ${PIPELINE_RUNNER}
   stage: test
   script:
-      - echo "testing available runners"
+      - cd src/django_orm
+      - python3 -m venv venv
+      - source venv/bin/activate
+      - pip install -r requirements.txt -c constraints.txt
+      - pytest
