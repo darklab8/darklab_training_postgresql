@@ -12,7 +12,7 @@ stages:
 
 docker-test:
   image: ${PIPELINE_RUNNER}
-  stage: test
+  stage: docker-test
   script:
       - cd src/django_orm
       - docker login $docker_registry -u $docker_username -p $docker_registry_token
@@ -22,14 +22,4 @@ docker-test:
       - docker run $image_name:test pytest
   variables:
     image_name: gitlab.noveogroup.com:4567/trainings-anovoselov/trainings-anovoselov-postgersql
-
-docker-check:
-  image: ${DOCKER_RUNNER}
-  tags: 
-    - docker
-    - dind
-    - docker-compose
-  stage: docker-test
-  script:
-    - docker ps
 
