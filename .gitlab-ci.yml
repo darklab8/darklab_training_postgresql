@@ -13,6 +13,9 @@ stages:
 docker-test:
   image: ${PIPELINE_RUNNER}
   stage: docker-test
+  tags: 
+    - docker
+    - dind
   script:
       - cd src/django_orm
       - docker login $docker_registry -u $docker_username -p $docker_registry_token
