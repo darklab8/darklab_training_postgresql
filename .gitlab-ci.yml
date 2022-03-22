@@ -19,7 +19,7 @@ docker-test:
       - cd src/django_orm
       - docker login $docker_registry -u $docker_username -p $docker_registry_token
       - docker pull $image_name:test || true
-      - docker build -t $image_name:test .
+      - docker build -t $image_name:test . --cache-from $image_name:test
       - docker push $image_name:test
       - docker run $image_name:test pytest
   variables:
