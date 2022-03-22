@@ -1,5 +1,6 @@
 variables:
   PIPELINE_RUNNER: python:3.9
+  DOCKER_RUNNER: 20.10.13-dind-alpine3.15
 
 cache:
   paths:
@@ -7,13 +8,26 @@ cache:
 
 stages:
   - test
+  - docker-test
 
-test:
-  image: ${PIPELINE_RUNNER}
-  stage: test
-  script:
-      - cd src/django_orm
-      - python3 -m venv venv
-      - source venv/bin/activate
-      - pip install -r requirements.txt -c constraints.txt
-      - pytest
+# Disabled to speed up docker-test
+# test:
+#   image: ${PIPELINE_RUNNER}
+#   stage: test
+#   script:
+#       - cd src/django_orm
+#       - python3 -m venv venv
+#       - source venv/bin/activate
+#       - pip install -r requirements.txt -c constraints.txt
+#       - pytest
+
+docker-test:
+  image: ${DOCKER_RUNNER}
+  tags: 
+    - docker
+    - dind
+    - docker-compose
+  stage: docker-test
+  scripts:
+    - docker ps
+
