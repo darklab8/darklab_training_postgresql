@@ -28,6 +28,6 @@ docker-test:
     - dind
     - docker-compose
   stage: docker-test
-  scripts:
+  script:
     - docker ps
 
