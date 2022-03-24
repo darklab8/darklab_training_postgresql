@@ -121,3 +121,4 @@ data/
 venv/
 
 by_book.sql
+task_background.sql

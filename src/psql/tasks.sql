@@ -1,0 +1,82 @@
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS posts CASCADE;
+DROP TABLE IF EXISTS post_editions CASCADE;
+DROP TABLE IF EXISTS post_approvals CASCADE;
+DROP TABLE IF EXISTS post_visits CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS comment_approvals CASCADE;
+
+CREATE TABLE users
+(
+  	id SERIAL PRIMARY KEY,
+  	first_name CHAR(50) NOT NULL,
+	second_name CHAR(50) NOT NULL,
+  	birth_date DATE NOT NULL,
+	email CHAR(50) NOT NULL,
+	password CHAR(100) NOT NULL,
+	address CHAR(200) NOT NULL
+);
+
+CREATE TABLE posts
+(
+	id SERIAL PRIMARY KEY,
+	author_id INTEGER NOT NULL,
+	title VARCHAR(255)   NOT NULL,
+	content TEXT           NOT NULL,
+	tags CHAR(30)[],
+	status CHAR(20) NOT NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+	FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE,
+	CHECK (status IN ('published', 'draft', 'archived'))
+);
+
+CREATE TABLE post_editions
+(
+	id SERIAL PRIMARY KEY,
+	post_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
+	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+	edited_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE post_approvals
+(
+	id SERIAL PRIMARY KEY,
+	post_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
+	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+	is_liked BOOLEAN NOT NULL
+);
+
+CREATE TABLE post_visits
+(
+	id SERIAL PRIMARY KEY,
+	post_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
+	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+	visited_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE comments
+(
+	id SERIAL PRIMARY KEY,
+	post_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
+	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+	content TEXT           NOT NULL
+);
+
+CREATE TABLE comment_approvals
+(
+	id SERIAL PRIMARY KEY,
+	comment_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
+	FOREIGN KEY (comment_id) REFERENCES posts (id) ON DELETE CASCADE,
+	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+	is_liked BOOLEAN NOT NULL
+);
