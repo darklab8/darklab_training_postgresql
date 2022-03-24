@@ -119,3 +119,5 @@ admin/
 data/
 
 venv/
+
+by_book.sql
