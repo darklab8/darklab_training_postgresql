@@ -95,6 +95,10 @@ CREATE OR REPLACE FUNCTION post_rating_trigger_function()
 AS $$
 BEGIN
    -- trigger logic
+   UPDATE posts
+   SET rating = rating + NEW.change
+   WHERE posts.id = NEW.post_id;
+   
    RETURN NEW;
 END $$;
 
@@ -131,12 +135,18 @@ BEGIN
   UPDATE posts SET status = 'published' WHERE id % 10 = 0;
 
   INSERT INTO post_approvals(post_id, user_id, change) SELECT
-    (num - 1) % v_posts_for_each_user + 1,
+    (num - 1) % (v_posts_for_each_user - 1) + 1,
     num,
     1
   FROM generate_series(1, v_users_number) as num;
 
 END $$;
 
-SELECT * FROM post_approvals
-WHERE post_id = 5
+INSERT INTO post_approvals(post_id, user_id, change)
+VALUES (5, 1000, -1);
+
+INSERT INTO post_approvals(post_id, user_id, change)
+VALUES (5, 999, -1);
+
+SELECT * FROM posts
+WHERE id = 5;
