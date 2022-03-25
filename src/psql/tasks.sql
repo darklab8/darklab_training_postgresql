@@ -89,6 +89,21 @@ CREATE TABLE comment_approvals
     CHECK(change = 1 OR change = -1)
 );
 
+CREATE OR REPLACE FUNCTION post_rating_trigger_function() 
+   RETURNS TRIGGER 
+   LANGUAGE PLPGSQL
+AS $$
+BEGIN
+   -- trigger logic
+   RETURN NEW;
+END $$;
+
+CREATE TRIGGER post_rating_trigger
+	AFTER INSERT OR DELETE
+	ON post_approvals
+	FOR ROW
+		EXECUTE PROCEDURE post_rating_trigger_function();
+
 
 DO $$
   DECLARE v_users_number INT;
