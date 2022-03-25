@@ -13,7 +13,6 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS posts CASCADE;
 DROP TABLE IF EXISTS post_editions CASCADE;
 DROP TABLE IF EXISTS post_approvals CASCADE;
-DROP TABLE IF EXISTS post_visits CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS comment_approvals CASCADE;
 
@@ -45,7 +44,7 @@ CREATE TABLE posts
     CHECK (array_length(tags, 1) < 20)
 );
 
-CREATE TABLE post_editions
+CREATE TABLE post_editions -- Also known as PostEditedBY in the design.jpg
 (
 	id SERIAL PRIMARY KEY,
 	post_id INTEGER NOT NULL,
@@ -62,7 +61,9 @@ CREATE TABLE post_approvals
 	user_id INTEGER NOT NULL,
 	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-	change SMALLINT NOT NULL
+	change SMALLINT NOT NULL,
+    UNIQUE(post_id, user_id),
+    CHECK(change = 1 OR change = -1)
 );
 
 CREATE TABLE comments
@@ -83,5 +84,37 @@ CREATE TABLE comment_approvals
 	user_id INTEGER NOT NULL,
 	FOREIGN KEY (comment_id) REFERENCES posts (id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-	change SMALLINT NOT NULL
+	change SMALLINT NOT NULL,
+    UNIQUE(comment_id, user_id),
+    CHECK(change = 1 OR change = -1)
 );
+
+
+DO $$
+  DECLARE v_users_number INT;
+  DECLARE v_posts_for_each_user INT;
+BEGIN
+ v_users_number := 1000;
+ v_posts_for_each_user := 50;
+
+  INSERT INTO users(first_name, second_name, birth_date, email, password, address) SELECT
+    concat('first_name', num),
+    concat('second_name', num),
+    DATE('1990-04-01'),
+    concat('email', num, '@example.com'),
+    LEFT(MD5(num::varchar), 100),
+    concat('address', num)
+  FROM generate_series(1, v_users_number) as num;
+  
+   INSERT INTO posts(author_id, title, content, status) SELECT
+    (num - 1) % v_users_number + 1,
+    LEFT(MD5(num::varchar), 5),
+    MD5(num::varchar),
+    'draft'
+  FROM generate_series(1, v_posts_for_each_user * v_users_number) as num;
+
+  UPDATE posts SET status = 'published' WHERE id % 10 = 0;
+
+END $$;
+
+SELECT * FROM users;
