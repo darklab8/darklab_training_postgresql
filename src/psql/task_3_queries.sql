@@ -6,11 +6,12 @@
 -- Посчитать количество постов для пользователя с заданным ID;
 SELECT count(id) FROM posts
 WHERE author_id = 5
+-- 40 MS (I already created Index for tis one)
 
 -- Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;
 SELECT * FROM posts
 ORDER BY created_at DESC
-LIMIT 10
+LIMIT 2000
 
 -- Выбрать N постов в статусе "ожидает публикации", отсортированных в порядке возрастания даты создания;
 SELECT * FROM posts
@@ -25,6 +26,8 @@ WHERE 'def' = ANY(posts.tags)
 GROUP BY post_id
 ORDER BY max(edited_at) DESC
 LIMIT 10 OFFSET 1*10
+-- 190-130 MS before INDEXES
+-- 62 MS after adding INDEX to post.id post_editions.post_id, they started to use Index Scan instead of Seq Scan
 
 
 -- Найти N постов с наибольшим рейтингом за день/месяц/год.

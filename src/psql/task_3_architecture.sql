@@ -110,12 +110,6 @@ BEGIN
    
    RETURN NEW;
 END $$;
-
-CREATE TRIGGER post_rating_trigger
-	AFTER INSERT OR DELETE
-	ON post_approvals
-	FOR ROW
-		EXECUTE PROCEDURE post_rating_trigger_function();
 		
 CREATE OR REPLACE FUNCTION user_rating_trigger_function() 
    RETURNS TRIGGER 
@@ -143,29 +137,23 @@ BEGIN
    RETURN NEW;
 END $$;
 
-CREATE TRIGGER user_rating_trigger_1
-	AFTER INSERT OR DELETE
-	ON post_approvals
-	FOR ROW
-		EXECUTE PROCEDURE user_rating_trigger_function();
-		
-CREATE TRIGGER user_rating_trigger_2
-	AFTER INSERT OR DELETE
-	ON comment_approvals
-	FOR ROW
-		EXECUTE PROCEDURE user_rating_trigger_function();
-		
-CREATE TRIGGER user_rating_trigger_3
-	AFTER INSERT OR DELETE
-	ON post_editions
-	FOR ROW
-		EXECUTE PROCEDURE user_rating_trigger_function();
-
 CREATE INDEX
   ON posts (author_id);
 
 CREATE INDEX
+  ON posts (id);
+
+CREATE INDEX
+  ON post_editions (post_id);
+
+CREATE INDEX
   ON posts (created_at);
+
+CREATE INDEX
+  ON posts USING GIN (tags);
+
+CREATE INDEX
+  ON posts USING BRIN (created_at);
 
 -- add to users, posts, post_approvals
 DO $$
@@ -228,7 +216,7 @@ DO $$
   DECLARE v_posts_for_each_user INT;
 BEGIN
  v_users_number := 2000;
- v_posts_for_each_user := 50;
+ v_posts_for_each_user := 500;
 
   INSERT INTO post_editions(post_id, user_id, edited_at) SELECT
     (num - 1) % (v_posts_for_each_user - 1) + 1,
