@@ -107,6 +107,55 @@ CREATE TRIGGER post_rating_trigger
 	ON post_approvals
 	FOR ROW
 		EXECUTE PROCEDURE post_rating_trigger_function();
+		
+CREATE OR REPLACE FUNCTION user_rating_trigger_function() 
+   RETURNS TRIGGER 
+   LANGUAGE PLPGSQL
+AS $$
+BEGIN
+    RAISE NOTICE 'test1'; 
+    
+    WITH ratings AS (
+        SELECT (0.5 * avg(rating))::float as rating FROM posts
+        WHERE author_id = NEW.user_id
+        GROUP BY author_id
+        UNION ALL
+        SELECT (0.2 * avg(change))::float as rating FROM comment_approvals AS a
+        JOIN comments AS c ON a.comment_id = c.id
+        WHERE c.user_id = NEW.user_id
+        UNION ALL
+        SELECT (0.3 * avg(rating))::float as rating FROM POSTS
+        WHERE id IN (SELECT DISTINCT post_id from post_editions
+                        WHERE user_id = NEW.user_id)
+    )
+    UPDATE users
+    SET rating = (SELECT sum(ratings.rating) FROM ratings)
+    WHERE users.id = NEW.user_id;
+
+    RAISE NOTICE 'var is %', NEW.user_id; 
+
+    RAISE NOTICE 'test12'; 
+
+   RETURN NEW;
+END $$;
+
+CREATE TRIGGER user_rating_trigger_1
+	AFTER INSERT OR DELETE
+	ON post_approvals
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
+		
+CREATE TRIGGER user_rating_trigger_2
+	AFTER INSERT OR DELETE
+	ON comment_approvals
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
+		
+CREATE TRIGGER user_rating_trigger_3
+	AFTER INSERT OR DELETE
+	ON post_editions
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
 
 
 DO $$
@@ -148,5 +197,22 @@ VALUES (5, 1000, -1);
 INSERT INTO post_approvals(post_id, user_id, change)
 VALUES (5, 999, -1);
 
-SELECT * FROM posts
+INSERT INTO comments(user_id, post_id, content)
+VALUES (5, 1, '1'),
+        (5, 1, '2'),
+        (5, 1, '3');
+
+INSERT INTO comment_approvals(user_id, comment_id, change)
+VALUES (5, 1, 1),
+        (5, 2, -1),
+        (5, 3, 1);
+
+INSERT INTO post_editions(post_id, user_id)
+VALUES (21, 5),
+        (22, 5),
+        (23, 6),
+        (22, 5),
+        (22, 5);
+
+SELECT * FROM users
 WHERE id = 5;
