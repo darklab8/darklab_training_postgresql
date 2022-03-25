@@ -113,7 +113,6 @@ CREATE OR REPLACE FUNCTION user_rating_trigger_function()
    LANGUAGE PLPGSQL
 AS $$
 BEGIN
-    RAISE NOTICE 'test1'; 
     
     WITH ratings AS (
         SELECT (0.5 * avg(rating))::float as rating FROM posts
@@ -131,10 +130,6 @@ BEGIN
     UPDATE users
     SET rating = (SELECT sum(ratings.rating) FROM ratings)
     WHERE users.id = NEW.user_id;
-
-    RAISE NOTICE 'var is %', NEW.user_id; 
-
-    RAISE NOTICE 'test12'; 
 
    RETURN NEW;
 END $$;
@@ -157,6 +152,8 @@ CREATE TRIGGER user_rating_trigger_3
 	FOR ROW
 		EXECUTE PROCEDURE user_rating_trigger_function();
 
+CREATE INDEX
+  ON posts (author_id);
 
 DO $$
   DECLARE v_users_number INT;
