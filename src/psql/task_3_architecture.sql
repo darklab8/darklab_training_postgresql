@@ -160,8 +160,8 @@ DO $$
   DECLARE v_users_number INT;
   DECLARE v_posts_for_each_user INT;
 BEGIN
- v_users_number := 2000;
- v_posts_for_each_user := 100;
+ v_users_number := 1000;
+ v_posts_for_each_user := 50;
 
   INSERT INTO users(first_name, second_name, birth_date, email, password, address) SELECT
     concat('first_name', num),
@@ -215,8 +215,8 @@ DO $$
   DECLARE v_users_number INT;
   DECLARE v_posts_for_each_user INT;
 BEGIN
- v_users_number := 2000;
- v_posts_for_each_user := 500;
+ v_users_number := 1000;
+ v_posts_for_each_user := 50;
 
   INSERT INTO post_editions(post_id, user_id, edited_at) SELECT
     (num - 1) % (v_posts_for_each_user - 1) + 1,
