@@ -24,6 +24,10 @@ def inited_db(engine):
     results = run_raw(engine, query)
 
 
+def random_DATE():
+    return f"20{random.randint(10,22):02}-{random.randint(1,12):02}-{random.randint(1,28):02}"
+
+
 @pytest.fixture
 def filled_db(inited_db, engine):
     Base = automap_base()
@@ -31,8 +35,9 @@ def filled_db(inited_db, engine):
 
     session = Session(engine)
 
-    users_amount: int = 1000
-    posts_count: int = 2000
+    users_total_amount: int = 1000
+    posts_per_user: int = 2
+    posts_total_amount = users_total_amount * posts_per_user
 
     User = Base.classes.users
     session.bulk_save_objects(
@@ -41,12 +46,12 @@ def filled_db(inited_db, engine):
                 id=i,
                 first_name=f"name_{i}",
                 second_name=f"second_name_{i}",
-                birth_date=f"20{random.randint(10,22):02}-{random.randint(1,12):02}-{random.randint(1,28):02}",
+                birth_date=f"{random_DATE()}",
                 email=f"email_{i}",
                 password=f"password_{i}",
                 address=f"address_{i}",
             )
-            for i in range(users_amount)
+            for i in range(users_total_amount)
         ]
     )
 
@@ -55,13 +60,14 @@ def filled_db(inited_db, engine):
         [
             Post(
                 id=i,
-                author_id=i % users_amount,
+                author_id=i % users_total_amount,
                 title=f"title_{i}",
                 content=f"content_{i}",
-                created_at=f"20{random.randint(10,22):02}-{random.randint(1,12):02}-{random.randint(1,28):02}",
+                created_at=f"{random_DATE()}",
                 status=random.choice(["draft", "published", "archived"]),
             )
-            for i in range(posts_count)
+            for i in range(posts_total_amount)
         ]
     )
+
     session.commit()

@@ -4,7 +4,8 @@ DROP TABLE IF EXISTS post_editions CASCADE;
 DROP TABLE IF EXISTS post_approvals CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS comment_approvals CASCADE;
-DROP TABLE IF EXISTS post_visits_per_day;
+DROP TABLE IF EXISTS post_visits_per_day CASCADE;
+DROP TABLE IF EXISTS post_ratings_per_day CASCADE;
 
 CREATE TABLE users
 (
@@ -27,13 +28,21 @@ CREATE TABLE posts
 	tags VARCHAR(50)[],
 	status TEXT NOT NULL,
 	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    rating INTEGER DEFAULT 0, -- Auto calculated by TRIGGER
     FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE,
 	CHECK (status IN ('published', 'draft', 'archived')),
     CHECK (array_length(tags, 1) < 20)
 );
 
-CREATE TABLE post_visits_per_day -- Also known as PostEditedBY in the design.jpg
+CREATE TABLE post_ratings_per_day 
+(
+	id SERIAL PRIMARY KEY,
+	post_id INTEGER NOT NULL,
+	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
+	day_date DATE DEFAULT NOW(),
+	rating BIGINT DEFAULT 0
+);
+
+CREATE TABLE post_visits_per_day
 (
 	id SERIAL PRIMARY KEY,
 	post_id INTEGER NOT NULL,
@@ -87,25 +96,7 @@ CREATE TABLE comment_approvals
     CHECK(change = 1 OR change = -1)
 );
 
-CREATE OR REPLACE FUNCTION post_rating_trigger_function() 
-   RETURNS TRIGGER 
-   LANGUAGE PLPGSQL
-AS $$
-BEGIN
-   -- trigger logic
-   UPDATE posts
-   SET rating = rating + NEW.change
-   WHERE posts.id = NEW.post_id;
-   
-   RETURN NEW;
-END $$;
-
-CREATE TRIGGER post_rating_trigger
-	AFTER INSERT OR DELETE
-	ON post_approvals
-	FOR ROW
-		EXECUTE PROCEDURE post_rating_trigger_function();
-		
+	
 CREATE OR REPLACE FUNCTION user_rating_trigger_function() 
    RETURNS TRIGGER 
    LANGUAGE PLPGSQL
