@@ -41,3 +41,10 @@ def test_check_tags(filled_db, engine):
 
     assert len(first_result) == 1
     assert first_result[0] in ["abc", "def", "ghi"]
+
+
+def test_users_with_rating_exist(filled_db, engine):
+
+    results = run_query(engine, "SELECT * FROM users WHERE rating > 0")
+
+    assert results.rowcount != 0
