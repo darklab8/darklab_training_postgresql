@@ -1,5 +1,4 @@
-from sqlalchemy.sql import text
-from ..app.utils import run_raw
+from ..app.utils import run_query
 from ..conftest import Consts
 
 # -- Задание 3
@@ -10,14 +9,13 @@ from ..conftest import Consts
 
 def test_task_3_find_users_by_id(filled_db, engine):
 
-    query = text("""SELECT count(id) FROM posts WHERE author_id = :author_id""")
+    the_amount_of_message_user_has = run_query(
+        engine,
+        """SELECT count(id) FROM posts WHERE author_id = :author_id""",
+        {"author_id": 5},
+        return_first=True,
+    )
 
-    statement = query.bindparams(author_id=5)
-
-    with engine.connect() as con:
-        results = con.execute(statement)
-
-    the_amount_of_message_user_has, *_ = results.first()
     assert the_amount_of_message_user_has == Consts.posts_per_user
 
 

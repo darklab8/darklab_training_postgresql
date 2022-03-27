@@ -1,6 +1,12 @@
-def run_raw(engine, query: str):
+from sqlalchemy.sql import text
+
+
+def run_query(engine, query, args={}, return_first=False):
     with engine.connect() as con:
+        results = con.execute(text(query).bindparams(**args))
 
-        results = con.execute(rf"{query}")
+    if return_first:
+        first_result, *_ = results.first()
+        return first_result
 
-        return results
+    return results

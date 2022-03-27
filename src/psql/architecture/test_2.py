@@ -1,4 +1,4 @@
-from ..app.utils import run_raw
+from ..app.utils import run_query
 import os
 from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
@@ -23,7 +23,7 @@ WHERE
 
 def test_automap_db(filled_db, engine):
 
-    results = run_raw(engine, "SELECT * FROM users LIMIT 10")
+    results = run_query(engine, "SELECT * FROM users LIMIT 10")
 
     count = 0
     for row in results:

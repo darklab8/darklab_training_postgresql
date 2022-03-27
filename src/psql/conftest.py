@@ -3,7 +3,7 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 import random
 import pytest
-from .app.utils import run_raw
+from .app.utils import run_query
 from dataclasses import dataclass
 
 
@@ -22,7 +22,7 @@ def inited_db(engine):
     with open("architecture/task_2_architecture.sql", "r") as file_:
         query = file_.read()
 
-    results = run_raw(engine, query)
+    results = run_query(engine, query)
 
 
 def random_DATE():
