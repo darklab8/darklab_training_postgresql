@@ -9,7 +9,7 @@ def test_check():
 
 
 def test_check_db_conn(engine):
-    results = run_raw(
+    results = run_query(
         engine,
         """
 SELECT EXISTS (

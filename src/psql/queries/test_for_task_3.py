@@ -8,15 +8,36 @@ from ..conftest import Consts
 
 
 def test_task_3_find_users_by_id(filled_db, engine):
+    "Посчитать количество постов для пользователя с заданным ID;"
+
+    id = 5
 
     the_amount_of_message_user_has = run_query(
         engine,
         """SELECT count(id) FROM posts WHERE author_id = :author_id""",
-        {"author_id": 5},
+        {"author_id": id},
         return_first=True,
     )
 
     assert the_amount_of_message_user_has == Consts.posts_per_user
+
+
+def test_task_3_find_N_published_posts_sorted_by_time_of_creation(filled_db, engine):
+    "Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;"
+
+    N = 25
+
+    results = run_query(
+        engine,
+        """
+        SELECT * FROM posts
+        ORDER BY created_at DESC
+        LIMIT :N
+        """,
+        {"N": N},
+    )
+
+    assert results.rowcount == N
 
 
 # -- 2) Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;
