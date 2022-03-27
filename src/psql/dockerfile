@@ -1,0 +1,19 @@
+# NOT WORKING CODE, JUST EXAMPLE OF DOCKERFILE FOR POSTGRESQL DRIVERS
+
+FROM python:3.9-slim
+
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+
+RUN apt update
+RUN apt install -y python3-pip python3-dev libpq-dev postgresql postgresql-contrib build-essential
+
+COPY ./requirements.txt ./
+RUN pip install -r requirements.txt
+
+WORKDIR /app
+
+COPY . .
+
+
+RUN chmod 777 $APP_HOME
