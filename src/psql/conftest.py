@@ -34,6 +34,8 @@ class database_generating_consts:
     users_total_amount: int = 1000
     posts_per_user: int = 2
     posts_total_amount: int = users_total_amount * posts_per_user
+    post_editions_per_post = 1
+    post_editions_total_amount = posts_total_amount * post_editions_per_post
 
 
 Consts = database_generating_consts()
@@ -72,8 +74,22 @@ def filled_db(inited_db, engine):
                 content=f"content_{i}",
                 created_at=f"{random_DATE()}",
                 status=random.choice(["draft", "published", "archived"]),
+                tags=[random.choice(["abc", "def", "ghi"])],
             )
             for i in range(Consts.posts_total_amount)
+        ]
+    )
+
+    PostEdit = Base.classes.post_editions
+    session.bulk_save_objects(
+        [
+            PostEdit(
+                id=i,
+                user_id=i % Consts.users_total_amount,
+                post_id=i % Consts.posts_total_amount,
+                edited_at=f"{random_DATE()}",
+            )
+            for i in range(Consts.post_editions_total_amount)
         ]
     )
 

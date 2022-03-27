@@ -102,6 +102,11 @@ CREATE OR REPLACE FUNCTION user_rating_trigger_function()
    LANGUAGE PLPGSQL
 AS $$
 BEGIN
+
+	-- У каждого пользователя есть рейтинг:
+	-- 50% составляет средний рейтинг созданных им постов,
+	-- 30% составляет средний рейтинг редактированных им постов,
+	-- 20% составляет средний рейтинг его комментариев.
     
     WITH ratings AS (
         SELECT (0.5 * avg(rating))::float as rating FROM posts
@@ -123,23 +128,23 @@ BEGIN
    RETURN NEW;
 END $$;
 
-CREATE TRIGGER user_rating_trigger_1
-	AFTER INSERT OR DELETE
-	ON post_approvals
-	FOR ROW
-		EXECUTE PROCEDURE user_rating_trigger_function();
+-- CREATE TRIGGER user_rating_trigger_1
+-- 	AFTER INSERT OR DELETE
+-- 	ON post_approvals
+-- 	FOR ROW
+-- 		EXECUTE PROCEDURE user_rating_trigger_function();
 		
-CREATE TRIGGER user_rating_trigger_2
-	AFTER INSERT OR DELETE
-	ON comment_approvals
-	FOR ROW
-		EXECUTE PROCEDURE user_rating_trigger_function();
+-- CREATE TRIGGER user_rating_trigger_2
+-- 	AFTER INSERT OR DELETE
+-- 	ON comment_approvals
+-- 	FOR ROW
+-- 		EXECUTE PROCEDURE user_rating_trigger_function();
 		
-CREATE TRIGGER user_rating_trigger_3
-	AFTER INSERT OR DELETE
-	ON post_editions
-	FOR ROW
-		EXECUTE PROCEDURE user_rating_trigger_function();
+-- CREATE TRIGGER user_rating_trigger_3
+-- 	AFTER INSERT OR DELETE
+-- 	ON post_editions
+-- 	FOR ROW
+-- 		EXECUTE PROCEDURE user_rating_trigger_function();
 
 CREATE INDEX
   ON posts (id);

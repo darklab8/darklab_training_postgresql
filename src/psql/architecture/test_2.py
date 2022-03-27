@@ -31,3 +31,13 @@ def test_automap_db(filled_db, engine):
         count += 1
 
     assert count == 10
+
+
+def test_check_tags(filled_db, engine):
+
+    first_result = run_query(
+        engine, "SELECT tags FROM posts LIMIT 1", return_first=True
+    )
+
+    assert len(first_result) == 1
+    assert first_result[0] in ["abc", "def", "ghi"]

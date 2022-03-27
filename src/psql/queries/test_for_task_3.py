@@ -14,7 +14,12 @@ def test_task_3_find_users_by_id(filled_db, engine):
 
     the_amount_of_message_user_has = run_query(
         engine,
-        """SELECT count(id) FROM posts WHERE author_id = :author_id""",
+        """
+
+SELECT count(id) FROM posts
+WHERE author_id = :author_id
+
+        """,
         {"author_id": id},
         return_first=True,
     )
@@ -30,9 +35,11 @@ def test_task_3_find_N_published_posts_sorted_by_time_of_creation(filled_db, eng
     results = run_query(
         engine,
         """
-        SELECT * FROM posts
-        ORDER BY created_at DESC
-        LIMIT :N
+
+SELECT * FROM posts
+ORDER BY created_at DESC
+LIMIT :N
+
         """,
         {"N": N},
     )
@@ -40,16 +47,54 @@ def test_task_3_find_N_published_posts_sorted_by_time_of_creation(filled_db, eng
     assert results.rowcount == N
 
 
-# -- 2) Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;
-# SELECT * FROM posts
-# ORDER BY created_at DESC
-# LIMIT 2000
+def test_get_N_draft_posts_sorted_by_date_creation_ascension(filled_db, engine):
+    'Выбрать N постов в статусе "ожидает публикации", отсортированных в порядке возрастания даты создания;'
+    N = 25
 
-# -- 3) Выбрать N постов в статусе "ожидает публикации", отсортированных в порядке возрастания даты создания;
-# SELECT * FROM posts
-# WHERE status = 'draft'
-# ORDER BY created_at ASC
-# LIMIT 10
+    results = run_query(
+        engine,
+        """
+
+SELECT * FROM posts
+WHERE status = 'draft'
+ORDER BY created_at ASC
+LIMIT :N
+
+        """,
+        {"N": N},
+    )
+
+    assert results.rowcount == N
+
+
+def test_get_N_recently_updated_posts_with_certain_tag_from_K_page_and_each_page_having_L_posts(
+    filled_db, engine
+):
+    "Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов)."
+
+    N = 25
+    K = 1
+    L = 10
+    tag = "def"
+    shown_posts = N if N < L else L
+
+    results = run_query(
+        engine,
+        """
+
+SELECT post_id, max(edited_at) FROM post_editions
+JOIN posts on posts.id = post_editions.post_id
+WHERE :tag = ANY(posts.tags)
+GROUP BY post_id
+ORDER BY max(edited_at) DESC
+LIMIT :shown_posts OFFSET :K * :L
+
+        """,
+        {"shown_posts": shown_posts, "L": L, "K": K, "tag": tag},
+    )
+
+    assert results.rowcount == L
+
 
 # -- 4) Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов).
 # SELECT post_id, max(edited_at) FROM post_editions
