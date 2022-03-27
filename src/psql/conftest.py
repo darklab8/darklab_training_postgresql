@@ -4,12 +4,13 @@ from sqlalchemy.orm import Session
 import random
 import pytest
 from .app.utils import run_raw
+from dataclasses import dataclass
 
 
 @pytest.fixture
 def engine():
     engine = create_engine(
-        "postgresql://postgres:postgres@localhost:5432/postgres", echo=True
+        "postgresql://postgres:postgres@localhost:5432/postgres"  # , echo=True
     )
 
     return engine
@@ -28,16 +29,22 @@ def random_DATE():
     return f"20{random.randint(10,22):02}-{random.randint(1,12):02}-{random.randint(1,28):02}"
 
 
+@dataclass
+class database_generating_consts:
+    users_total_amount: int = 1000
+    posts_per_user: int = 2
+    posts_total_amount: int = users_total_amount * posts_per_user
+
+
+Consts = database_generating_consts()
+
+
 @pytest.fixture
 def filled_db(inited_db, engine):
     Base = automap_base()
     Base.prepare(engine, reflect=True)
 
     session = Session(engine)
-
-    users_total_amount: int = 1000
-    posts_per_user: int = 2
-    posts_total_amount = users_total_amount * posts_per_user
 
     User = Base.classes.users
     session.bulk_save_objects(
@@ -51,7 +58,7 @@ def filled_db(inited_db, engine):
                 password=f"password_{i}",
                 address=f"address_{i}",
             )
-            for i in range(users_total_amount)
+            for i in range(Consts.users_total_amount)
         ]
     )
 
@@ -60,13 +67,13 @@ def filled_db(inited_db, engine):
         [
             Post(
                 id=i,
-                author_id=i % users_total_amount,
+                author_id=i % Consts.users_total_amount,
                 title=f"title_{i}",
                 content=f"content_{i}",
                 created_at=f"{random_DATE()}",
                 status=random.choice(["draft", "published", "archived"]),
             )
-            for i in range(posts_total_amount)
+            for i in range(Consts.posts_total_amount)
         ]
     )
 
