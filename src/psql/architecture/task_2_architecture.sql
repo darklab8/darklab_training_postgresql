@@ -134,17 +134,20 @@ BEGIN
 	-- 20% составляет средний рейтинг его комментариев.
     
     WITH ratings AS (
-        SELECT (0.5 * avg(rating))::float as rating FROM posts
-        WHERE author_id = NEW.user_id
-        GROUP BY author_id
-        UNION ALL
-        SELECT (0.2 * avg(change))::float as rating FROM comment_approvals AS a
-        JOIN comments AS c ON a.comment_id = c.id
-        WHERE c.user_id = NEW.user_id
-        UNION ALL
-        SELECT (0.3 * avg(rating))::float as rating FROM POSTS
-        WHERE id IN (SELECT DISTINCT post_id from post_editions
-                        WHERE user_id = NEW.user_id)
+        SELECT (0.5 * avg(coalesce(pr.rating, 0)))::float as rating FROM posts
+		LEFT JOIN post_ratings_per_day pr ON pr.post_id = posts.id
+		WHERE author_id = NEW.user_id
+		GROUP BY author_id
+		UNION ALL
+		SELECT coalesce((0.2 * avg(change)),0)::float FROM comment_approvals AS a
+		JOIN comments AS c ON a.comment_id = c.id
+		WHERE c.user_id = NEW.user_id
+		UNION ALL
+		SELECT (0.3 * avg(coalesce(rating, 0)))::float as rating FROM posts
+		LEFT JOIN post_ratings_per_day pr ON pr.post_id = posts.id
+		WHERE posts.id IN (SELECT DISTINCT post_id from post_editions
+						WHERE user_id = NEW.user_id)
+		GROUP BY author_id
     )
     UPDATE users
     SET rating = (SELECT sum(ratings.rating) FROM ratings)
@@ -153,23 +156,23 @@ BEGIN
    RETURN NEW;
 END $$;
 
--- CREATE TRIGGER user_rating_trigger_1
--- 	AFTER INSERT OR DELETE
--- 	ON post_approvals
--- 	FOR ROW
--- 		EXECUTE PROCEDURE user_rating_trigger_function();
+CREATE TRIGGER user_rating_trigger_1
+	AFTER INSERT OR DELETE
+	ON post_approvals
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
 		
--- CREATE TRIGGER user_rating_trigger_2
--- 	AFTER INSERT OR DELETE
--- 	ON comment_approvals
--- 	FOR ROW
--- 		EXECUTE PROCEDURE user_rating_trigger_function();
+CREATE TRIGGER user_rating_trigger_2
+	AFTER INSERT OR DELETE
+	ON comment_approvals
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
 		
--- CREATE TRIGGER user_rating_trigger_3
--- 	AFTER INSERT OR DELETE
--- 	ON post_editions
--- 	FOR ROW
--- 		EXECUTE PROCEDURE user_rating_trigger_function();
+CREATE TRIGGER user_rating_trigger_3
+	AFTER INSERT OR DELETE
+	ON post_editions
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
 
 CREATE INDEX
   ON posts (id);
