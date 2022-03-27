@@ -39,7 +39,8 @@ CREATE TABLE post_ratings_per_day
 	post_id INTEGER NOT NULL,
 	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
 	day_date DATE DEFAULT NOW(),
-	rating BIGINT DEFAULT 0
+	rating BIGINT DEFAULT 0,
+	UNIQUE (post_id, day_date)
 );
 
 CREATE TABLE post_visits_per_day
@@ -68,10 +69,34 @@ CREATE TABLE post_approvals
 	user_id INTEGER NOT NULL,
 	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 	change SMALLINT NOT NULL,
     UNIQUE(post_id, user_id),
     CHECK(change = 1 OR change = -1)
 );
+
+CREATE OR REPLACE FUNCTION post_rating_trigger_function() 
+   RETURNS TRIGGER 
+   LANGUAGE PLPGSQL
+AS $$
+BEGIN
+   -- trigger logic
+
+   	INSERT INTO post_ratings_per_day(post_id, rating, day_date)
+	VALUES (NEW.post_id, NEW.change, NEW.created_at)
+	ON CONFLICT (post_id, day_date)
+	DO
+		UPDATE SET rating = post_ratings_per_day.rating + EXCLUDED.rating;
+   
+   RETURN NEW;
+END $$;
+
+CREATE TRIGGER post_rating_trigger
+	AFTER INSERT OR DELETE
+	ON post_approvals
+	FOR ROW
+		EXECUTE PROCEDURE post_rating_trigger_function();
+
 
 CREATE TABLE comments
 (

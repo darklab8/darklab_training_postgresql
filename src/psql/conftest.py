@@ -102,6 +102,7 @@ def filled_db(inited_db, engine):
                 user_id=i % Consts.users_total_amount,
                 post_id=i % Consts.posts_total_amount,
                 change=random.choice([1, 1, -1]),
+                created_at=f"{random_DATE()}",
             )
             for i in range(Consts.post_approvals_total_amount)
         ]

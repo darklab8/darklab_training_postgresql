@@ -99,13 +99,28 @@ LIMIT :shown_posts OFFSET :K * :L
     assert results.rowcount == L
 
 
-def test_get_N_posts_with_biggest_rating_for_day_month_year():
-    raise NotImplementedError("123")
+def test_get_N_posts_with_biggest_rating_for_day_month_year(filled_db, engine):
+    "Найти N постов с наибольшим рейтингом за день/месяц/год."
 
+    N = 10
 
-# -- 5) Найти N постов с наибольшим рейтингом за день/месяц/год.
-# -- TODO rewrite to calculate RATING per day/month/year
-# -- You need to have rating_of_posts_per_day, and to have adjusted trigger
+    results = run_query(
+        engine,
+        rf"""
+
+SELECT post_id, sum(rating) FROM posts
+LEFT JOIN post_ratings_per_day pr ON pr.post_id = posts.id
+WHERE pr.day_date::TEXT LIKE '2021-%-%'
+GROUP BY post_id
+ORDER BY sum(rating) DESC
+LIMIT :N
+
+        """,
+        {"N": N},
+    )
+
+    assert results.rowcount == N
+
 
 # -- Оценить время выполнения запросов (на достаточном количестве тестовых данных) и проанализировать план выполнения запросов.
 # -- Сократить время на выполнение запросов, используя подходящие индексы. Сравнить время выполнения и план запросов после создания индексов.
