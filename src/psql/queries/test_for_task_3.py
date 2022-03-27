@@ -104,6 +104,7 @@ def test_get_N_posts_with_biggest_rating_for_day_month_year(filled_db, engine):
 
     N = 10
 
+    # разница между днём, месяцем, или годом: в параметре 2021-02-12, 2021-02-%, 2021-%-%
     results = run_query(
         engine,
         rf"""

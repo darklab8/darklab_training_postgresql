@@ -108,4 +108,17 @@ def filled_db(inited_db, engine):
         ]
     )
 
+    PostVisit = Base.classes.post_visits_per_day
+    session.bulk_save_objects(
+        [
+            PostVisit(
+                id=i,
+                post_id=i % Consts.posts_total_amount,
+                visits=random.randint(1, 20),
+                day_date=f"{random_DATE()}",
+            )
+            for i in range(Consts.post_approvals_total_amount)
+        ]
+    )
+
     session.commit()
