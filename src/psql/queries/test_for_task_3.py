@@ -24,7 +24,7 @@ WHERE author_id = :author_id
         return_first=True,
     )
 
-    assert the_amount_of_message_user_has == Consts.posts_per_user
+    assert the_amount_of_message_user_has == 1
 
 
 def test_task_3_find_N_published_posts_sorted_by_time_of_creation(filled_db, engine):
@@ -72,6 +72,9 @@ def test_get_N_recently_updated_posts_with_certain_tag_from_K_page_and_each_page
 ):
     "Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов)."
 
+    # -- 190-130 MS before INDEXES
+    # -- 62 MS after adding INDEX to post.id post_editions.post_id, they started to use Index Scan instead of Seq Scan
+
     N = 25
     K = 1
     L = 10
@@ -96,15 +99,9 @@ LIMIT :shown_posts OFFSET :K * :L
     assert results.rowcount == L
 
 
-# -- 4) Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов).
-# SELECT post_id, max(edited_at) FROM post_editions
-# JOIN posts on posts.id = post_editions.post_id
-# WHERE 'def' = ANY(posts.tags)
-# GROUP BY post_id
-# ORDER BY max(edited_at) DESC
-# LIMIT 10 OFFSET 1*10
-# -- 190-130 MS before INDEXES
-# -- 62 MS after adding INDEX to post.id post_editions.post_id, they started to use Index Scan instead of Seq Scan
+def test_get_N_posts_with_biggest_rating_for_day_month_year():
+    raise NotImplementedError("123")
+
 
 # -- 5) Найти N постов с наибольшим рейтингом за день/месяц/год.
 # -- TODO rewrite to calculate RATING per day/month/year

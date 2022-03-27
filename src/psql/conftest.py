@@ -32,10 +32,11 @@ def random_DATE():
 @dataclass
 class database_generating_consts:
     users_total_amount: int = 1000
-    posts_per_user: int = 2
-    posts_total_amount: int = users_total_amount * posts_per_user
+    users_per_post: int = 2
+    posts_total_amount: int = int(users_total_amount / users_per_post)
     post_editions_per_post = 1
     post_editions_total_amount = posts_total_amount * post_editions_per_post
+    post_approvals_total_amount = users_total_amount
 
 
 Consts = database_generating_consts()
@@ -90,6 +91,19 @@ def filled_db(inited_db, engine):
                 edited_at=f"{random_DATE()}",
             )
             for i in range(Consts.post_editions_total_amount)
+        ]
+    )
+
+    PostApproval = Base.classes.post_approvals
+    session.bulk_save_objects(
+        [
+            PostApproval(
+                id=i,
+                user_id=i % Consts.users_total_amount,
+                post_id=i % Consts.posts_total_amount,
+                change=random.choice([1, 1, -1]),
+            )
+            for i in range(Consts.post_approvals_total_amount)
         ]
     )
 
