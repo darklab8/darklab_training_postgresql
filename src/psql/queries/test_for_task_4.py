@@ -47,10 +47,29 @@ LIMIT :N
         {"N": N, "user_id": user_id},
     )
 
-    assert results.rowcount == 3
+    assert results.rowcount > 0
 
-# -- 3) Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей.
-# -- Возможо написать
+def test_task_4_find_N_users_with_best_summed_ratings_from_all_their_posts(filled_db, engine):
+    "Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей."
+    N = 10
+
+    results = run_query(
+        engine,
+        rf"""
+
+SELECT posts.author_id, SUM(post_ratings_per_day.rating) as summed_rating FROM posts
+JOIN post_ratings_per_day ON posts.id = post_ratings_per_day.post_id
+GROUP BY post_ratings_per_day.post_id, posts.author_id
+ORDER BY SUM(post_ratings_per_day.rating) DESC
+LIMIT :N
+
+        """,
+        {"N": N},
+    )
+
+    assert results.rowcount == N
+
+
 
 # -- 4) Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей младше K лет.
 # -- Возможо написать
