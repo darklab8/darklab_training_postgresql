@@ -7,7 +7,8 @@ from .app.utils import run_query
 from dataclasses import dataclass
 
 
-@pytest.fixture
+
+@pytest.fixture(scope="session")
 def engine():
     engine = create_engine(
         "postgresql://postgres:postgres@localhost:5432/postgres"  # , echo=True
@@ -16,7 +17,7 @@ def engine():
     return engine
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def inited_db(engine):
 
     with open("architecture/task_2_architecture.sql", "r") as file_:
@@ -42,8 +43,7 @@ class database_generating_consts:
 Consts = database_generating_consts()
 
 
-@pytest.fixture
-def filled_db(inited_db, engine):
+def filled_db_initer(inited_db, engine):
     Base = automap_base()
     Base.prepare(engine, reflect=True)
 
@@ -122,3 +122,9 @@ def filled_db(inited_db, engine):
     )
 
     session.commit()
+
+@pytest.fixture(scope="session")
+def filled_db(inited_db, engine):
+    filled_db_initer(inited_db, engine)
+
+

@@ -70,9 +70,13 @@ LIMIT :N
     assert results.rowcount == N
 
 
+def test_task_4_find_users_with_best_summed_rating_of_posts_among_users_younger_than_K_years():
+    "Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей младше K лет."
+    # raise NotImplementedError("123")
+    pass
 
-# -- 4) Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей младше K лет.
-# -- Возможо написать
+
+
 
 
 def test_task_4_find_most_rated_users(filled_db, engine):
