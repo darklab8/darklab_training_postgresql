@@ -26,8 +26,28 @@ LIMIT :N
     assert results.rowcount == N
 
 
-# -- 2) Найти N наиболее посещаемых постов для заданного пользователя за все время, которые создал не он, но которые он редактировал.
-# -- Возможо написать
+def test_task_4_find_most_visited_posts_which_he_edited_but_did_not_create(filled_db, engine):
+    "Найти N наиболее посещаемых постов для заданного пользователя за все время, которые создал не он, но которые он редактировал."
+    N = 10
+    user_id = 5
+
+    results = run_query(
+        engine,
+        rf"""
+
+SELECT p.id as post_id, coalesce(pv.visits,0) as visiting
+FROM posts p
+LEFT JOIN post_visits_per_day pv ON p.id = pv.post_id
+WHERE p.author_id != :user_id AND p.author_id in (SELECT DISTINCT post_id FROM post_editions WHERE user_id = :user_id)
+ORDER BY coalesce(pv.visits,0) DESC
+LIMIT :N
+
+
+        """,
+        {"N": N, "user_id": user_id},
+    )
+
+    assert results.rowcount == 3
 
 # -- 3) Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей.
 # -- Возможо написать
