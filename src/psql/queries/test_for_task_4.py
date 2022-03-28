@@ -70,10 +70,28 @@ LIMIT :N
     assert results.rowcount == N
 
 
-def test_task_4_find_users_with_best_summed_rating_of_posts_among_users_younger_than_K_years():
+def test_task_4_find_users_with_best_summed_rating_of_posts_among_users_younger_than_K_years(filled_db, engine):
     "Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей младше K лет."
-    # raise NotImplementedError("123")
-    pass
+    N = 10
+    K = 2
+
+    results = run_query(
+        engine,
+        rf"""
+
+SELECT users.id, users.birth_date::date, SUM(post_ratings_per_day.rating) as summed_rating FROM posts
+JOIN post_ratings_per_day ON posts.id = post_ratings_per_day.post_id
+JOIN users ON users.id = posts.author_id
+WHERE (NOW()::date - users.birth_date::date) < 365 * :K
+GROUP BY post_ratings_per_day.post_id, users.id
+ORDER BY SUM(post_ratings_per_day.rating) DESC
+LIMIT :N
+
+        """,
+        {"N": N, "K": K},
+    )
+
+    assert results.rowcount == N
 
 
 
