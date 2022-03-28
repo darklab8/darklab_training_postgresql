@@ -57,10 +57,9 @@ def test_task_4_find_N_users_with_best_summed_ratings_from_all_their_posts(fille
         engine,
         rf"""
 
-SELECT posts.author_id, SUM(post_ratings_per_day.rating) as summed_rating FROM posts
-JOIN post_ratings_per_day ON posts.id = post_ratings_per_day.post_id
-GROUP BY post_ratings_per_day.post_id, posts.author_id
-ORDER BY SUM(post_ratings_per_day.rating) DESC
+SELECT posts.author_id, SUM(posts.rating) as summed_rating FROM posts
+GROUP BY posts.author_id
+ORDER BY SUM(posts.rating) DESC
 LIMIT :N
 
         """,
@@ -79,12 +78,11 @@ def test_task_4_find_users_with_best_summed_rating_of_posts_among_users_younger_
         engine,
         rf"""
 
-SELECT users.id, users.birth_date::date, SUM(post_ratings_per_day.rating) as summed_rating FROM posts
-JOIN post_ratings_per_day ON posts.id = post_ratings_per_day.post_id
+SELECT users.id, users.birth_date::date, SUM(posts.rating) as summed_rating FROM posts
 JOIN users ON users.id = posts.author_id
 WHERE (NOW()::date - users.birth_date::date) < 365 * :K
-GROUP BY post_ratings_per_day.post_id, users.id
-ORDER BY SUM(post_ratings_per_day.rating) DESC
+GROUP BY users.id
+ORDER BY SUM(posts.rating) DESC
 LIMIT :N
 
         """,

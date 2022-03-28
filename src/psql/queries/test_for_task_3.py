@@ -109,11 +109,11 @@ def test_get_N_posts_with_biggest_rating_for_day_month_year(filled_db, engine):
         engine,
         rf"""
 
-SELECT post_id, sum(rating) FROM posts
-LEFT JOIN post_ratings_per_day pr ON pr.post_id = posts.id
-WHERE pr.day_date::TEXT LIKE '2021-%-%'
+SELECT post_id, sum(change) FROM posts
+LEFT JOIN post_approvals pr ON pr.post_id = posts.id
+WHERE pr.created_at BETWEEN NOW() - interval '1 year' and NOW()
 GROUP BY post_id
-ORDER BY sum(rating) DESC
+ORDER BY sum(change) DESC
 LIMIT :N
 
         """,

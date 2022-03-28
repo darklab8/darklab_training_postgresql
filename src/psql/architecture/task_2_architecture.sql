@@ -27,20 +27,11 @@ CREATE TABLE posts
 	content VARCHAR(20000)           NOT NULL,
 	tags VARCHAR(50)[],
 	status TEXT NOT NULL,
+	rating INTEGER DEFAULT 0,
 	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE,
 	CHECK (status IN ('published', 'draft', 'archived')),
     CHECK (array_length(tags, 1) < 20)
-);
-
-CREATE TABLE post_ratings_per_day 
-(
-	id SERIAL PRIMARY KEY,
-	post_id INTEGER NOT NULL,
-	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
-	day_date DATE DEFAULT NOW(),
-	rating BIGINT DEFAULT 0,
-	UNIQUE (post_id, day_date)
 );
 
 CREATE TABLE post_visits_per_day
@@ -82,12 +73,9 @@ CREATE OR REPLACE FUNCTION post_rating_trigger_function()
 AS $$
 BEGIN
    -- trigger logic
-
-   	INSERT INTO post_ratings_per_day(post_id, rating, day_date)
-	VALUES (NEW.post_id, NEW.change, NEW.created_at)
-	ON CONFLICT (post_id, day_date)
-	DO
-		UPDATE SET rating = post_ratings_per_day.rating + EXCLUDED.rating;
+   UPDATE posts
+   SET rating = rating + NEW.change
+   WHERE posts.id = NEW.post_id;
    
    RETURN NEW;
 END $$;
@@ -135,20 +123,17 @@ BEGIN
 	-- 20% составляет средний рейтинг его комментариев.
     
     WITH ratings AS (
-        SELECT (0.5 * avg(coalesce(pr.rating, 0)))::float as rating FROM posts
-		LEFT JOIN post_ratings_per_day pr ON pr.post_id = posts.id
-		WHERE author_id = NEW.user_id
-		GROUP BY author_id
-		UNION ALL
-		SELECT coalesce((0.2 * avg(change)),0)::float FROM comment_approvals AS a
-		JOIN comments AS c ON a.comment_id = c.id
-		WHERE c.user_id = NEW.user_id
-		UNION ALL
-		SELECT (0.3 * avg(coalesce(rating, 0)))::float as rating FROM posts
-		LEFT JOIN post_ratings_per_day pr ON pr.post_id = posts.id
-		WHERE posts.id IN (SELECT DISTINCT post_id from post_editions
-						WHERE user_id = NEW.user_id)
-		GROUP BY author_id
+        SELECT (0.5 * avg(rating))::float as rating FROM posts
+        WHERE author_id = NEW.user_id
+        GROUP BY author_id
+        UNION ALL
+        SELECT (0.2 * avg(change))::float as rating FROM comment_approvals AS a
+        JOIN comments AS c ON a.comment_id = c.id
+        WHERE c.user_id = NEW.user_id
+        UNION ALL
+        SELECT (0.3 * avg(rating))::float as rating FROM POSTS
+        WHERE id IN (SELECT DISTINCT post_id from post_editions
+                        WHERE user_id = NEW.user_id)
     )
     UPDATE users
     SET rating = (SELECT sum(ratings.rating) FROM ratings)
