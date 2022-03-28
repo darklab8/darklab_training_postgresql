@@ -39,7 +39,7 @@ def test_check_tags(filled_db, engine):
         engine, "SELECT tags FROM posts LIMIT 1", return_first=True
     )
 
-    assert len(first_result) == 1
+    assert len(first_result) == 2
     assert first_result[0] in ["abc", "def", "ghi"]
 
 

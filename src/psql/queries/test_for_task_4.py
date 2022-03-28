@@ -116,5 +116,28 @@ LIMIT :N
     assert results.rowcount == N
 
 
-# -- 6) Найти N тэгов, для которых суммарное количество посещений связанных с ними постов наибольшее за неделю.
-# -- Возможо написать
+def test_task4_find_N_tags_which_have_the_most_visits_in_week_range(filled_db, engine):
+    "Найти N тэгов, для которых суммарное количество посещений связанных с ними постов наибольшее за неделю."
+    N = 10
+
+    # Чтобы было за неделю, надо лишь поменять 1 year на 1 week, поставил за год в связи
+    # с тем что данных сгенерировано на данный период больше для значительного результата
+    results = run_query(
+        engine,
+        rf"""
+
+SELECT unnest(tags), SUM(post_visits_per_day.visits) as visits  FROM posts
+JOIN post_visits_per_day ON post_visits_per_day.post_id = posts.id
+WHERE post_visits_per_day.day_date BETWEEN NOW() - interval '1 year' and NOW()
+GROUP BY unnest(tags)
+ORDER BY SUM(post_visits_per_day.visits) DESC
+LIMIT :N
+
+        """,
+        {"N": N},
+    )
+
+    assert results.rowcount > 0
+
+
+

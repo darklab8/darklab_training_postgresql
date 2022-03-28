@@ -75,7 +75,7 @@ def filled_db_initer(inited_db, engine):
                 content=f"content_{i}",
                 created_at=f"{random_DATE()}",
                 status=random.choice(["draft", "published", "archived"]),
-                tags=[random.choice(["abc", "def", "ghi"])],
+                tags=[random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])],
             )
             for i in range(Consts.posts_total_amount)
         ]
