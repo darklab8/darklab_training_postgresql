@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "noveo-training-postgresql"
+version = "0.1.0"
+description = ""
+authors = ["Andrei Novoselov <andrei.novoselov@noveogroup.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+mkdocs = "^1.4.1"
+pymdown-extensions = "^9.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

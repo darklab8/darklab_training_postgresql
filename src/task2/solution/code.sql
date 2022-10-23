@@ -39,9 +39,9 @@ CREATE TABLE post_visits_per_day
 	id SERIAL PRIMARY KEY,
 	post_id INTEGER NOT NULL,
 	FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
-  day_date DATE DEFAULT NOW(),
-  visits BIGINT DEFAULT 0,
-  UNIQUE (post_id, day_date)
+	day_date DATE DEFAULT NOW(),
+	visits BIGINT DEFAULT 0,
+	UNIQUE (post_id, day_date)
 );
 
 CREATE TABLE post_editions -- Also known as PostEditedBY in the design.jpg

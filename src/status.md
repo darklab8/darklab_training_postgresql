@@ -1,0 +1,16 @@
+- # tasks
+- [Task 1](task_1.md)
+    - [x]  status
+- [Task 2](task_2.md)
+    - [ ] sql
+    - [ ] sqlalchemy
+- [Task 3](task_3.md)
+    - [ ] sql
+- [Task 4](task_4.md)
+    - [ ] sql
+- [Task 5](task_5.md)
+    - [ ] sql
+- [Task 6](task_6.md)
+    - [ ] sql
+- [Task 7](task_7.md)
+    - [ ] sql
