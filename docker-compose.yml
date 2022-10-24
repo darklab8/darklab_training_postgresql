@@ -3,8 +3,17 @@ version: '3.5'
 services:
   app:
     build: .
+    environment:
+      TRAINING_DATABASE_USERNAME: "postgres"
+      TRAINING_DATABASE_PASSWORD: "postgres"
+      TRAINING_DATABASE_HOST: "db"
+      TRAINING_LOGGER_CONSOLE_LEVEL: "DEBUG"
     depends_on:
       - db
+    command: sh
+    volumes:
+      - ".:/code"
+    working_dir: /code
   db:
     container_name: postgres_container
     image: postgres
