@@ -22,9 +22,10 @@ pages:
   script:
     - pip install -r requirements.txt
     - mkdocs build
+    - mv site public
   artifacts:
     paths:
-      - site
+      - public
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
