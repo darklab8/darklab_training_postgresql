@@ -6,6 +6,7 @@
 # dev environment
 
 - poetry install
+- poetry shell
 - mkdocs serve
 
 # build
