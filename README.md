@@ -5,14 +5,14 @@
 - docker-compose (only for pytest tests + postgresql code)
 # dev environment (for documentation)
 
-- poetry install (or pip install -r requirements.txt, if u aren't planning add new python deps)
-- poetry shell (only if installed via poetry)
-- mkdocs serve
+- `poetry install` (or p`ip install -r requirements.txt`, if u aren't planning add new python deps)
+- `poetry shell` (only if installed via poetry)
+- `mkdocs serve`
 
 # build (for documentation)
 
-- pip install -r requirements
-- mkdocs build
+- `pip install -r requirements.txt`
+- `mkdocs build`
 - (read .gitlab-ci.yml for actual relevant code that does it in CI)
 
 # dev env (for postgresql)
