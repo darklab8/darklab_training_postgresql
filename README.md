@@ -5,7 +5,7 @@
 
 # dev environment
 
-- poetry install
+- poetry install (or pip install -r requirements.txt, if u aren't planning add new python deps)
 - poetry shell
 - mkdocs serve
 
