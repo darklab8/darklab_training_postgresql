@@ -5,6 +5,7 @@ import argparse
 import logging
 import os
 from types import SimpleNamespace
+import secrets
 
 def get_logger():
     debug_level = os.environ.get("LOGGING_LEVEL","DEBUG")
@@ -31,6 +32,7 @@ class Action(Enum):
     dev_shell = "dev env (for postgresql)"
     dev_down = auto()
     dev_test = "testing (for postgresql) (TODO add to CI)"
+    ci_test = auto()
     shell_docs_build = "build (for documentation)"
     shell_docs_dev = "rendering in dev env"
     shell_poetry_export = "regenerate requirements.txt for docker image"
@@ -40,6 +42,7 @@ def shell(cmd):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--id", default=secrets.token_hex(2))
 
     actions_parser = parser.add_subparsers(dest="action", required=True,)
     actions = SimpleNamespace()
@@ -51,9 +54,9 @@ def main():
 
     match Action[args.action]:
         case Action.dev_shell:
-            shell("docker-compose build -- app && docker-compose run --rm app sh ; docker-compose down")
+            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --rm app sh ; docker-compose -p {args.id} down")
         case Action.dev_test:
-            shell("docker-compose build -- app && docker-compose run --rm app pytest ; docker-compose down")
+            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --rm app pytest ; docker-compose -p {args.id} down")
         case Action.dev_down:
             shell("docker-compose down")
         case Action.shell_docs_build:
@@ -62,6 +65,14 @@ def main():
             shell("mkdocs serve")
         case Action.shell_poetry_export:
             shell("poetry export --without-hashes --format=requirements.txt > requirements.txt")
+        case Action.ci_test:
+            try:
+                shell(f"docker-compose -p {args.id} build -- app")
+                shell(f"docker-compose -p {args.id} pull")
+                shell(f"docker-compose -p {args.id} up -d")
+                shell(f"docker-compose -p {args.id} run app ./wait_for_it.sh db:5432 -t 30 -- pytest")
+            finally:
+                shell(f"docker-compose -p {args.id} down")
 
 
 if __name__=="__main__":

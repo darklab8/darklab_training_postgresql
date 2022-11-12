@@ -1,27 +1,21 @@
 image: python:3.10
 
-variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
-cache:
-  paths:
-    - .cache/pip
-    - venv/
-
-before_script:
-  - python --version  # For debugging
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-
 stages:
+  - test
   - deploy
+
+unit-tests:
+  stage: test
+  script:
+    - ./make ci_test
 
 pages:
   stage: deploy
+  needs:
+    - unit-tests
   script:
     - pip install -r requirements.txt
-    - mkdocs build
+    - ./make shell_docs_build
     - mv site public
   artifacts:
     paths:
