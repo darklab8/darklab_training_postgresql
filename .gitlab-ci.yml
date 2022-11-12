@@ -1,15 +1,17 @@
-image: python:3.10
+
 
 stages:
   - test
   - deploy
 
 unit-tests:
+  image: docker:20.10.21-cli
   stage: test
   script:
     - ./make ci_test
 
 pages:
+  image: python:3.10
   stage: deploy
   needs:
     - unit-tests
