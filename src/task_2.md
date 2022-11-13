@@ -150,3 +150,7 @@ erDiagram
 ```sql
 --8<-- "src/task2/migrations/task2_1.sql"
 ```
+
+```py
+--8<-- "src/task2/script_fill_db.py"
+```

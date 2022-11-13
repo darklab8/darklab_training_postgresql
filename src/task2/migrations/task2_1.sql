@@ -120,11 +120,59 @@ BEGIN
 END $$;
 
 CREATE TRIGGER post_rating_calculating_trigger
-	AFTER INSERT OR DELETE
+	AFTER INSERT OR DELETE OR UPDATE
 	ON post_approval
 	FOR ROW
 		EXECUTE PROCEDURE post_rating_function_add();
 
 -- 9. У каждого пользователя есть рейтинг: 50% составляет средний рейтинг созданных им постов, 30% составляет средний рейтинг редактированных им постов, 20% составляет средний рейтинг его комментариев.
 
--- 10. Написать скрипт для заполнения таблицы тестовыми данными. В базе данных должно быть не менее 100000 постов для разных пользователей; Для генерации тестовых данных можно воспользоваться функцией generate_series;
+ALTER TABLE user_
+	ADD COLUMN rating INTEGER DEFAULT 0;
+
+CREATE OR REPLACE FUNCTION user_rating_trigger_function() 
+   RETURNS TRIGGER 
+   LANGUAGE PLPGSQL
+AS $$
+BEGIN
+	-- У каждого пользователя есть рейтинг:
+    WITH ratings AS (
+		-- 50% составляет средний рейтинг созданных им постов,
+        SELECT (0.5 * avg(rating))::float as rating FROM post
+        WHERE author_id = NEW.user_id
+        GROUP BY author_id
+		-- 30% составляет средний рейтинг редактированных им постов,
+        UNION ALL
+        SELECT (0.3 * avg(rating))::float as rating FROM post
+        WHERE id IN (SELECT DISTINCT post_id from post_editions
+                        WHERE user_id = NEW.user_id)
+        UNION ALL
+		-- 20% составляет средний рейтинг его комментариев.
+        SELECT (0.2 * avg(change))::float as rating FROM comment_approval AS a
+        JOIN comments AS c ON a.comment_id = c.id
+        WHERE c.user_id = NEW.user_id
+    )
+    UPDATE user_
+    SET rating = (SELECT sum(ratings.rating) FROM ratings)
+    WHERE user_.id = NEW.user_id;
+
+   RETURN NEW;
+END $$;
+
+CREATE TRIGGER user_rating_trigger_1
+	AFTER INSERT OR DELETE OR UPDATE
+	ON post_approval
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
+		
+CREATE TRIGGER user_rating_trigger_2
+	AFTER INSERT OR DELETE OR UPDATE
+	ON comment_approval
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
+		
+CREATE TRIGGER user_rating_trigger_3
+	AFTER INSERT OR DELETE OR UPDATE
+	ON post_edition
+	FOR ROW
+		EXECUTE PROCEDURE user_rating_trigger_function();
