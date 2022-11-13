@@ -53,7 +53,7 @@ def main():
 
     match Action[args.action]:
         case Action.dev_shell:
-            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --service-ports --rm -v $(pwd):/code app_with_pgadmin sh ; docker-compose -p {args.id} down")
+            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --service-ports --rm -v $(pwd):/code app_with_pgadmin bash ; docker-compose -p {args.id} down")
         case Action.dev_down:
             shell("docker-compose down")
         case Action.dev_docs_build:
