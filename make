@@ -31,7 +31,6 @@ logger = get_logger()
 class Action(Enum):
     dev_shell = "dev env (for postgresql)"
     dev_down = auto()
-    dev_test = "testing (for postgresql) (TODO add to CI)"
     ci_test = auto()
     shell_docs_build = "build (for documentation)"
     shell_docs_dev = "rendering in dev env"
@@ -54,9 +53,7 @@ def main():
 
     match Action[args.action]:
         case Action.dev_shell:
-            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --rm app sh ; docker-compose -p {args.id} down")
-        case Action.dev_test:
-            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --rm app pytest ; docker-compose -p {args.id} down")
+            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --rm -v $(pwd):/code app sh ; docker-compose -p {args.id} down")
         case Action.dev_down:
             shell("docker-compose down")
         case Action.shell_docs_build:
