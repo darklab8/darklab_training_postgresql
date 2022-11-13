@@ -15,27 +15,3 @@ markdown_extensions:
     - toc:
         permalink: "#"
         baselevel: 2
-# nav:
-#   - Home: 'index.md'
-#   - Main:
-#     - Requirements: requirements.md
-#     - Resources: resources.md
-#     - Status: status.md
-#     - Tips: tips.md
-
-#   - Tasks:
-#       - 'Task #1': task1/task.md
-#       - 'Task #2':
-#           - Description: task2/task/#2
-#           - ERD: task2/task/#entity-relationship-diagram
-#           - 'SQL code': task2/task/#sql-code
-#       - 'Task #3':
-#           - Description: task3/task/#3
-#       - 'Task #4':
-#           - Description: task4/task.md
-#       - 'Task #5':
-#           - Description: task5/task.md
-#       - 'Task #6':
-#           - Description: task6/task.md
-#       - 'Task #7':
-#           - Description: task7/task.md
