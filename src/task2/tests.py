@@ -26,7 +26,7 @@ Consts = database_generating_consts()
 @pytest.fixture
 def load_test2_scheme(database: Database):
 
-    with open(str(Path(__file__).parent / "solution" / "code.sql"), "r") as file:
+    with open(str(Path(__file__).parent / "migrations" / "task2_1.sql"), "r") as file:
         schema_sql_code = file.read()
 
     with database.get_core_session() as session:
@@ -40,7 +40,7 @@ def test_generate_data(database: Database, load_test2_scheme):
 
     with database.get_core_session() as session:
 
-        User = Base.classes.users
+        User = Base.classes.user_
         session.bulk_save_objects(
             [
                 User(
@@ -56,7 +56,7 @@ def test_generate_data(database: Database, load_test2_scheme):
             ]
         )
 
-        Post = Base.classes.posts
+        Post = Base.classes.post
         session.bulk_save_objects(
             [
                 Post(
@@ -64,7 +64,7 @@ def test_generate_data(database: Database, load_test2_scheme):
                     author_id=i % Consts.users_total_amount,
                     title=f"title_{i}",
                     content=f"content_{i}",
-                    created_at=f"{random_DATE()}",
+                    # created_at=f"{random_DATE()}",
                     status=random.choice(["draft", "published", "archived"]),
                     tags=[random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])],
                 )
@@ -72,44 +72,44 @@ def test_generate_data(database: Database, load_test2_scheme):
             ]
         )
 
-        PostEdit = Base.classes.post_editions
-        session.bulk_save_objects(
-            [
-                PostEdit(
-                    id=i,
-                    user_id=i % Consts.users_total_amount,
-                    post_id=random.randint(0,i % Consts.posts_total_amount),
-                    edited_at=f"{random_DATE()}",
-                )
-                for i in range(Consts.post_editions_total_amount)
-            ]
-        )
+        # PostEdit = Base.classes.post_editions
+        # session.bulk_save_objects(
+        #     [
+        #         PostEdit(
+        #             id=i,
+        #             user_id=i % Consts.users_total_amount,
+        #             post_id=random.randint(0,i % Consts.posts_total_amount),
+        #             edited_at=f"{random_DATE()}",
+        #         )
+        #         for i in range(Consts.post_editions_total_amount)
+        #     ]
+        # )
 
-        PostApproval = Base.classes.post_approvals
-        session.bulk_save_objects(
-            [
-                PostApproval(
-                    id=i,
-                    user_id=i % Consts.users_total_amount,
-                    post_id=i % Consts.posts_total_amount,
-                    change=random.choice([1, 1, -1]),
-                    created_at=f"{random_DATE()}",
-                )
-                for i in range(Consts.post_approvals_total_amount)
-            ]
-        )
+        # PostApproval = Base.classes.post_approvals
+        # session.bulk_save_objects(
+        #     [
+        #         PostApproval(
+        #             id=i,
+        #             user_id=i % Consts.users_total_amount,
+        #             post_id=i % Consts.posts_total_amount,
+        #             change=random.choice([1, 1, -1]),
+        #             created_at=f"{random_DATE()}",
+        #         )
+        #         for i in range(Consts.post_approvals_total_amount)
+        #     ]
+        # )
 
-        PostVisit = Base.classes.post_visits_per_day
-        session.bulk_save_objects(
-            [
-                PostVisit(
-                    id=i,
-                    post_id=i % Consts.posts_total_amount,
-                    visits=random.randint(1, 20),
-                    day_date=f"{random_DATE()}",
-                )
-                for i in range(Consts.posts_total_amount)
-            ]
-        )
+        # PostVisit = Base.classes.post_visits_per_day
+        # session.bulk_save_objects(
+        #     [
+        #         PostVisit(
+        #             id=i,
+        #             post_id=i % Consts.posts_total_amount,
+        #             visits=random.randint(1, 20),
+        #             day_date=f"{random_DATE()}",
+        #         )
+        #         for i in range(Consts.posts_total_amount)
+        #     ]
+        # )
 
         session.commit()

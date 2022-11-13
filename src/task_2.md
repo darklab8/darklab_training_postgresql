@@ -148,5 +148,5 @@ erDiagram
 ### SQL Code
 
 ```sql
---8<-- "src/task2/solution/code.sql"
+--8<-- "src/task2/migrations/task2_1.sql"
 ```
