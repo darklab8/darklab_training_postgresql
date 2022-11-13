@@ -139,7 +139,7 @@ erDiagram
 
 
   </div>
- <script src="/trainings-anovoselov-postgersql/shared/mermaid.min.js"></script>
+ <script src="../shared/mermaid.min.js"></script>
  <script>mermaid.initialize({startOnLoad:true});
 </script>
 </body>
