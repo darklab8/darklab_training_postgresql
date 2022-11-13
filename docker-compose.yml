@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  app:
+  app: &app
     build: .
     environment:
       TRAINING_DATABASE_USERNAME: "postgres"
@@ -12,7 +12,7 @@ services:
       - db
     command: sh
   db:
-    image: postgres
+    image: postgres:12-buster
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -20,8 +20,15 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-postgres@gmail.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-postgres}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
       - "${PGADMIN_PORT:-5050}:80"
+  app_with_pgadmin:
+    <<: *app
+    depends_on:
+      - db
+      - pgadmin
+
+  

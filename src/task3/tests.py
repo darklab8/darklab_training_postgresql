@@ -14,6 +14,7 @@ def query(query_filename: str, params = None) -> text:
     return text(schema_sql_code).bindparams(**params)
 
 def test_task3_1_query_count_of_posts_for_user(database: Database, load_task2_scheme, factories: TypeFactories):
+    "1. Посчитать количество постов для пользователя с заданным ID;"
     amount_of_posts = 10
     user: UserTemplate = factories.user.create_one(factories.user.template())
     factories.post.create_batch([factories.post.template(author_id=user.id) for i in range(amount_of_posts)])
@@ -27,6 +28,7 @@ def test_task3_1_query_count_of_posts_for_user(database: Database, load_task2_sc
         assert result.fetchone()[0] == amount_of_posts
 
 def test_task3_2_get_n_ordered_posts(database: Database, load_task2_scheme, factories: TypeFactories):
+    "2. Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;"
     N = 5
     posts = factories.post.create_batch([factories.post.template()for i in range(20)])
 
@@ -43,6 +45,7 @@ def test_task3_2_get_n_ordered_posts(database: Database, load_task2_scheme, fact
         assert sorted_posts == fetched_posts
 
 def test_task3_3_get_drafts(database: Database, load_task2_scheme, factories: TypeFactories):
+    "3. Выбрать N постов в статусе 'ожидает публикации', отсортированных в порядке возрастания даты создания;"
     N = 5
     draft_posts = factories.post.create_batch([factories.post.template(status='draft')for i in range(10)])
     published_posts = factories.post.create_batch([factories.post.template(status='published')for i in range(10)])
@@ -61,5 +64,19 @@ def test_task3_3_get_drafts(database: Database, load_task2_scheme, factories: Ty
         assert sorted_posts == fetched_posts
 
 def test_task3_4(database: Database, load_task2_scheme, factories: TypeFactories):
+    "4. Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов)."
+    tag_to_find = "target"
+    N = 3
+    K = 2
+    L = 4
+    post_edits_batch1 = factories.post_edition.create_batch([factories.post_edition.template(tags=["target", "other_tag"]) for i in range(20)])
+    post_edits_batch2 = factories.post_edition.create_batch([factories.post_edition.template() for i in range(20)])
+    posts = factories.post.create_batch([factories.post.template() for i in range(20)])
 
-    post_editions = factories.post_edition.create_batch([factories.post_edition.template() for i in range(10)])
+    with database.get_core_session() as session:
+        result = session.execute(query("query3_4.sql", dict(N=N, L=L, K=K, tag=tag_to_find)))
+
+        fetched_rows = result.fetchall()
+        print(fetched_rows)
+        
+        assert len(fetched_rows) == N
