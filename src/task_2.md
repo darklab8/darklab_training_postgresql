@@ -152,5 +152,8 @@ erDiagram
 ```
 
 ```py
---8<-- "src/task2/script_fill_db.py"
+--8<-- "src/task2/factories.py"
+```
+```py
+--8<-- "src/task2/test_task2_10.py"
 ```

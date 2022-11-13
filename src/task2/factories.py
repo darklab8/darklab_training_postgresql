@@ -6,10 +6,12 @@
 P.S. При создании 10000 юзеров с 50 постами каждого, скрипт выполняется за 14 секунд
 """
 from sqlalchemy.ext.automap import automap_base
-from utils.database.sql import Database, Session
+from utils.database.sql import Database
 import random
 import sys
 from dataclasses import dataclass, field
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 def random_DATE():
     return f"20{random.randint(10,22):02}-{random.randint(1,12):02}-{random.randint(1,28):02}"
@@ -32,6 +34,7 @@ class UserTemplate:
     email: str = field(default_factory=lambda: f"email_{rnd_int()}")
     password: str = field(default_factory=lambda: f"password_{rnd_int()}")
     address: str = field(default_factory=lambda: f"address_{rnd_int()}")
+    rating: int = 0
 
 @dataclass
 class PostTemplateRaw:
@@ -40,13 +43,17 @@ class PostTemplateRaw:
     title: str = field(default_factory=lambda: f"title_{rnd_int()}")
     content: str = field(default_factory=lambda: f"content_{rnd_int()}")
     created_at: str = field(default_factory=random_DATE)
-    status: str = field(default_factory=lambda: random.choice(["draft", "published", "archived"]))
-    tags: str = field(default_factory=lambda: [random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])])
+    status: str = field(default_factory=
+            lambda: random.choice(["draft", "published", "archived"]))
+    tags: str = field(default_factory=
+            lambda: [random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])])
+    rating: int = 0
 
 class FactoryConveyor:
-    def __init__(self, database: Database, db_model):
+    def __init__(self, database: Database, db_model, template):
         self.database = database
         self.db_model = db_model
+        self.template = template
 
     def create_one(self, template):
         with self.database.get_core_session() as session:
@@ -70,28 +77,24 @@ class FactoryConveyor:
             session.commit()
             return templates
 
+class TypeFactories:
+    user = FactoryConveyor(MagicMock(),MagicMock(),template=UserTemplate)
+    post = FactoryConveyor(MagicMock(),MagicMock(),template=PostTemplateRaw)
 
-
-def script_fill_db(database: Database):
+def generate_factories(database: Database) -> TypeFactories:
     Base = automap_base()
     Base.prepare(database.engine, reflect=True)
-    class Consts:
-        users_total_amount: int = 100
-        users_per_post: int = 50
-        posts_total_amount: int = users_total_amount * users_per_post
+    factories = SimpleNamespace()
 
-    user_factory = FactoryConveyor(database=database, db_model=Base.classes.user_)
-    post_factory = FactoryConveyor(database=database, db_model=Base.classes.post)
+    factories.user = FactoryConveyor(
+        database=database, db_model=Base.classes.user_, template=UserTemplate)
 
     @dataclass
     class PostTemplate(PostTemplateRaw):
-        author_id: int = field(default_factory=lambda: user_factory.create_one(UserTemplate()).id)
+        author_id: int = field(default_factory=
+            lambda: factories.user.create_one(factories.user.template()).id)
 
+    factories.post = FactoryConveyor(
+        database=database, db_model=Base.classes.post, template=PostTemplate)
 
-    user_factory.create_batch(
-        [UserTemplate(id=i) for i in range(Consts.users_total_amount)])
-
-    post_factory.create_batch(
-        [PostTemplate(id=i,author_id=i % Consts.users_total_amount) for i in range(Consts.posts_total_amount)])
-
-    post_factory.create_one(PostTemplate())
+    return factories
