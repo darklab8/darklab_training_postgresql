@@ -144,12 +144,12 @@ BEGIN
 		-- 30% составляет средний рейтинг редактированных им постов,
         UNION ALL
         SELECT (0.3 * avg(rating))::float as rating FROM post
-        WHERE id IN (SELECT DISTINCT post_id from post_editions
+        WHERE id IN (SELECT DISTINCT post_id from post_edition
                         WHERE user_id = NEW.user_id)
         UNION ALL
 		-- 20% составляет средний рейтинг его комментариев.
         SELECT (0.2 * avg(change))::float as rating FROM comment_approval AS a
-        JOIN comments AS c ON a.comment_id = c.id
+        JOIN comment AS c ON a.comment_id = c.id
         WHERE c.user_id = NEW.user_id
     )
     UPDATE user_

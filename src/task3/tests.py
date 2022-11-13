@@ -60,3 +60,6 @@ def test_task3_3_get_drafts(database: Database, load_task2_scheme, factories: Ty
 
         assert sorted_posts == fetched_posts
 
+def test_task3_4(database: Database, load_task2_scheme, factories: TypeFactories):
+
+    post_editions = factories.post_edition.create_batch([factories.post_edition.template() for i in range(10)])

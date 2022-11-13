@@ -62,6 +62,19 @@ class PostTemplateRaw:
     created_at: datetime = field(default_factory=random_date)
     rating: int = 0
 
+@dataclass
+class PostEditionTemplateRaw:
+    id: int = field(default_factory=rnd_int)
+    post_id: int = field(default_factory=rnd_int)
+    user_id: int = field(default_factory=rnd_int)
+    edited_at: datetime = field(default_factory=random_date)
+
+    # new content
+    title: str = field(default_factory=lambda: f"title_{rnd_int()}")
+    content: str = field(default_factory=lambda: f"content_{rnd_int()}")
+    tags: str = field(default_factory=
+            lambda: [random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])])
+
 class FactoryConveyor:
     def __init__(self, database: Database, db_model, template):
         self.database = database
@@ -109,5 +122,15 @@ def generate_factories(database: Database) -> TypeFactories:
 
     factories.post = FactoryConveyor(
         database=database, db_model=Base.classes.post, template=PostTemplate)
+
+    @dataclass
+    class PostEditionTemplate(PostEditionTemplateRaw):
+        post_id: int = field(default_factory=
+            lambda: factories.post.create_one(factories.post.template()).id)
+        user_id: int = field(default_factory=
+            lambda: factories.user.create_one(factories.user.template()).id)
+    
+    factories.post_edition = FactoryConveyor(
+        database=database, db_model=Base.classes.post_edition, template=PostEditionTemplate)
 
     return factories
