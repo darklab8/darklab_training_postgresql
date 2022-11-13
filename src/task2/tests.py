@@ -56,21 +56,21 @@ def test_generate_data(database: Database, load_test2_scheme):
             ]
         )
 
-        Post = Base.classes.post
-        session.bulk_save_objects(
-            [
-                Post(
-                    id=i,
-                    author_id=i % Consts.users_total_amount,
-                    title=f"title_{i}",
-                    content=f"content_{i}",
-                    # created_at=f"{random_DATE()}",
-                    status=random.choice(["draft", "published", "archived"]),
-                    tags=[random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])],
-                )
-                for i in range(Consts.posts_total_amount)
-            ]
-        )
+        # Post = Base.classes.post
+        # session.bulk_save_objects(
+        #     [
+        #         Post(
+        #             id=i,
+        #             author_id=i % Consts.users_total_amount,
+        #             title=f"title_{i}",
+        #             content=f"content_{i}",
+        #             # created_at=f"{random_DATE()}",
+        #             status=random.choice(["draft", "published", "archived"]),
+        #             tags=[random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])],
+        #         )
+        #         for i in range(Consts.posts_total_amount)
+        #     ]
+        # )
 
         # PostEdit = Base.classes.post_editions
         # session.bulk_save_objects(
