@@ -32,8 +32,8 @@ class Action(Enum):
     dev_shell = "dev env (for postgresql)"
     dev_down = auto()
     ci_test = auto()
-    shell_docs_build = "build (for documentation)"
-    shell_docs_dev = "rendering in dev env"
+    dev_docs_build = "build (for documentation)"
+    dev_docs_run = "rendering in dev env"
     shell_poetry_export = "regenerate requirements.txt for docker image"
 
 def shell(cmd):
@@ -56,10 +56,10 @@ def main():
             shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --rm -v $(pwd):/code app sh ; docker-compose -p {args.id} down")
         case Action.dev_down:
             shell("docker-compose down")
-        case Action.shell_docs_build:
-            shell("mkdocs build")
-        case Action.shell_docs_dev:
-            shell("mkdocs serve")
+        case Action.dev_docs_build:
+            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run --rm -v $(pwd):/code app mkdocs build ; docker-compose -p {args.id} down")
+        case Action.dev_docs_run:
+            shell(f"docker-compose -p {args.id} build -- app && docker-compose -p {args.id} run -p 8000:8000 --rm -v $(pwd):/code app mkdocs serve -a 0.0.0.0:8000 ; docker-compose -p {args.id} down")
         case Action.shell_poetry_export:
             shell("poetry export --without-hashes --format=requirements.txt > requirements.txt")
         case Action.ci_test:
