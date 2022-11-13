@@ -12,9 +12,21 @@ import sys
 from dataclasses import dataclass, field
 from types import SimpleNamespace
 from unittest.mock import MagicMock
+from random import randrange
+from datetime import timedelta, datetime
 
-def random_DATE():
-    return f"20{random.randint(10,22):02}-{random.randint(1,12):02}-{random.randint(1,28):02}"
+random_date_start = datetime.strptime("2020/01/01 16:30", "%Y/%m/%d %H:%M")
+random_date_end = datetime.strptime("2022/01/01 16:30", "%Y/%m/%d %H:%M")
+
+def random_date() -> datetime:
+    """
+    This function will return a random datetime between two datetime 
+    objects.
+    """
+    delta = random_date_end - random_date_start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return random_date_start + timedelta(seconds=random_second)
 
 def random_int_generator():
     for i in range(sys.maxsize):
@@ -30,7 +42,7 @@ class UserTemplate:
     id: int = field(default_factory=rnd_int)
     first_name: str = field(default_factory=lambda: f"name_{rnd_int()}")
     second_name: str = field(default_factory=lambda: f"second_name_{rnd_int()}")
-    birth_date: str = field(default_factory=random_DATE)
+    birth_date: datetime = field(default_factory=random_date)
     email: str = field(default_factory=lambda: f"email_{rnd_int()}")
     password: str = field(default_factory=lambda: f"password_{rnd_int()}")
     address: str = field(default_factory=lambda: f"address_{rnd_int()}")
@@ -42,11 +54,12 @@ class PostTemplateRaw:
     author_id: int = field(default_factory=rnd_int)
     title: str = field(default_factory=lambda: f"title_{rnd_int()}")
     content: str = field(default_factory=lambda: f"content_{rnd_int()}")
-    created_at: str = field(default_factory=random_DATE)
-    status: str = field(default_factory=
-            lambda: random.choice(["draft", "published", "archived"]))
     tags: str = field(default_factory=
             lambda: [random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])])
+    status: str = field(default_factory=
+            lambda: random.choice(["draft", "published", "archived"]))
+    
+    created_at: datetime = field(default_factory=random_date)
     rating: int = 0
 
 class FactoryConveyor:

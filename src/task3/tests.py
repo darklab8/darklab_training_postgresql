@@ -38,6 +38,14 @@ def test_task3_2_get_n_ordered_posts(database: Database, load_task2_scheme, fact
     with database.get_core_session() as session:
         result = session.execute(query("query3_2.sql", dict(N=N)))
 
-        fetched_posts = result.fetchall()
+        fetched_rows = result.fetchall()
         
-        assert len(fetched_posts) == len(posts[:N])
+        assert len(fetched_rows) == len(posts[:N])
+
+        sorted_posts = sorted(posts, key=lambda x: x.created_at, reverse=True)[:N]
+        fetched_posts = list([factories.post.template(*row) for row in fetched_rows])
+
+        assert sorted_posts == fetched_posts
+
+
+
