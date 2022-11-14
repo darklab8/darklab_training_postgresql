@@ -4,7 +4,7 @@ from ..task2.factories import TypeFactories
 
 from .reusable_code import query
 
-def test_task3_3_get_drafts(database: Database, load_task2_scheme, factories: TypeFactories):
+def test_task3_3_get_drafts(database: Database, apply_task2_migrations, factories: TypeFactories):
     "3. Выбрать N постов в статусе 'ожидает публикации', отсортированных в порядке возрастания даты создания;"
     N = 5
     draft_posts = factories.post.create_batch([factories.post.template(status='draft')for i in range(10)])

@@ -3,7 +3,7 @@ from utils.database.sql import Database
 from ..task2.factories import TypeFactories
 from .reusable_code import query
 
-def test_task3_2_get_n_ordered_posts(database: Database, load_task2_scheme, factories: TypeFactories):
+def test_task3_2_get_n_ordered_posts(database: Database, apply_task2_migrations, factories: TypeFactories):
     "2. Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;"
     N = 5
     posts = factories.post.create_batch([factories.post.template()for i in range(20)])

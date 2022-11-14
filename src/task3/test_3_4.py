@@ -4,7 +4,7 @@ from ..task2.factories import TypeFactories, UserTemplate
 from .reusable_code import query
 
 
-def test_task3_4(database: Database, load_task2_scheme, factories: TypeFactories):
+def test_task3_4(database: Database, apply_task2_migrations, factories: TypeFactories):
     "4. Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов)."
     tag_to_find = "target"
     N = 3

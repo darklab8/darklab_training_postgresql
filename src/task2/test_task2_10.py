@@ -3,7 +3,7 @@ from utils.database.sql import Database
 from .factories import TypeFactories
 
 
-def test_generate_data(database: Database, load_task2_scheme, factories: TypeFactories):
+def test_generate_data(database: Database, apply_task2_migrations, factories: TypeFactories):
     class Consts:
         users_total_amount: int = 100
         users_per_post: int = 50

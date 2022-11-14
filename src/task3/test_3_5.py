@@ -3,7 +3,7 @@ from ..task2.factories import TypeFactories
 import random
 from .reusable_code import query
 
-def test_task3_5(database: Database, load_task2_scheme, factories: TypeFactories):
+def test_task3_5(database: Database, apply_task2_migrations, factories: TypeFactories):
     "5. Найти N постов с наибольшим рейтингом за день/месяц/год."
     N=5
     approving_users = factories.user.create_batch([factories.user.template(id=i) for i in range(100,200)])
