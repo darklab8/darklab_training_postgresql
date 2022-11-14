@@ -4,18 +4,4 @@
 
 CREATE INDEX CONCURRENTLY
   ON post (id);
-
-CREATE INDEX CONCURRENTLY
-  ON post (author_id);
-
-CREATE INDEX CONCURRENTLY
-  ON post_edition (post_id);
-
-CREATE INDEX CONCURRENTLY
-  ON post (created_at);
-
-CREATE INDEX CONCURRENTLY
-  ON post USING GIN (tags);
-
-CREATE INDEX CONCURRENTLY
-  ON post USING BRIN (created_at);
+  
