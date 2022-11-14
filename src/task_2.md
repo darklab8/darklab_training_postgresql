@@ -64,7 +64,7 @@ END $$;
 
 ## Solution
 
-### Entity Relationship Diagram
+## Entity Relationship Diagram
 
 <!DOCTYPE html>
 <html lang="en">
@@ -145,7 +145,7 @@ erDiagram
 </body>
 </html>
 
-### SQL Code
+## SQL Code
 
 ```sql
 --8<-- "src/task2/migrations/task2_1.sql"
