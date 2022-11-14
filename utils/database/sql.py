@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Generator, AsyncGenerator
 from contextlib import contextmanager, asynccontextmanager
 
+from sqlalchemy.engine.base import Connection
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 import sqlalchemy.orm as orm
@@ -81,6 +82,10 @@ class Database:
     def get_core_session(self) -> Generator[Session, None, None]:
         with Session(self.engine, future=True) as session:
             yield session
+
+    @contextmanager
+    def get_core_connection(self) -> Generator[Connection, None, None]:
+        yield self.engine.connect(close_with_result=True)
 
     @asynccontextmanager
     async def get_async_session(self) -> AsyncGenerator[AsyncSession, None]:
