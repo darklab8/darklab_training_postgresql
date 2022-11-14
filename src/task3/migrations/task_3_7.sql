@@ -1,17 +1,17 @@
 CREATE INDEX
-  ON posts (id);
+  ON post (id);
 
 CREATE INDEX
-  ON posts (author_id);
+  ON post (author_id);
 
 CREATE INDEX
-  ON post_editions (post_id);
+  ON post_edition (post_id);
 
 CREATE INDEX
-  ON posts (created_at);
+  ON post (created_at);
 
 CREATE INDEX
-  ON posts USING GIN (tags);
+  ON post USING GIN (tags);
 
 CREATE INDEX
-  ON posts USING BRIN (created_at);
+  ON post USING BRIN (created_at);
