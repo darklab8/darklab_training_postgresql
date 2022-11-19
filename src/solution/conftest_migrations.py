@@ -23,13 +23,13 @@ def apply_migration(database: Database, path: Path):
 @pytest.fixture
 def apply_task2_migrations(database: Database):
     apply_migration(database=database, path=Migrations2.task_2_1)
-    # print(f"applied {Migrations2.task_2_1=}")
+    apply_migration(database=database, path=Migrations2.disable_triggers)
+
 
 @pytest.fixture
 def apply_task3_migrations(database: Database, apply_task2_migrations):
     for migration_path in migrations3:
         apply_migration(database=database, path=migration_path)
-        # print(f"applied {migration_path=}")
 
 @pytest.fixture
 def factories(database: Database):

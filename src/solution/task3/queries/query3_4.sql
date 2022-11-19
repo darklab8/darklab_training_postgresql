@@ -8,4 +8,4 @@ LEFT JOIN post_edition on post.id = post_edition.post_id
 WHERE :tag = ANY(post.tags) OR :tag = ANY(post_edition.tags)
 GROUP BY post.id
 ORDER BY latest_date DESC
-LIMIT :N OFFSET :K * :L
+LIMIT LEAST(:N,:L) OFFSET :K * :L

@@ -1,2 +1,0 @@
-CREATE INDEX CONCURRENTLY
-  ON post USING BRIN (created_at);

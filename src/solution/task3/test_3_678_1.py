@@ -44,6 +44,8 @@ EXPLAIN ANALYZE VERBOSE
 "Planning Time: 0.039 ms"
 "Execution Time: 10.367 ms"
 
+post_author_id_idx is Btree
+
 "Aggregate  (cost=2322.69..2322.70 rows=1 width=8) (actual time=9.944..9.945 rows=1 loops=1)"
 "  Output: count(id)"
 "  ->  Index Scan using post_author_id_idx on public.post  (cost=0.29..2197.52 rows=50070 width=4) (actual time=0.014..7.635 rows=50000 loops=1)"

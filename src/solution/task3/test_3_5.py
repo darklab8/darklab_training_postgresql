@@ -7,7 +7,7 @@ def test_task3_5(database: Database, apply_task2_migrations, factories: TypeFact
     "5. Найти N постов с наибольшим рейтингом за день/месяц/год."
     N=5
     approving_users = factories.user.create_batch([factories.user.template(id=i) for i in range(100,200)])
-    posts = factories.post.create_batch([factories.post.template() for i in range(10)])
+    posts = factories.post.create_batch([factories.post.template() for i in range(50)])
     post_approvals = factories.post_approval.create_batch([
         factories.post_approval.template(
             user_id=approving_users[i].id,

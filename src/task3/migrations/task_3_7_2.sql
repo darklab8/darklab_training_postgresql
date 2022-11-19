@@ -1,2 +1,0 @@
-CREATE INDEX CONCURRENTLY
-  ON post (author_id);

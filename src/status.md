@@ -1,16 +1,8 @@
 - # tasks
-- [Task 1](task_1.md)
-    - [x]  status
-- [Task 2](task_2.md)
-    - [ ] sql
-    - [ ] sqlalchemy
-- [Task 3](task_3.md)
-    - [ ] sql
-- [Task 4](task_4.md)
-    - [ ] sql
-- [Task 5](task_5.md)
-    - [ ] sql
-- [Task 6](task_6.md)
-    - [ ] sql
-- [Task 7](task_7.md)
-    - [ ] sql
+- [x] [Task 1](solution/task_1.md)
+- [x] [Task 2](solution/task_2.md)
+- [ ] [Task 3](solution/task_3.md)
+- [ ] [Task 4](solution/task_4.md)
+- [ ] [Task 5](solution/task_5.md)
+- [ ] [Task 6](solution/task_6.md)
+- [ ] [Task 7](solution/task_7.md)

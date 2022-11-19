@@ -13,6 +13,7 @@ services:
     command: sh
   db:
     image: postgres:12-buster
+    # command: sh -c "postgres -c shared_buffers=0MB -c effective_cache_size=0MB -c debug_discard_caches=1"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}

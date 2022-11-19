@@ -139,7 +139,7 @@ erDiagram
 
 
   </div>
- <script src="../shared/mermaid.min.js"></script>
+ <script src="../../shared/mermaid.min.js"></script>
  <script>mermaid.initialize({startOnLoad:true});
 </script>
 </body>
@@ -148,12 +148,12 @@ erDiagram
 ## SQL Code
 
 ```sql
---8<-- "src/task2/migrations/task2_1.sql"
+--8<-- "src/solution/task2/migrations/task2_1.sql"
 ```
 
 ```py
---8<-- "src/task2/factories.py"
+--8<-- "src/solution/task2/factories.py"
 ```
 ```py
---8<-- "src/task2/test_task2_10.py"
+--8<-- "src/solution/task2/test_task2_10.py"
 ```

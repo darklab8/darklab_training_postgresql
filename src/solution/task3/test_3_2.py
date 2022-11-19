@@ -5,7 +5,8 @@ from .reusable_code import query, measure_time
 
 def base_test(database: Database, factories: TypeFactories, N, enable_sorting=False):
     "2. Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;"
-    posts = factories.post.create_batch([factories.post.template()for i in range(N*2)])
+    user = factories.user.create_one(factories.user.template())
+    posts = factories.post.create_batch([factories.post.template(author_id=user.id) for i in range(N*2)])
 
     with database.get_core_session() as session:
         with measure_time(f"3_2, {N=}"):

@@ -22,51 +22,51 @@
 ## 1. Посчитать количество постов для пользователя с заданным ID;
 
 ```sql
---8<-- "src/task3/queries/query3_1.sql"
+--8<-- "src/solution/task3/queries/query3_1.sql"
 ```
 
 ```py
---8<-- "src/task3/test_3_1.py"
+--8<-- "src/solution/task3/test_3_1.py"
 ```
 
 ## 2. Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;
 
 ```sql
---8<-- "src/task3/queries/query3_2.sql"
+--8<-- "src/solution/task3/queries/query3_2.sql"
 ```
 
 ```py
---8<-- "src/task3/test_3_2.py"
+--8<-- "src/solution/task3/test_3_2.py"
 ```
 
 ## 3. Выбрать N постов в статусе "ожидает публикации", отсортированных в порядке возрастания даты создания;
 
 ```sql
---8<-- "src/task3/queries/query3_3.sql"
+--8<-- "src/solution/task3/queries/query3_3.sql"
 ```
 
 ```py
---8<-- "src/task3/test_3_3.py"
+--8<-- "src/solution/task3/test_3_3.py"
 ```
 
 ## 4. Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов).
 
 ```sql
---8<-- "src/task3/queries/query3_4.sql"
+--8<-- "src/solution/task3/queries/query3_4.sql"
 ```
 
 ```py
---8<-- "src/task3/test_3_4.py"
+--8<-- "src/solution/task3/test_3_4.py"
 ```
 
 ## 5. Найти N постов с наибольшим рейтингом за день/месяц/год.
 
 ```sql
---8<-- "src/task3/queries/query3_5.sql"
+--8<-- "src/solution/task3/queries/query3_5.sql"
 ```
 
 ```py
---8<-- "src/task3/test_3_5.py"
+--8<-- "src/solution/task3/test_3_5.py"
 ```
 
 `6.` Оценить время выполнения запросов (на достаточном количестве тестовых данных) и проанализировать план выполнения запросов.
@@ -81,25 +81,25 @@
 
 ## Task 678_1 performance
 ```py
---8<-- "src/task3/test_3_678_1.py"
+--8<-- "src/solution/task3/test_3_678_1.py"
 ```
 
 ## Task 678_2 performance
 ```py
---8<-- "src/task3/test_3_678_2.py"
+--8<-- "src/solution/task3/test_3_678_2.py"
 ```
 
 ## Task 678_3 performance
 ```py
---8<-- "src/task3/test_3_678_3.py"
+--8<-- "src/solution/task3/test_3_678_3.py"
 ```
 
 ## Task 678_4 performance
 ```py
---8<-- "src/task3/test_3_678_4.py"
+--8<-- "src/solution/task3/test_3_678_4.py"
 ```
 
 ## Task 678_5 performance
 ```py
---8<-- "src/task3/test_3_678_5.py"
+--8<-- "src/solution/task3/test_3_678_5.py"
 ```
