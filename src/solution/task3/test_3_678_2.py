@@ -65,6 +65,6 @@ post_created_at_idx is a btree
 "Execution Time: 5.636 ms"
 
 CONCLUSION:
-Improvement more than twice in plan :) Index is working.
+Улучшение плана в 2 раза, предположительного и фактического времени. Индекс работает.
 C * Log2(N) * N becomes, C * N potentially? If Limit is Const and not an O(N).
 """

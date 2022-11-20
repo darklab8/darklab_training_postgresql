@@ -6,10 +6,10 @@ from .reusable_code import query, measure_time
 def base_test(database: Database, factories: TypeFactories, amount_of_posts):
     # user we will query
     user: UserTemplate = factories.user.create_one(factories.user.template())
-    factories.post.create_batch([factories.post.template(author_id=user.id) for i in range(amount_of_posts)])
+    factories.post.create_batch_in_chunks((factories.post.template(author_id=user.id) for i in range(amount_of_posts)))
     # for other users
     user2: UserTemplate = factories.user.create_one(factories.user.template())
-    factories.post.create_batch([factories.post.template(author_id=user2.id) for i in range(amount_of_posts)])
+    factories.post.create_batch_in_chunks((factories.post.template(author_id=user2.id) for i in range(amount_of_posts)))
 
     with database.get_core_session() as session:
         with measure_time(f"3_1, {amount_of_posts=}"):

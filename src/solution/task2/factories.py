@@ -14,6 +14,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 from random import randrange
 from datetime import timedelta, datetime
+from src.solution.task3.reusable_code import measure_time
 
 random_date_start = datetime.strptime("2020/01/01 16:30", "%Y/%m/%d %H:%M")
 random_date_end = datetime.strptime("2022/01/01 16:30", "%Y/%m/%d %H:%M")
@@ -82,7 +83,7 @@ class PostApprovalTemplateRaw:
     post_id: int = field(default_factory=rnd_int)
     user_id: int = field(default_factory=rnd_int)
     created_at: datetime = field(default_factory=random_date)
-    change: int = random.choice([-1, 1])
+    change: int = field(default_factory=lambda: random.choice([-1, 1]))
 
 class FactoryConveyor:
     def __init__(self, database: Database, db_model, template):
@@ -110,6 +111,20 @@ class FactoryConveyor:
                 ]
             )
             session.commit()
+        return templates
+
+    def create_batch_in_chunks(self, templates: list):
+        with self.database.get_core_session() as session:
+            with measure_time(f"query"):
+                try:
+                    while True:
+                        prepare_objects = []
+                        for i in range(10000):
+                            prepare_objects.append(self.db_model(**(next(templates).__dict__)))
+                        session.bulk_save_objects(prepare_objects)
+                except StopIteration:
+                    session.bulk_save_objects(prepare_objects)
+                session.commit()
             return templates
 
 class TypeFactories:

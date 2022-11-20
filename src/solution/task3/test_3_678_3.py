@@ -68,4 +68,5 @@ post_created_at_idx is a btree
 
 Conclusion:
 One less performed loop. We got rid of Sort and Seq Scan, and had it replaced to Index Scan
+But... estimated cost only increased twice.
 """

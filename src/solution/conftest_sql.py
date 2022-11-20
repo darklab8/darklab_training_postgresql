@@ -13,13 +13,13 @@ def database():
         name=f"test_database_{secrets.token_hex(10)}",
     )
 
-    if not database_exists(database.full_url):
-        create_database(database.full_url)
-
-    yield database
-
-    if database_exists(database.full_url):
-        drop_database(database.full_url)
+    try:
+        if not database_exists(database.full_url):
+            create_database(database.full_url)
+        yield database
+    finally:
+        if database_exists(database.full_url):
+            drop_database(database.full_url)
 
 
 @pytest.fixture
