@@ -1,0 +1,3 @@
+SELECT * FROM users
+ORDER BY rating DESC
+LIMIT :N

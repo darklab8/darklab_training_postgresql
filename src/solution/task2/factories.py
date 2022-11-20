@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 from random import randrange
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from src.solution.task3.reusable_code import measure_time
 
 random_date_start = datetime.strptime("2020/01/01 16:30", "%Y/%m/%d %H:%M")
@@ -85,6 +85,13 @@ class PostApprovalTemplateRaw:
     created_at: datetime = field(default_factory=random_date)
     change: int = field(default_factory=lambda: random.choice([-1, 1]))
 
+@dataclass
+class PostVisitsTemplateRaw:
+    id: int = field(default_factory=rnd_int)
+    post_id: int = field(default_factory=rnd_int)
+    day_date: date = field(default_factory=random_date)
+    visits: int = field(default_factory=lambda: random.randint(0,1000))
+
 class FactoryConveyor:
     def __init__(self, database: Database, db_model, template):
         self.database = database
@@ -130,6 +137,7 @@ class FactoryConveyor:
 class TypeFactories:
     user = FactoryConveyor(MagicMock(),MagicMock(),template=UserTemplate)
     post = FactoryConveyor(MagicMock(),MagicMock(),template=PostTemplateRaw)
+    post_visits = FactoryConveyor(MagicMock(),MagicMock(),template=PostVisitsTemplateRaw)
 
 def generate_factories(database: Database) -> TypeFactories:
     Base = automap_base()
@@ -162,5 +170,8 @@ def generate_factories(database: Database) -> TypeFactories:
             lambda: factories.user.create_one(factories.user.template()).id)
     factories.post_approval = FactoryConveyor(
         database=database, db_model=Base.classes.post_approval, template=PostApprovalTemplate)
+
+    factories.post_visits = FactoryConveyor(
+        database=database, db_model=Base.classes.post_visits_per_day, template=PostVisitsTemplateRaw)
 
     return factories
