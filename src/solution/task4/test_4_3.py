@@ -5,7 +5,7 @@ from ..task3.reusable_code import query, measure_time
 import random
 
 def test_task4_3(database: Database, apply_task2_migrations, factories: TypeFactories):
-    "1. Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей."
+    "3. Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей."
 
     N=100
     selected = 50

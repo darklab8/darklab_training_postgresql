@@ -5,6 +5,6 @@ from ..task3.reusable_code import query, measure_time
 
 
 def test_task4_5(database: Database, apply_task2_migrations, factories: TypeFactories):
-    "1. Найти N пользователей с наибольшим рейтингом."
+    "5. Найти N пользователей с наибольшим рейтингом."
 
 

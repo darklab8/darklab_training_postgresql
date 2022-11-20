@@ -5,7 +5,7 @@ from ..task3.reusable_code import query, measure_time
 
 
 def test_task4_2(database: Database, apply_task2_migrations, factories: TypeFactories):
-    "1. Найти N наиболее посещаемых постов для заданного пользователя за все время, которые создал не он, но которые он редактировал."
+    "2. Найти N наиболее посещаемых постов для заданного пользователя за все время, которые создал не он, но которые он редактировал."
 
     amount_of_posts=100
     selected = 50
