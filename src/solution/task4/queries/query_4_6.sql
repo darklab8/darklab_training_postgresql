@@ -1,6 +1,8 @@
-SELECT unnest(tags), SUM(post_visits_per_day.visits) as visits  FROM posts
-JOIN post_visits_per_day ON post_visits_per_day.post_id = posts.id
-WHERE post_visits_per_day.day_date BETWEEN NOW() - interval '1 year' and NOW()
-GROUP BY unnest(tags)
-ORDER BY SUM(post_visits_per_day.visits) DESC
+SELECT
+	distinct(unnest(tags)) as unnested_tag,
+	SUM(COALESCE(pv.visits,0)) as summed_visits
+FROM post p
+LEFT JOIN post_visits_per_day pv ON pv.post_id = p.id
+GROUP BY unnested_tag
+ORDER BY summed_visits DESC
 LIMIT :N
