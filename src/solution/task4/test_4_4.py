@@ -5,6 +5,6 @@ from ..task3.reusable_code import query, measure_time
 
 
 def test_task4_4(database: Database, apply_task2_migrations, factories: TypeFactories):
-    "1. Найти N наиболее посещаемых постов за день/месяц/год.;"
+    "1. Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей младше K лет."
 
 

@@ -138,6 +138,7 @@ class TypeFactories:
     user = FactoryConveyor(MagicMock(),MagicMock(),template=UserTemplate)
     post = FactoryConveyor(MagicMock(),MagicMock(),template=PostTemplateRaw)
     post_visits = FactoryConveyor(MagicMock(),MagicMock(),template=PostVisitsTemplateRaw)
+    post_edition = FactoryConveyor(MagicMock(),MagicMock(),template=PostEditionTemplateRaw)
 
 def generate_factories(database: Database) -> TypeFactories:
     Base = automap_base()
