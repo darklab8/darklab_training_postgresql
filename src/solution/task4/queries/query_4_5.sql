@@ -1,3 +1,3 @@
-SELECT * FROM users
+SELECT * FROM user_
 ORDER BY rating DESC
 LIMIT :N
