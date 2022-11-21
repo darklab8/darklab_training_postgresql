@@ -3,9 +3,9 @@
 
 BEGIN;
 
-DELETE FROM post_comment WHERE user_id IN (SELECT DISTINCT(id) FROM post WHERE author_id IN (SELECT id FROM user_ WHERE rating < N)) -- Комменты к постам
-DELETE FROM post_comment WHERE user_id IN (SELECT id FROM user_ WHERE rating < N) -- Комментарии пользователя
-DELETE FROM post WHERE author_id IN (SELECT id FROM user_ WHERE rating < N)
-DELETE FROM user_ WHERE rating < N
+DELETE FROM comment WHERE user_id IN (SELECT DISTINCT(id) FROM post WHERE author_id IN (SELECT id FROM user_ WHERE rating < :N)); -- Комменты к постам
+DELETE FROM comment WHERE user_id IN (SELECT id FROM user_ WHERE rating < :N); -- Комментарии пользователя
+DELETE FROM post WHERE author_id IN (SELECT id FROM user_ WHERE rating < :N);
+DELETE FROM user_ WHERE rating < :N;
 
 COMMIT;
