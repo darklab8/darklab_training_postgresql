@@ -132,3 +132,12 @@ https://stackoverflow.com/questions/46470030/postgresql-index-size-and-value-num
 
 - Создавай `CONCURRENTLY`
 - https://www.postgresql.org/docs/current/sql-createindex.html
+
+
+## Research about transactional level:
+
+`TODO add here`
+
+## Research regarding views and materialized views?
+
+`TODO perhaps mention them here too`
