@@ -1,5 +1,3 @@
-
-
 from utils.database.sql import Database
 from ..task2.factories import TypeFactories, UserTemplate
 from ..task3.reusable_code import query, measure_time
