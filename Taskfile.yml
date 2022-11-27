@@ -54,5 +54,4 @@ tasks:
           CMD:
             sh: echo 'app pytest'
           PULL_CONTAINERS: db
-          VOLUME:
-            sh: echo '-v $(pwd):/code'
+
