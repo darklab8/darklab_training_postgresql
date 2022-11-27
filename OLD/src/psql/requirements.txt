@@ -1,4 +1,0 @@
-pytest
-SQLAlchemy
-psycopg2
-black
