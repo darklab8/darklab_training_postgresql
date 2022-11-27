@@ -1,0 +1,58 @@
+version: '3'
+
+env:
+  COMPOSE_ID:
+    sh: echo "$(date +%s)"
+  COMPOSE_FILE: "docker-compose.yml"
+
+includes:
+  compose:
+    taskfile: ./Taskfile.shared.compose.yml
+    internal: true
+
+tasks:
+  help:
+    cmds:
+      - task --list-all
+
+  poetry_export:
+    cmds:
+      - poetry export --without-hashes --format=requirements.txt > requirements.txt
+
+  shell:
+    cmds:
+      - task: compose:run
+        vars:
+          CMD:
+            sh: echo '--service-ports --rm -v $(pwd):/code app_with_pgadmin bash'
+          COMPOSE_ID: postgresql_training
+
+  down:
+    cmds:
+      - task: compose:down
+        vars:
+          COMPOSE_ID: postgresql_training
+
+  docs_build:
+    cmds:
+      - task: compose:run
+        vars:
+          CMD:
+            sh: echo '--rm -v $(pwd):/code app mkdocs build'
+
+  docs_run:
+    cmds:
+      - task: compose:run
+        vars:
+          CMD:
+            sh: echo '-p 8000:8000 --rm -v $(pwd):/code app mkdocs serve -a 0.0.0.0:8000'
+
+  test:
+    cmds:
+      - task: compose:ci_run
+        vars:
+          CMD:
+            sh: echo 'app pytest'
+          PULL_CONTAINERS: db
+          VOLUME:
+            sh: echo '-v $(pwd):/code'

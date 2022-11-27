@@ -1,0 +1,38 @@
+version: '3'
+
+tasks:
+  down:
+    internal: true
+    cmds:
+      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} down
+
+  build:
+    internal: true
+    cmds:
+      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} build -- app
+      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} build 
+
+  up:
+    internal: true
+    cmds:
+      - task: build
+      - defer: { task: down }
+      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} up
+
+  run:
+    internal: true
+    cmds:
+      - task: build
+      - defer: { task: down }
+      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} run {{.CMD}}
+
+  ci_run:
+    internal: true
+    cmds:
+      - defer: docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} down --volumes --rmi local
+      - task: build
+      - docker-compose -p {{.COMPOSE_ID}} -f {{.COMPOSE_FILE}} pull {{.PULL_CONTAINERS}}
+      - docker-compose -p {{.COMPOSE_ID}} -f {{.COMPOSE_FILE}} up -d {{.PULL_CONTAINERS}}
+      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} run {{.VOLUME}} app ./wait_for_it.sh db:5432 -t 60
+      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} run {{.CMD}}
+      
