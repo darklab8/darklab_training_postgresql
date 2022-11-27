@@ -1,8 +1,6 @@
 version: '3'
 
 env:
-  COMPOSE_ID:
-    sh: echo "$(date +%s)"
   COMPOSE_FILE: "docker-compose.yml"
 
 includes:
@@ -34,18 +32,24 @@ tasks:
           COMPOSE_ID: postgresql_training
 
   docs_build:
+    desc: compile mkdocs
     cmds:
       - task: compose:run
         vars:
           CMD:
             sh: echo '--rm -v $(pwd):/code app mkdocs build'
+          COMPOSE_ID:
+            sh: echo "$(date +%s)"
 
   docs_run:
+    desc: launch mkdocs in dev mod
     cmds:
       - task: compose:run
         vars:
           CMD:
             sh: echo '-p 8000:8000 --rm -v $(pwd):/code app mkdocs serve -a 0.0.0.0:8000'
+          COMPOSE_ID:
+            sh: echo "$(date +%s)"
 
   test:
     cmds:
@@ -54,4 +58,6 @@ tasks:
           CMD:
             sh: echo 'app pytest'
           PULL_CONTAINERS: db
+          COMPOSE_ID:
+            sh: echo "$(date +%s)"
 
