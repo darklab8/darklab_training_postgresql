@@ -1,8 +1,6 @@
 from utils.database.sql import Database
 from ..task2.factories import TypeFactories
 from ..task3.reusable_code import query, measure_time
-import random
-import pytest  
 
 def test_task7_1(database: Database, apply_task2_migrations, factories: TypeFactories, task_7_setup):
     """

@@ -17,18 +17,18 @@ CREATE TABLE post
 (
 	id SERIAL PRIMARY KEY,
 	author_id INTEGER NOT NULL,
-	title VARCHAR(255) NOT NULL,
-	content VARCHAR(20000) NOT NULL,
-	tags VARCHAR(50)[],
 	status VARCHAR(20) NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES user_ (id) ON DELETE CASCADE,
-	CONSTRAINT allowed_statuses CHECK (status IN ('published', 'draft', 'archived')),
-    CONSTRAINT allowed_tags_amount CHECK (array_length(tags, 1) < 20)
-);
 
--- P.S. we would be happy to order posts according to their creation in addition :thinking:
-ALTER TABLE post
-	ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
+	-- для удобства в потенциале было бы классно додобавить немножко денормализации
+	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+	-- post_edition_first INTEGER, ссылка на первую редакцию поста
+	-- FOREIGN KEY (post_edition_first) REFERENCES post_edition (id) ON DELETE NO ACTION,
+	-- post_edition_last INTEGER, ссылка на последнюю редакцию поста
+	-- FOREIGN KEY (post_edition_last) REFERENCES post_edition (id) ON DELETE NO ACTION,
+
+    FOREIGN KEY (author_id) REFERENCES user_ (id) ON DELETE CASCADE,
+	CONSTRAINT allowed_statuses CHECK (status IN ('published', 'draft', 'archived'))
+);
 
 -- 3. Пользователи могут редактировать посты, созданные другими пользователями.
 
@@ -39,9 +39,9 @@ CREATE TABLE post_edition
 	user_id INTEGER NOT NULL,
 	FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES user_ (id) ON DELETE CASCADE,
-    edited_at TIMESTAMP NOT NULL DEFAULT NOW(),
 
 	-- New Content Of Edition
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 	title VARCHAR(255) NOT NULL,
 	content VARCHAR(20000) NOT NULL,
 	tags VARCHAR(50)[],

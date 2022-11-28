@@ -13,8 +13,13 @@ def task_7_setup(database: Database, apply_task2_migrations, factories: TypeFact
     users = list(factories.user.create_batch([factories.user.template() for i in range(N)]))
     posts = list(factories.post.create_batch([factories.post.template(
             author_id=random.choice(users).id,
-            tags=tag_generator(),
-        ) for i in range(N)]))
+         ) for i in range(N)]))
+
+    factories.post_edition.create_batch((factories.post_edition.template(
+        post_id=posts[i].id,
+        user_id=random.choice(users).id,
+        tags=tag_generator(),
+    ) for i in range(N)))
 
     factories.post_edition.create_batch((factories.post_edition.template(
         post_id=random.choice(posts).id,

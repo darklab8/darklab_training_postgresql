@@ -38,6 +38,10 @@ rand = random_int_generator()
 def rnd_int():
     return next(rand)
 
+def increasing_date() -> datetime:
+    "always increasing forward"
+    return datetime.fromtimestamp(random_date_start.timestamp() + rnd_int())
+
 @dataclass
 class UserTemplate:
     id: int = field(default_factory=rnd_int)
@@ -53,10 +57,6 @@ class UserTemplate:
 class PostTemplateRaw:
     id: int = field(default_factory=rnd_int)
     author_id: int = field(default_factory=rnd_int)
-    title: str = field(default_factory=lambda: f"title_{rnd_int()}")
-    content: str = field(default_factory=lambda: f"content_{rnd_int()}")
-    tags: str = field(default_factory=
-            lambda: [random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])])
     status: str = field(default_factory=
             lambda: random.choice(["draft", "published", "archived"]))
     
@@ -68,7 +68,7 @@ class PostEditionTemplateRaw:
     id: int = field(default_factory=rnd_int)
     post_id: int = field(default_factory=rnd_int)
     user_id: int = field(default_factory=rnd_int)
-    edited_at: datetime = field(default_factory=random_date)
+    created_at: datetime = field(default_factory=random_date)
 
     # new content
     title: str = field(default_factory=lambda: f"title_{rnd_int()}")
