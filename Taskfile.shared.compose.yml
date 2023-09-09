@@ -35,8 +35,4 @@ tasks:
       - defer: docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} down --volumes --rmi local
       - task: build
         vars: { COMPOSE_ID: "{{.COMPOSE_ID}}"}
-      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} pull {{.PULL_CONTAINERS}}
-      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} up -d {{.PULL_CONTAINERS}}
-      - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} run app ./wait_for_it.sh db:5432 -t 60
       - docker-compose -f {{.COMPOSE_FILE}} -p {{.COMPOSE_ID}} run {{.CMD}}
-      
