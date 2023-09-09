@@ -4,3 +4,11 @@ tasks:
   test:
     cmds:
       - go test ./... {{.CLI_ARGS}}
+
+  db:run:
+    cmds:
+      - docker-compose up -d db
+  db:down:
+    cmds:
+      - docker-compose down --remove-orphans --volumes
+  
