@@ -31,18 +31,38 @@ func (data *BulkJob[T]) runJob(worker_id int) StatusCode {
 	return CodeSuccess
 }
 
-func BulkCreate[T any](
-	dbname types.Dbname,
-	amount_to_create types.AmountCreate,
+type Bulker[T any] struct {
+	all_objs    [][]T
+	all_objPtrs [][]*T
 
+	Amount_to_create types.AmountCreate
 	// Postgresql maximum parameters in one request 65535.
 	// Proportional to amount of attributes
-	bulk_max types.BulkMax,
-	conn_orm *gorm.DB,
+	Bulk_max types.BulkMax
+
+	bulk_times int
+	Dbname     types.Dbname
+}
+
+func (b *Bulker[T]) Init() *Bulker[T] {
+	b.bulk_times = int(math.Ceil(float64(b.Amount_to_create) / float64(b.Bulk_max)))
+
+	b.all_objs = [][]T{}
+	b.all_objPtrs = [][]*T{}
+	for i := 0; i < b.bulk_times; i++ {
+		b.all_objs = append(b.all_objs, make([]T, b.Bulk_max))
+		b.all_objPtrs = append(b.all_objPtrs, make([]*T, b.Bulk_max))
+	}
+	return b
+}
+
+func (b *Bulker[T]) BulkCreate(
 	fill func(*T),
 ) {
 	job_timeout := 30
 	worker_count := 10
+
+	left_to_create := int(b.Amount_to_create)
 
 	jobPool := JobPool[T, *BulkJob[T]]{
 		JobTimeout: job_timeout,
@@ -51,33 +71,36 @@ func BulkCreate[T any](
 	jobs := []*BulkJob[T]{}
 	FixtureTimeMeasure(func() {
 
-		bulk_times := int(math.Ceil(float64(amount_to_create) / float64(bulk_max)))
-		left_to_create := int(amount_to_create)
+		FixtureTimeMeasure(func() {
 
-		for i := 0; i < bulk_times; i++ {
-			users := make([]T, bulk_max)
-			usersPtrs := make([]*T, bulk_max)
+			var objs []T
+			var obj_ptrs []*T
 
-			creating_count := int(bulk_max)
-			if left_to_create < int(bulk_max) {
-				users = make([]T, left_to_create)
-				usersPtrs = make([]*T, left_to_create)
-				creating_count = int(left_to_create)
+			for i := 0; i < b.bulk_times; i++ {
+				objs = b.all_objs[i]
+				obj_ptrs = b.all_objPtrs[i]
+
+				creating_count := int(b.Bulk_max)
+				if left_to_create < int(b.Bulk_max) {
+					objs = make([]T, left_to_create)
+					obj_ptrs = make([]*T, left_to_create)
+					creating_count = int(left_to_create)
+				}
+
+				for number, _ := range obj_ptrs {
+					fill(&objs[number])
+					obj_ptrs[number] = &objs[number]
+				}
+
+				jobs = append(jobs, &BulkJob[T]{
+					Ptrs:   obj_ptrs,
+					dbname: b.Dbname,
+					id:     i,
+				})
+
+				left_to_create -= creating_count
 			}
-
-			for number, _ := range usersPtrs {
-				fill(&users[number])
-				usersPtrs[number] = &users[number]
-			}
-
-			jobs = append(jobs, &BulkJob[T]{
-				Ptrs:   usersPtrs,
-				dbname: dbname,
-				id:     i,
-			})
-
-			left_to_create -= creating_count
-		}
+		}, "allocating memory")
 
 		FixtureTimeMeasure(func() {
 			jobPool.doJobs(jobs)
