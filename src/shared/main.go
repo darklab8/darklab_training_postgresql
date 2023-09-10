@@ -39,6 +39,7 @@ func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *s
 		panic(err)
 	}
 
+	defer db.Close()
 	callback(dbname, db, gormDB)
 	fmt.Println("The database is connected")
 }

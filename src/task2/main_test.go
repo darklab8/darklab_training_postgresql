@@ -32,12 +32,14 @@ func TestCreateData(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		FixtureTask2Migrations(conn)
 
-		max_users := 100000
+		max_users := 1000000
 
 		shared.FixtureTimeMeasure(func() {
-			shared.BulkCreate[User](dbname, types.AmountCreate(max_users), types.BulkMax(8000), conn_orm, func(u *User) {
-				u.Fill()
-			})
+			for i := 0; i < 10; i++ {
+				shared.BulkCreate[User](dbname, types.AmountCreate(max_users/10), types.BulkMax(8000), conn_orm, func(u *User) {
+					u.Fill()
+				})
+			}
 
 			var user_count int
 			rows, _ := conn.Query("SELECT count(*) FROM user_")

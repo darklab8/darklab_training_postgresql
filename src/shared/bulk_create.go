@@ -12,17 +12,19 @@ import (
 )
 
 type BulkJob[T any] struct {
-	id       int
-	done     bool
-	Ptrs     []*T
-	conn_orm *gorm.DB
-	result   *gorm.DB
+	id     int
+	done   bool
+	Ptrs   []*T
+	dbname types.Dbname
+	result *gorm.DB
 }
 
 func (data *BulkJob[T]) runJob(worker_id int) StatusCode {
 	FixtureTimeMeasure(func() {
 		// fmt.Println("worker", worker_id, "started  job", data.id)
-		data.result = data.conn_orm.Create(data.Ptrs)
+		FixtureConn(data.dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+			data.result = conn_orm.Create(data.Ptrs)
+		})
 	}, fmt.Sprintf("worker %d finished job %d", worker_id, data.id))
 
 	data.done = true
@@ -67,13 +69,13 @@ func BulkCreate[T any](
 				fill(&users[number])
 				usersPtrs[number] = &users[number]
 			}
-			FixtureConn(dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-				jobs = append(jobs, &BulkJob[T]{
-					Ptrs:     usersPtrs,
-					conn_orm: conn_orm,
-					id:       i,
-				})
+
+			jobs = append(jobs, &BulkJob[T]{
+				Ptrs:   usersPtrs,
+				dbname: dbname,
+				id:     i,
 			})
+
 			left_to_create -= creating_count
 		}
 
