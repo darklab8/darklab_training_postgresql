@@ -30,17 +30,6 @@ func FixtureTask2Migrations(conn *sql.DB) {
 	utils.MustExec(conn, Migration2)
 }
 
-// CREATE TABLE user_
-// (
-//   	id SERIAL PRIMARY KEY,
-//   	first_name VARCHAR(100) NOT NULL,
-// 	second_name VARCHAR(100) NOT NULL,
-//   	birth_date DATE NOT NULL,
-// 	email VARCHAR(100) NOT NULL,
-// 	password VARCHAR(100) NOT NULL,
-// 	address VARCHAR(200) NOT NULL
-// );
-
 type User struct {
 	ID         int       `gorm:"column:id;primaryKey"`
 	FirstName  string    `gorm:"column:first_name"`
@@ -86,8 +75,6 @@ func (u *User) fill() {
 	u.Rating = 0
 }
 
-const max_users = 10
-
 func TestMain(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB) {
 		FixtureTask2Migrations(conn)
@@ -97,6 +84,8 @@ func TestMain(t *testing.T) {
 		if err != nil {
 			panic("failed to connect database")
 		}
+
+		max_users := 10
 
 		users := make([]User, max_users)
 		//#usersPtrs := [max_users]*User{}
