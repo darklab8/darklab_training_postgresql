@@ -7,7 +7,6 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
-	"math/rand"
 	"testing"
 	"time"
 
@@ -61,16 +60,29 @@ const (
 	PostgresqlSerialMax = 2147483647
 )
 
-// var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+var (
+	// Sequence counter which user to create
+	UserIDSeq         = 0
+	UserFirstNameSeq  = 0
+	UserSecondNameSeq = 0
+	UserEmailSeq      = 0
+	UserPasswordSeq   = 0
+	UserAddressSeq    = 0
+)
+
+func GetNext(number *int) int {
+	*number++
+	return *number
+}
 
 func (u *User) fill() {
-	u.ID = rand.Intn(PostgresqlSerialMax)
-	u.FirstName = utils.TokenHex(4)
-	u.SecondName = utils.TokenHex(4)
+	u.ID = GetNext(&UserIDSeq)
+	u.FirstName = fmt.Sprintf("first_name%d", GetNext(&UserFirstNameSeq))
+	u.SecondName = fmt.Sprintf("second_name%d", GetNext(&UserSecondNameSeq))
 	u.Birth_date = time.Now()
-	u.Email = utils.TokenHex(4)
-	u.Password = utils.TokenHex(4)
-	u.Address = utils.TokenHex(4)
+	u.Email = fmt.Sprintf("email%d", GetNext(&UserEmailSeq))
+	u.Password = fmt.Sprintf("password%d", GetNext(&UserPasswordSeq))
+	u.Address = fmt.Sprintf("address%d", GetNext(&UserAddressSeq))
 	u.Rating = 0
 }
 
