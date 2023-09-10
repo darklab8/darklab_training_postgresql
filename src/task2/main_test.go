@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -76,14 +75,8 @@ func (u *User) fill() {
 }
 
 func TestMain(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB) {
+	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		FixtureTask2Migrations(conn)
-
-		dsn := fmt.Sprintf("host=localhost user=postgres password=postgres dbname=%s port=5432 sslmode=disable", dbname)
-		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		if err != nil {
-			panic("failed to connect database")
-		}
 
 		max_users := 10
 
@@ -95,7 +88,7 @@ func TestMain(t *testing.T) {
 			users[number].fill()
 			usersPtrs[number] = &users[number]
 		}
-		result := db.Create(usersPtrs)
+		result := conn_orm.Create(usersPtrs)
 		assert.Nil(t, result.Error, "failed to create users")
 
 		var user_count int

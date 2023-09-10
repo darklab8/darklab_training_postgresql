@@ -13,11 +13,13 @@ CREATE TABLE user_
 
 -- 2. Пользователь может публиковать посты и задавать для них название, содержание, тэги и статус. Пост может быть в статусе опубликован, черновик или архив.
 
+CREATE TYPE status AS ENUM ('published', 'draft', 'archived');
+
 CREATE TABLE post
 (
 	id SERIAL PRIMARY KEY,
 	author_id INTEGER NOT NULL,
-	status VARCHAR(20) NOT NULL,
+	status status NOT NULL,
 
 	-- для удобства в потенциале было бы классно додобавить немножко денормализации
 	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -26,8 +28,7 @@ CREATE TABLE post
 	-- post_edition_last INTEGER, ссылка на последнюю редакцию поста
 	-- FOREIGN KEY (post_edition_last) REFERENCES post_edition (id) ON DELETE NO ACTION,
 
-    FOREIGN KEY (author_id) REFERENCES user_ (id) ON DELETE CASCADE,
-	CONSTRAINT allowed_statuses CHECK (status IN ('published', 'draft', 'archived'))
+    FOREIGN KEY (author_id) REFERENCES user_ (id) ON DELETE CASCADE
 );
 
 -- 3. Пользователи могут редактировать посты, созданные другими пользователями.

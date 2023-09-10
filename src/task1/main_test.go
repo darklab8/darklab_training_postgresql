@@ -8,10 +8,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestMain(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbpath types.Dbname, conn *sql.DB) {
+	shared.FixtureConnTestDB(func(dbpath types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		fmt.Println(dbpath)
 		rows, err := conn.Query("SELECT 1")
 		if err != nil {
