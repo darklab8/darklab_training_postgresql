@@ -3,7 +3,9 @@ version: '3'
 tasks:
   test:
     cmds:
-      - go test ./... {{.CLI_ARGS}}
+      - go clean -cache
+      - go clean -testcache
+      - go test ./... -count=1 -a {{.CLI_ARGS}}
 
   db:run:
     cmds:

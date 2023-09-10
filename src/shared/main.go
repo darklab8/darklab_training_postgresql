@@ -13,6 +13,7 @@ import (
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB)) {
@@ -30,19 +31,16 @@ func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *s
 
 	gormDB, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: db,
-	}), &gorm.Config{})
+	}), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
+
+	if err != nil {
+		panic(err)
+	}
 
 	callback(dbname, db, gormDB)
 	fmt.Println("The database is connected")
-}
-
-func FixtureConnOrm(dbname types.Dbname, callback func(dbname types.Dbname, conn_orm *gorm.DB)) {
-	dsn := fmt.Sprintf("host=localhost user=postgres password=postgres dbname=%s port=5432 sslmode=disable", dbname)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	callback(dbname, db)
 }
 
 func FixtureDatabase(callback func(dbname types.Dbname)) {
