@@ -7,3 +7,5 @@ type BulkMax int
 type AmountCreate int
 
 type MaxUsers int
+
+type PostsPerUser int

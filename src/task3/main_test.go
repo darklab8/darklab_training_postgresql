@@ -36,6 +36,7 @@ func TestQuery1(t *testing.T) {
 		task2.FixtureFillWithData(
 			dbname,
 			types.MaxUsers(1000),
+			types.PostsPerUser(5),
 		)
 	})
 }

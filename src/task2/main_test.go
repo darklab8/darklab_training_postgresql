@@ -19,13 +19,19 @@ func TestCreateData(t *testing.T) {
 		FixtureFillWithData(
 			dbname,
 			types.MaxUsers(max_users),
+			types.PostsPerUser(50),
 		)
 
-		var user_count int
+		var count int
 		rows, _ := conn.Query("SELECT count(*) FROM user_")
 		rows.Next()
-		rows.Scan(&user_count)
-		assert.Equal(t, user_count, max_users)
+		rows.Scan(&count)
+		assert.Equal(t, count, max_users)
+
+		rows, _ = conn.Query("SELECT count(*) FROM post")
+		rows.Next()
+		rows.Scan(&count)
+		assert.Equal(t, count, max_users*50)
 
 	})
 }

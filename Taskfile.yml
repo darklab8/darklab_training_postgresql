@@ -7,6 +7,10 @@ tasks:
       - go clean -testcache
       - go test ./... -count=1 -a {{.CLI_ARGS}}
 
+  test:create:
+    cmds:
+      - task test -- -run TestCreateData -v
+
   db:run:
     cmds:
       - docker-compose up -d db

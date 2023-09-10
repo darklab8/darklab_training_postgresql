@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
+	"math/rand"
 )
 
 var (
@@ -24,13 +25,27 @@ func FixtureTask2Migrations(conn *sql.DB) {
 	utils.MustExec(conn, Migration2)
 }
 
-func FixtureFillWithData(dbname types.Dbname, max_users types.MaxUsers) {
+func FixtureFillWithData(
+	dbname types.Dbname,
+	max_users types.MaxUsers,
+	posts_per_user types.PostsPerUser,
+) {
 	shared.FixtureTimeMeasure(func() {
-		bulker := shared.Bulker[User]{
+		user_bulker := shared.Bulker[User]{
 			Amount_to_create: types.AmountCreate(max_users),
 			Bulk_max:         types.BulkMax(8000),
 			Dbname:           dbname,
 		}
-		bulker.Init().BulkCreate(func(u *User) { u.Fill() })
+		user_bulker.Init().BulkCreate(func(u *User) { u.Fill() })
+
+		post_bulker := shared.Bulker[Post]{
+			Amount_to_create: types.AmountCreate(int(max_users) * int(posts_per_user)),
+			Bulk_max:         types.BulkMax(16000),
+			Dbname:           dbname,
+		}
+		post_bulker.Init().BulkCreate(func(p *Post) {
+			p.Fill(1 + rand.Intn(int(max_users)-1))
+		})
+
 	}, "database filling with data")
 }
