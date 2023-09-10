@@ -8,7 +8,6 @@ import (
 	_ "embed"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -29,73 +28,23 @@ func FixtureTask2Migrations(conn *sql.DB) {
 	utils.MustExec(conn, Migration2)
 }
 
-type User struct {
-	ID         int       `gorm:"column:id;primaryKey"`
-	FirstName  string    `gorm:"column:first_name"`
-	SecondName string    `gorm:"column:second_name"`
-	Birth_date time.Time `gorm:"column:birth_date"`
-	Email      string    `gorm:"column:email"`
-	Password   string    `gorm:"column:password"`
-	Address    string    `gorm:"column:address"`
-	Rating     int       `gorm:"column:rating"`
-}
-
-func (u User) TableName() string {
-	return "user_"
-}
-
-const (
-	PostgresqlSerialMax = 2147483647
-)
-
-var (
-	// Sequence counter which user to create
-	UserIDSeq         = 0
-	UserFirstNameSeq  = 0
-	UserSecondNameSeq = 0
-	UserEmailSeq      = 0
-	UserPasswordSeq   = 0
-	UserAddressSeq    = 0
-)
-
-func GetNext(number *int) int {
-	*number++
-	return *number
-}
-
-func (u *User) fill() {
-	u.ID = GetNext(&UserIDSeq)
-	u.FirstName = fmt.Sprintf("first_name%d", GetNext(&UserFirstNameSeq))
-	u.SecondName = fmt.Sprintf("second_name%d", GetNext(&UserSecondNameSeq))
-	u.Birth_date = time.Now()
-	u.Email = fmt.Sprintf("email%d", GetNext(&UserEmailSeq))
-	u.Password = fmt.Sprintf("password%d", GetNext(&UserPasswordSeq))
-	u.Address = fmt.Sprintf("address%d", GetNext(&UserAddressSeq))
-	u.Rating = 0
-}
-
-func TestMain(t *testing.T) {
+func TestCreateData(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		FixtureTask2Migrations(conn)
 
-		max_users := 10
+		max_users := 10000
 
-		users := make([]User, max_users)
-		//#usersPtrs := [max_users]*User{}
-		usersPtrs := make([]*User, max_users)
+		shared.FixtureTimeMeasure(func() {
+			shared.BulkCreate[User](types.AmountCreate(max_users), types.BulkMax(8000), conn_orm, func(u *User) {
+				u.Fill()
+			})
 
-		for number, _ := range users {
-			users[number].fill()
-			usersPtrs[number] = &users[number]
-		}
-		result := conn_orm.Create(usersPtrs)
-		assert.Nil(t, result.Error, "failed to create users")
-
-		var user_count int
-		rows, _ := conn.Query("SELECT count(*) FROM user_")
-		rows.Next()
-		rows.Scan(&user_count)
-		assert.Equal(t, max_users, user_count)
+			var user_count int
+			rows, _ := conn.Query("SELECT count(*) FROM user_")
+			rows.Next()
+			rows.Scan(&user_count)
+			assert.Equal(t, user_count, max_users)
+		}, "database filling with data")
 
 	})
 }

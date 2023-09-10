@@ -4,6 +4,9 @@ import (
 	"darklab_training_postgres/utils"
 	"darklab_training_postgres/utils/types"
 	"database/sql"
+	"log"
+	"strings"
+	"time"
 
 	"fmt"
 
@@ -68,4 +71,13 @@ func FixtureConnTestDB(callback func(dbname types.Dbname, conn *sql.DB, conn_orm
 			callback(dbname, conn, conn_orm)
 		})
 	})
+}
+
+func FixtureTimeMeasure(callback func(), msgs ...string) {
+	start := time.Now()
+
+	callback()
+
+	elapsed := time.Since(start)
+	log.Printf("time elapsed %s for %s", elapsed, strings.Join(msgs, " "))
 }
