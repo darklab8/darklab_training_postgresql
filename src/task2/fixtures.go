@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
-	"math/rand"
 )
 
 var (
@@ -44,8 +43,14 @@ func FixtureFillWithData(
 			Bulk_max:         types.BulkMax(16000),
 			Dbname:           dbname,
 		}
+
+		postCounter := 1
 		post_bulker.Init().BulkCreate(func(p *orm.Post) {
-			p.Fill(1 + rand.Intn(int(max_users)-1))
+			p.Fill(postCounter)
+			postCounter++
+			if postCounter > int(max_users) {
+				postCounter = 1
+			}
 		})
 
 	}, "database filling with data")

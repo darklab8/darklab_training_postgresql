@@ -37,11 +37,13 @@ func FixtureDefaultData(dbname types.Dbname, conn *sql.DB) {
 
 	task2.FixtureFillWithData(
 		dbname,
-		types.MaxUsers(1000),
-		types.PostsPerUser(5),
+		temporal_max_users,
+		temporal_posts_per_users,
 	)
 }
 
+var temporal_max_users types.MaxUsers = 1000
+var temporal_posts_per_users types.PostsPerUser = 5
 var temporal_dbname types.Dbname
 
 func TestMain(m *testing.M) {
@@ -73,5 +75,22 @@ func TestQueryReuseSetup2(t *testing.T) {
 		rows.Next()
 		rows.Scan(&count)
 		assert.Equal(t, count, 1000*5)
+	})
+}
+
+func TestQuery1(t *testing.T) {
+	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+
+		fmt.Println()
+		row := 50
+		rows, err := conn.Query(Query1, row)
+		if err != nil {
+			panic(err)
+		}
+
+		rows.Next()
+		var count int
+		rows.Scan(&count)
+		assert.Equal(t, int(temporal_posts_per_users), count)
 	})
 }
