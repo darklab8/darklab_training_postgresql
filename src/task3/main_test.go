@@ -82,15 +82,38 @@ func TestQuery1(t *testing.T) {
 	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
 		fmt.Println()
-		row := 50
-		rows, err := conn.Query(Query1, row)
+		author_id := 50
+		result := conn_orm.Raw(Query1, sql.Named("author_id", author_id))
+		// rows, err := conn.Query(Query1, row)
+		if result.Error != nil {
+			panic(result.Error)
+		}
+
+		var count int
+		result.Scan(&count)
+		assert.Equal(t, int(temporal_posts_per_users), count)
+	})
+}
+
+func TestQuery2(t *testing.T) {
+	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+
+		fmt.Println()
+		N := 50
+		result := conn_orm.Raw(Query2, sql.Named("N", N))
+		if result.Error != nil {
+			panic(result.Error)
+		}
+
+		rows, err := result.Rows()
 		if err != nil {
 			panic(err)
 		}
 
-		rows.Next()
-		var count int
-		rows.Scan(&count)
-		assert.Equal(t, int(temporal_posts_per_users), count)
+		count_rows := 0
+		for rows.Next() {
+			count_rows += 1
+		}
+		assert.Equal(t, N, count_rows)
 	})
 }
