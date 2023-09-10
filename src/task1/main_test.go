@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestMain(t *testing.T) {
+func TestMigrate(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbpath types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		fmt.Println(dbpath)
 		rows, err := conn.Query("SELECT 1")
@@ -24,5 +24,6 @@ func TestMain(t *testing.T) {
 		fmt.Println(answer)
 
 		assert.Equal(t, 1, answer)
+		fmt.Println("running testmigrate")
 	})
 }

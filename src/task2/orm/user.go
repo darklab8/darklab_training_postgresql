@@ -1,6 +1,7 @@
-package task2
+package orm
 
 import (
+	"darklab_training_postgres/utils"
 	"fmt"
 	"time"
 )
@@ -31,12 +32,12 @@ func (u User) TableName() string {
 }
 
 func (u *User) Fill() {
-	u.ID = GetNext(&UserIDSeq)
-	u.FirstName = fmt.Sprintf("first_name%d", GetNext(&UserFirstNameSeq))
-	u.SecondName = fmt.Sprintf("second_name%d", GetNext(&UserSecondNameSeq))
+	u.ID = utils.GetNext(&UserIDSeq)
+	u.FirstName = fmt.Sprintf("first_name%d", utils.GetNext(&UserFirstNameSeq))
+	u.SecondName = fmt.Sprintf("second_name%d", utils.GetNext(&UserSecondNameSeq))
 	u.Birth_date = time.Now()
-	u.Email = fmt.Sprintf("email%d", GetNext(&UserEmailSeq))
-	u.Password = fmt.Sprintf("password%d", GetNext(&UserPasswordSeq))
-	u.Address = fmt.Sprintf("address%d", GetNext(&UserAddressSeq))
+	u.Email = fmt.Sprintf("email%d", utils.GetNext(&UserEmailSeq))
+	u.Password = fmt.Sprintf("password%d", utils.GetNext(&UserPasswordSeq))
+	u.Address = fmt.Sprintf("address%d", utils.GetNext(&UserAddressSeq))
 	u.Rating = 0
 }

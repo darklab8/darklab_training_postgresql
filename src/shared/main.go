@@ -25,14 +25,12 @@ func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *s
 		panic(err)
 	}
 
-	if err = db.Ping(); err != nil {
-		panic(err)
-	}
-
 	gormDB, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: db,
 	}), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger:                 logger.Default.LogMode(logger.Silent),
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
 	})
 
 	if err != nil {

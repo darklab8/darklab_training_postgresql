@@ -23,6 +23,7 @@ func (data *BulkJob[T]) runJob(worker_id int) StatusCode {
 	FixtureTimeMeasure(func() {
 		// fmt.Println("worker", worker_id, "started  job", data.id)
 		FixtureConn(data.dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+
 			data.result = conn_orm.Create(data.Ptrs)
 		})
 	}, fmt.Sprintf("worker %d finished job %d", worker_id, data.id))

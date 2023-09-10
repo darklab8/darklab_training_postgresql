@@ -5,10 +5,13 @@ import (
 	"darklab_training_postgres/utils/types"
 	"database/sql"
 	_ "embed"
+	"fmt"
+	"os"
 	"testing"
 
 	"darklab_training_postgres/src/task2"
 
+	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
 
@@ -29,14 +32,46 @@ var (
 	Query5 string
 )
 
-func TestQuery1(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		task2.FixtureTask2Migrations(conn)
+func FixtureDefaultData(dbname types.Dbname, conn *sql.DB) {
+	task2.FixtureTask2Migrations(conn)
 
-		task2.FixtureFillWithData(
-			dbname,
-			types.MaxUsers(1000),
-			types.PostsPerUser(5),
-		)
+	task2.FixtureFillWithData(
+		dbname,
+		types.MaxUsers(1000),
+		types.PostsPerUser(5),
+	)
+}
+
+var temporal_dbname types.Dbname
+
+func TestMain(m *testing.M) {
+	fmt.Println("seting")
+	var code int
+	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+		FixtureDefaultData(dbname, conn)
+		temporal_dbname = dbname
+		code = m.Run()
+		fmt.Println("teardown")
+	})
+	os.Exit(code)
+}
+
+func TestQueryReuseSetup1(t *testing.T) {
+	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+		var count int
+		rows, _ := conn.Query("SELECT count(*) FROM user_")
+		rows.Next()
+		rows.Scan(&count)
+		assert.Equal(t, count, 1000)
+	})
+}
+
+func TestQueryReuseSetup2(t *testing.T) {
+	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+		var count int
+		rows, _ := conn.Query("SELECT count(*) FROM post")
+		rows.Next()
+		rows.Scan(&count)
+		assert.Equal(t, count, 1000*5)
 	})
 }

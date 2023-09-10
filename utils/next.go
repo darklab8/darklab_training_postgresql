@@ -1,4 +1,4 @@
-package task2
+package utils
 
 const (
 	PostgresqlSerialMax = 2147483647

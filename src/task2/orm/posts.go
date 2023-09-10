@@ -1,6 +1,7 @@
-package task2
+package orm
 
 import (
+	"darklab_training_postgres/utils"
 	"math/rand"
 	"time"
 )
@@ -24,7 +25,7 @@ func (p Post) TableName() string {
 }
 
 func (p *Post) Fill(authorID int) {
-	p.ID = GetNext(&PostIDSeq)
+	p.ID = utils.GetNext(&PostIDSeq)
 	p.AuthorID = authorID
 	p.Status = Statuses[rand.Intn(3)]
 	p.CreatedAt = time.Now()

@@ -2,6 +2,7 @@ package task2
 
 import (
 	"darklab_training_postgres/src/shared"
+	"darklab_training_postgres/src/task2/orm"
 	"darklab_training_postgres/utils"
 	"darklab_training_postgres/utils/types"
 	"database/sql"
@@ -31,19 +32,19 @@ func FixtureFillWithData(
 	posts_per_user types.PostsPerUser,
 ) {
 	shared.FixtureTimeMeasure(func() {
-		user_bulker := shared.Bulker[User]{
+		user_bulker := shared.Bulker[orm.User]{
 			Amount_to_create: types.AmountCreate(max_users),
 			Bulk_max:         types.BulkMax(8000),
 			Dbname:           dbname,
 		}
-		user_bulker.Init().BulkCreate(func(u *User) { u.Fill() })
+		user_bulker.Init().BulkCreate(func(u *orm.User) { u.Fill() })
 
-		post_bulker := shared.Bulker[Post]{
+		post_bulker := shared.Bulker[orm.Post]{
 			Amount_to_create: types.AmountCreate(int(max_users) * int(posts_per_user)),
 			Bulk_max:         types.BulkMax(16000),
 			Dbname:           dbname,
 		}
-		post_bulker.Init().BulkCreate(func(p *Post) {
+		post_bulker.Init().BulkCreate(func(p *orm.Post) {
 			p.Fill(1 + rand.Intn(int(max_users)-1))
 		})
 
