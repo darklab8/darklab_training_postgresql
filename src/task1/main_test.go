@@ -1,4 +1,4 @@
-package section1
+package task1
 
 import (
 	"darklab_training_postgres/src/shared"
@@ -6,6 +6,8 @@ import (
 	"database/sql"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(t *testing.T) {
@@ -19,5 +21,7 @@ func TestMain(t *testing.T) {
 		var answer int
 		rows.Scan(&answer)
 		fmt.Println(answer)
+
+		assert.Equal(t, 1, answer)
 	})
 }
