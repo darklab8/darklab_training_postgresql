@@ -17,7 +17,7 @@ type JobTest struct {
 
 func (data *JobTest) runJob(worker_id int) StatusCode {
 	fmt.Println("worker", worker_id, "started  job", data.id)
-	time.Sleep(time.Second * time.Duration(data.id))
+	// time.Sleep(time.Second * time.Duration(data.id))
 	fmt.Println("worker", worker_id, "finished job", data.id)
 	data.result = data.id * 1
 	data.done = true

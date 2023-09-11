@@ -2,7 +2,7 @@ package task2
 
 import (
 	"darklab_training_postgres/src/shared"
-	"darklab_training_postgres/src/task2/orm"
+	"darklab_training_postgres/src/shared/orm"
 	"darklab_training_postgres/utils"
 	"darklab_training_postgres/utils/types"
 	"database/sql"

@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
+	"math/rand"
 	"os"
 	"testing"
 
@@ -82,7 +83,7 @@ func TestQuery1(t *testing.T) {
 	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
 		fmt.Println()
-		author_id := 50
+		author_id := 1 + rand.Intn(int(temporal_max_users)-1)
 		result := conn_orm.Raw(Query1, sql.Named("author_id", author_id))
 		// rows, err := conn.Query(Query1, row)
 		if result.Error != nil {
@@ -99,8 +100,54 @@ func TestQuery2(t *testing.T) {
 	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
 		fmt.Println()
-		N := 50
+		N := rand.Intn(int(temporal_max_users) + int(temporal_posts_per_users))
 		result := conn_orm.Raw(Query2, sql.Named("N", N))
+		if result.Error != nil {
+			panic(result.Error)
+		}
+
+		rows, err := result.Rows()
+		if err != nil {
+			panic(err)
+		}
+
+		count_rows := 0
+		for rows.Next() {
+			count_rows += 1
+		}
+		assert.Equal(t, N, count_rows)
+	})
+}
+
+func TestQuery3(t *testing.T) {
+	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+
+		fmt.Println()
+		N := (rand.Intn(int(temporal_max_users)+int(temporal_posts_per_users)) / 4)
+		result := conn_orm.Raw(Query3, sql.Named("N", N))
+		if result.Error != nil {
+			panic(result.Error)
+		}
+
+		rows, err := result.Rows()
+		if err != nil {
+			panic(err)
+		}
+
+		count_rows := 0
+		for rows.Next() {
+			count_rows += 1
+		}
+		assert.Equal(t, N, count_rows)
+	})
+}
+
+func TestQuery4(t *testing.T) {
+	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+
+		fmt.Println()
+		N := (rand.Intn(int(temporal_max_users)+int(temporal_posts_per_users)) / 4)
+		result := conn_orm.Raw(Query3, sql.Named("N", N))
 		if result.Error != nil {
 			panic(result.Error)
 		}
