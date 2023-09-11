@@ -1,8 +1,8 @@
 package shared
 
 import (
-	"darklab_training_postgres/utils"
-	"darklab_training_postgres/utils/types"
+	"darklab_training_postgres/golang/shared/types"
+	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
 	"log"
 	"strings"

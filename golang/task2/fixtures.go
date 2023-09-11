@@ -1,10 +1,10 @@
 package task2
 
 import (
-	"darklab_training_postgres/src/shared"
-	"darklab_training_postgres/src/shared/orm"
-	"darklab_training_postgres/utils"
-	"darklab_training_postgres/utils/types"
+	"darklab_training_postgres/golang/shared"
+	"darklab_training_postgres/golang/shared/orm"
+	"darklab_training_postgres/golang/shared/types"
+	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
 	_ "embed"
 	"fmt"

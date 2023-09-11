@@ -1,7 +1,7 @@
 package shared
 
 import (
-	"darklab_training_postgres/utils/types"
+	"darklab_training_postgres/golang/shared/types"
 	"database/sql"
 	"fmt"
 	"math"

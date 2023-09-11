@@ -1,7 +1,7 @@
 package orm
 
 import (
-	"darklab_training_postgres/utils"
+	"darklab_training_postgres/golang/shared/utils"
 	"math/rand"
 	"time"
 )

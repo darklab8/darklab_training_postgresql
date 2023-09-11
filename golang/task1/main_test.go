@@ -1,8 +1,8 @@
 package task1
 
 import (
-	"darklab_training_postgres/src/shared"
-	"darklab_training_postgres/utils/types"
+	"darklab_training_postgres/golang/shared"
+	"darklab_training_postgres/golang/shared/types"
 	"database/sql"
 	"fmt"
 	"testing"

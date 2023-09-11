@@ -1,8 +1,8 @@
 package task3
 
 import (
-	"darklab_training_postgres/src/shared"
-	"darklab_training_postgres/utils/types"
+	"darklab_training_postgres/golang/shared"
+	"darklab_training_postgres/golang/shared/types"
 	"database/sql"
 	_ "embed"
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"os"
 	"testing"
 
-	"darklab_training_postgres/src/task2"
+	"darklab_training_postgres/golang/task2"
 
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
