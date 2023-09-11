@@ -26,3 +26,9 @@ func TokenHex(length int) string {
 func TokenWord(length int) string {
 	return StringWithCharset(length, "abcdefghijklmnopqrstuvwxyz")
 }
+
+func Check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}

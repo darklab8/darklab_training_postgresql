@@ -3,8 +3,8 @@ package task3
 import (
 	"darklab_training_postgres/golang/shared"
 	"darklab_training_postgres/golang/shared/types"
+	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
-	_ "embed"
 	"fmt"
 	"math/rand"
 	"os"
@@ -17,21 +17,20 @@ import (
 )
 
 var (
-	//go:embed queries/query3_1.sql
 	Query1 string
-
-	//go:embed queries/query3_2.sql
 	Query2 string
-
-	//go:embed queries/query3_3.sql
 	Query3 string
-
-	//go:embed queries/query3_4.sql
 	Query4 string
-
-	//go:embed queries/query3_5.sql
 	Query5 string
 )
+
+func init() {
+	Query1 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_1.sql"))
+	Query2 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_2.sql"))
+	Query3 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_3.sql"))
+	Query4 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_4.sql"))
+	Query5 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_5.sql"))
+}
 
 func FixtureDefaultData(dbname types.Dbname, conn *sql.DB) {
 	task2.FixtureTask2Migrations(conn)

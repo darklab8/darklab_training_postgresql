@@ -6,17 +6,18 @@ import (
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
-	_ "embed"
 	"fmt"
 )
 
 var (
-	//go:embed migrations/task2_1.sql
 	Migration1 string
-
-	//go:embed migrations/task2_2_disable_triggers_for_tests.sql
 	Migration2 string
 )
+
+func init() {
+	Migration1 = utils.ReadProjectFile("sql/task2/migrations/task2_1.sql")
+	Migration2 = utils.ReadProjectFile("sql/task2/migrations/task2_2_disable_triggers_for_tests.sql")
+}
 
 func FixtureTask2Migrations(conn *sql.DB) {
 	fmt.Println()

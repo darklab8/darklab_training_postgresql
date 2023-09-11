@@ -3,4 +3,4 @@
 SELECT * FROM post
 WHERE status = 'draft'
 ORDER BY created_at ASC
-LIMIT @N
+LIMIT :N
