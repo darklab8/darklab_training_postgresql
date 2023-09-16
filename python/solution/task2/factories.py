@@ -68,7 +68,7 @@ class PostEditionTemplateRaw:
     id: int = field(default_factory=rnd_int)
     post_id: int = field(default_factory=rnd_int)
     user_id: int = field(default_factory=rnd_int)
-    created_at: datetime = field(default_factory=random_date)
+    edited_at: datetime = field(default_factory=random_date)
 
     # new content
     title: str = field(default_factory=lambda: f"title_{rnd_int()}")
@@ -110,17 +110,18 @@ class FactoryConveyor(Generic[Template]):
             session.commit()
             return template
 
-    def create_batch(self, templates: Iterator[Template]):
+    def create_batch(self, templates: Iterator[Template]) -> list[Template]:
+        list_templates = list(templates)
         with self.database.get_core_session() as session:
             session.bulk_save_objects(
                 [
                     self.db_model(
                         **(template.__dict__)
-                    ) for template in templates
+                    ) for template in list_templates
                 ]
             )
             session.commit()
-        return templates
+        return list_templates
 
     def create_batch_in_chunks(self, templates: Iterator[Template]):
         with self.database.get_core_session() as session:
