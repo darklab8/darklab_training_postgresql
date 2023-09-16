@@ -1,4 +1,4 @@
-from utils.database.sql import Database
+from python.utils.database.sql import Database
 from ..task2.factories import TypeFactories
 import random
 import pytest

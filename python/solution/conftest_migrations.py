@@ -1,11 +1,10 @@
 import pytest
-from utils.database.sql import Database
+from python.utils.database.sql import Database
 from .task2.factories import generate_factories
 from .task2.migrator import Migrations as Migrations2
 from .task3.migrator import migrations as migrations3
 from pathlib import Path
 from sqlalchemy import text
-from sqlalchemy.engine import create_engine
 
 
 def apply_migration(database: Database, path: Path):

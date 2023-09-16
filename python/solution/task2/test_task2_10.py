@@ -1,5 +1,5 @@
 import pytest
-from utils.database.sql import Database
+from python.utils.database.sql import Database
 from .factories import TypeFactories
 import random
 

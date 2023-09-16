@@ -6,7 +6,7 @@
 P.S. При создании 10000 юзеров с 50 постами каждого, скрипт выполняется за 14 секунд
 """
 from sqlalchemy.ext.automap import automap_base
-from utils.database.sql import Database
+from python.utils.database.sql import Database
 import random
 import sys
 from dataclasses import dataclass, field
@@ -14,7 +14,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 from random import randrange
 from datetime import timedelta, datetime, date
-from src.solution.task3.reusable_code import measure_time
+from python.solution.task3.reusable_code import measure_time
 
 random_date_start = datetime.strptime("2020/01/01 16:30", "%Y/%m/%d %H:%M")
 random_date_end = datetime.strptime("2022/01/01 16:30", "%Y/%m/%d %H:%M")
