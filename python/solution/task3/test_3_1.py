@@ -15,7 +15,7 @@ def base_test(database: Database, factories: TypeFactories, amount_of_posts: int
 
     with database.get_core_session() as session:
         with measure_time(f"3_1, {amount_of_posts=}"):
-            result = session.execute(query("query3_1.sql", task, dict(id=user.id)))
+            result = session.execute(query("query3_1.sql", task, dict(author_id=user.id)))
 
         row = result.fetchone()
         assert row is not None

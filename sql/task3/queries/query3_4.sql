@@ -2,7 +2,7 @@
 
 SELECT
 	post.id,
-	max(post_edition.created_at) as latest_date
+	max(post_edition.edited_at) as latest_date
 FROM post
 JOIN post_edition on post.id = post_edition.post_id
 WHERE :tag = ANY(post_edition.tags)

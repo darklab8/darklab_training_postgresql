@@ -4,10 +4,10 @@ WITH sub AS (
   SELECT
     pe.post_id as post_id,
 	pe.tags as tags,
-	pe.created_at as created,
+	pe.edited_at as created,
 	row_number() OVER (
       PARTITION BY pe.post_id
-      ORDER BY pe.created_at DESC
+      ORDER BY pe.edited_at DESC
     ) AS created_recency
   FROM post_edition AS pe
 )

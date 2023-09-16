@@ -24,7 +24,7 @@ def base_test(database: Database, factories: TypeFactories, N: int):
         fetched_rows = result.fetchall()
         fetched_posts = list([factories.post.template(*row) for row in fetched_rows])
         
-        assert len(fetched_posts) > 0 and len(fetched_posts) < N_to_query
+        assert len(fetched_posts) > 0 and len(fetched_posts) <= N_to_query
 
         for i, post in enumerate(fetched_posts[1:]):
             assert fetched_posts[i-1].rating >= post.rating
