@@ -1,5 +1,6 @@
 from python.utils.config_parser import ConfigParser
 from python.utils.logger import Logger
+from pathlib import Path
 
 logger = Logger(console_level="DEBUG", name=__name__)
 config = ConfigParser(settings_prefix="training")
@@ -11,3 +12,5 @@ DATABASE_URL = config.get(
     "database_url", f"{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/"
 )
 DATABASE_DEBUG = bool(config.get("database_debug", ""))
+
+sql_folder = Path(__file__).parent.parent.parent / "sql"

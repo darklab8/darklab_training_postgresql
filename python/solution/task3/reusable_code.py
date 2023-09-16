@@ -1,17 +1,25 @@
 from pathlib import Path
-from sqlalchemy import text
+from sqlalchemy import text, TextClause
 from contextlib import contextmanager
+from python.shared.settings import sql_folder
+from enum import Enum, auto
+import time
 
-def query(query_filename: str, params = None, root=__file__) -> text:
+class Task(Enum):
+    task3 = auto()
+    task4 = auto()
+    task5 = auto()
+    task6 = auto()
+    task7 = auto()
+
+def query(query_filename: str, task: Task, params = None) -> TextClause:
     if params is None:
         params = dict()
 
-    with open(str(Path(root).parent / "queries" / query_filename), "r") as file:
+    with open(str(sql_folder / task.name / "queries" / query_filename), "r") as file:
         schema_sql_code = file.read()
     
     return text(schema_sql_code).bindparams(**params)
-
-import time
 
 @contextmanager
 def measure_time(obj="uknown"):

@@ -1,6 +1,8 @@
 from python.utils.database.sql import Database
 from ..task2.factories import TypeFactories
-from ..task3.reusable_code import query, measure_time
+from ..task3.reusable_code import query, measure_time, Task
+
+task = Task.task7
 
 def test_task7_3(database: Database, apply_task2_migrations, factories: TypeFactories, task_7_setup):
     """
@@ -10,6 +12,6 @@ def test_task7_3(database: Database, apply_task2_migrations, factories: TypeFact
 
     with database.get_core_session() as session:
         with measure_time(f"{N=}"):
-            result = session.execute(query("query_7_3.sql", dict(), root=__file__))
+            result = session.execute(query("query_7_3.sql", task))
             rows = result.fetchall()
             assert len(rows) > 0

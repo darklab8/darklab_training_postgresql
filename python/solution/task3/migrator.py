@@ -1,4 +1,5 @@
 from pathlib import Path
+from python.shared.settings import sql_folder
 
 # order does not matter
-migrations = (Path(__file__).parent / "migrations").glob("*.sql")
+migrations = (sql_folder / "task3" / "migrations").glob("*.sql")

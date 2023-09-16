@@ -11,10 +11,10 @@ import random
 import sys
 from dataclasses import dataclass, field
 from types import SimpleNamespace
-from unittest.mock import MagicMock
 from random import randrange
 from datetime import timedelta, datetime, date
 from python.solution.task3.reusable_code import measure_time
+from typing import Protocol, TypeVar, Generic, Type, Iterator
 
 random_date_start = datetime.strptime("2020/01/01 16:30", "%Y/%m/%d %H:%M")
 random_date_end = datetime.strptime("2022/01/01 16:30", "%Y/%m/%d %H:%M")
@@ -73,7 +73,7 @@ class PostEditionTemplateRaw:
     # new content
     title: str = field(default_factory=lambda: f"title_{rnd_int()}")
     content: str = field(default_factory=lambda: f"content_{rnd_int()}")
-    tags: str = field(default_factory=
+    tags: list[str] = field(default_factory=
             lambda: [random.choice(["abc", "def", "ghi"]), random.choice(["jkl", "mno", "pqr"])])
 
 
@@ -92,13 +92,15 @@ class PostVisitsTemplateRaw:
     day_date: date = field(default_factory=random_date)
     visits: int = field(default_factory=lambda: random.randint(0,1000))
 
-class FactoryConveyor:
-    def __init__(self, database: Database, db_model, template):
-        self.database = database
+Template = TypeVar("Template")
+
+class FactoryConveyor(Generic[Template]):
+    def __init__(self, database: Database, db_model, template: Type[Template]):
+        self.database: Database = database
         self.db_model = db_model
         self.template = template
 
-    def create_one(self, template):
+    def create_one(self, template: Template):
         with self.database.get_core_session() as session:
             session.add(
                 self.db_model(
@@ -108,7 +110,7 @@ class FactoryConveyor:
             session.commit()
             return template
 
-    def create_batch(self, templates: list):
+    def create_batch(self, templates: Iterator[Template]):
         with self.database.get_core_session() as session:
             session.bulk_save_objects(
                 [
@@ -120,7 +122,7 @@ class FactoryConveyor:
             session.commit()
         return templates
 
-    def create_batch_in_chunks(self, templates: list):
+    def create_batch_in_chunks(self, templates: Iterator[Template]):
         with self.database.get_core_session() as session:
             with measure_time(f"query"):
                 try:
@@ -134,11 +136,12 @@ class FactoryConveyor:
                 session.commit()
             return templates
 
-class TypeFactories:
-    user = FactoryConveyor(MagicMock(),MagicMock(),template=UserTemplate)
-    post = FactoryConveyor(MagicMock(),MagicMock(),template=PostTemplateRaw)
-    post_visits = FactoryConveyor(MagicMock(),MagicMock(),template=PostVisitsTemplateRaw)
-    post_edition = FactoryConveyor(MagicMock(),MagicMock(),template=PostEditionTemplateRaw)
+class TypeFactories(Protocol):
+    user: FactoryConveyor[UserTemplate]
+    post: FactoryConveyor[PostTemplateRaw]
+    post_visits: FactoryConveyor[PostVisitsTemplateRaw]
+    post_edition: FactoryConveyor[PostEditionTemplateRaw]
+    post_approval: FactoryConveyor[PostApprovalTemplateRaw]
 
 def generate_factories(database: Database) -> TypeFactories:
     Base = automap_base()

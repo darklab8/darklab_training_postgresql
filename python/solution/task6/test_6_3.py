@@ -1,6 +1,8 @@
 from python.utils.database.sql import Database
 from ..task2.factories import TypeFactories
-from ..task3.reusable_code import query, measure_time
+from ..task3.reusable_code import query, measure_time, Task
+
+task = Task.task6
 
 def test_task6_3(database: Database, apply_task2_migrations, factories: TypeFactories):
     """
@@ -10,5 +12,5 @@ def test_task6_3(database: Database, apply_task2_migrations, factories: TypeFact
 
     with database.get_core_session() as session:
         with measure_time(f""):
-            result = session.execute(query("query_6_3.sql", dict(), root=__file__))
+            result = session.execute(query("query_6_3.sql", task))
 

@@ -1,7 +1,9 @@
 from python.utils.database.sql import Database
 from ..task2.factories import TypeFactories, UserTemplate
-from ..task3.reusable_code import query, measure_time
+from ..task3.reusable_code import query, measure_time, Task
 import random
+
+task = Task.task6
 
 def test_task6_1(database: Database, apply_task2_migrations, factories: TypeFactories):
     """
@@ -25,7 +27,7 @@ def test_task6_1(database: Database, apply_task2_migrations, factories: TypeFact
 
     with database.get_core_session() as session:
         with measure_time(f"{N=}"):
-            result = session.execute(query("query_6_1.sql", dict(post_id=target_post.id), root=__file__))
+            result = session.execute(query("query_6_1.sql", task, dict(post_id=target_post.id)))
 
             assert (session.execute("SELECT COUNT(id) FROM post_edition;").fetchone())[0] == 60
             assert (session.execute("SELECT COUNT(id) FROM post;").fetchone())[0] == N+2

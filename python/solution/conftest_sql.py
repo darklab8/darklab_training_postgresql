@@ -1,6 +1,5 @@
 import pytest
-from sqlalchemy_utils import database_exists, create_database, drop_database
-from python.utils.database.sql import Database
+from sqlalchemy_utils import database_exists, create_database, drop_database # type: ignore
 from python.shared.databases import DatabaseFactory
 from python.shared import settings
 import secrets

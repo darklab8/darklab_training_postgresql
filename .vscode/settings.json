@@ -3,5 +3,9 @@
         "."
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "mypy.targets": [
+        ".",
+    ],
+    "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy"
 }

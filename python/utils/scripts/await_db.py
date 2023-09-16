@@ -1,5 +1,5 @@
 import time
-import psycopg2
+import psycopg2 # type: ignore
 from dataclasses import dataclass
 from contextlib import contextmanager
 import argparse
