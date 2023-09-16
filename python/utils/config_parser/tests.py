@@ -1,6 +1,6 @@
 # type: ignore
 import os
-from utils.config_parser.main import ConfigParser
+from .main import ConfigParser
 import pytest
 
 

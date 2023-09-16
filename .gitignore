@@ -3,3 +3,8 @@ docs/public/
 resources/
 .hugo_build.lock
 *.deb
+
+.venv/
+site/
+__pycache__/
+venv/

@@ -1,6 +1,19 @@
 version: '3.5'
 
 services:
+  python: &python
+    build:
+      context: .
+      dockerfile: ./python/Dockerfile
+    environment:
+      TRAINING_DATABASE_USERNAME: "postgres"
+      TRAINING_DATABASE_PASSWORD: "postgres"
+      TRAINING_DATABASE_HOST: "db"
+      TRAINING_LOGGER_CONSOLE_LEVEL: "DEBUG"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh
   db:
     image: postgres:15-bullseye
     # command: postgres -c shared_buffers=16 -c effective_cache_size=1 -c plan_cache_mode='force_custom_plan'

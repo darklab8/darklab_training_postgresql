@@ -1,5 +1,5 @@
-from utils.config_parser import ConfigParser
-from utils.logger import Logger
+from python.utils.config_parser import ConfigParser
+from python.utils.logger import Logger
 
 logger = Logger(console_level="DEBUG", name=__name__)
 config = ConfigParser(settings_prefix="training")

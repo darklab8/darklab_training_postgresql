@@ -1,5 +1,5 @@
 site_name: My Docs
-docs_dir: src
+docs_dir: python
 theme:
     name: readthedocs
     highlightjs: true
