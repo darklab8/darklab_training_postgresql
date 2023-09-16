@@ -3,7 +3,7 @@
 ## Code embedding
 
 ```py
---8<-- "src/tips/123.py"
+--8<-- "docs/tips/123.py"
 ```
 
 ## mermaid diagram

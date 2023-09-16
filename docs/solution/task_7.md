@@ -24,33 +24,33 @@
 ### 1. Вывести рейтинг по количеству тегов под статьей пользователей в порядке увеличения кол-ва тегов.
 
 ```sql
---8<-- "src/solution/task7/queries/query_7_1.sql"
+--8<-- "sql/task7/queries/query_7_1.sql"
 ```
 ```py
---8<-- "src/solution/task7/test_7_1.py"
+--8<-- "python/solution/task7/test_7_1.py"
 ```
 ### 2. Вывести суммарное накопленное количество тегов на текущую дату по каждому пользователю.
 
 ```sql
---8<-- "src/solution/task7/queries/query_7_2.sql"
+--8<-- "sql/task7/queries/query_7_2.sql"
 ```
 ```py
---8<-- "src/solution/task7/test_7_2.py"
+--8<-- "python/solution/task7/test_7_2.py"
 ```
 
 ### 3. К заданию 2 добавить столбцы со значениями: сумма количества тегов в первый день, предыдущий день, следующий день и последний день периода.
 
 ```sql
---8<-- "src/solution/task7/queries/query_7_3.sql"
+--8<-- "sql/task7/queries/query_7_3.sql"
 ```
 ```py
---8<-- "src/solution/task7/test_7_3.py"
+--8<-- "python/solution/task7/test_7_3.py"
 ```
 ### 4. По желанию. Дополнить задание 3 другими оконными функциями из документации.
 
 ```sql
---8<-- "src/solution/task7/queries/query_7_4.sql"
+--8<-- "sql/task7/queries/query_7_4.sql"
 ```
 ```py
---8<-- "src/solution/task7/test_7_4.py"
+--8<-- "python/solution/task7/test_7_4.py"
 ```
