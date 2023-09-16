@@ -82,7 +82,8 @@ class Database:
 
     @contextmanager
     def get_core_connection(self) -> Generator[Connection, None, None]:
-        yield self.engine.connect(close_with_result=True)
+        with self.engine.connect() as connection:
+            yield connection
 
     @asynccontextmanager
     async def get_async_session(self) -> AsyncGenerator[AsyncSession, None]:
@@ -94,33 +95,3 @@ class Database:
 
     def get_self(self) -> "Database":
         return self
-
-
-@dataclass
-class SettingStub:
-    DATABASE_URL: str = "example"
-    DATABASE_NAME: str = "example"
-    DATABASE_DEBUG: bool = False
-
-
-class DatabaseFactoryBase(Database):
-    @property
-    def settings(self) -> SettingStub:
-        raise NotImplementedError("define settings")
-
-    def __init__(
-        cls,
-        url: str | None = None,
-        name: str | None = None,
-        debug: bool | None = None,
-    ):
-        super().__init__(
-            url=cls.settings.DATABASE_URL if url is None else url,
-            name=cls.settings.DATABASE_NAME if name is None else name,
-            debug=cls.settings.DATABASE_DEBUG if debug is None else debug,
-        )
-
-    @classmethod
-    def get_default_database(cls) -> Database:
-        database: Database = cls()
-        return database

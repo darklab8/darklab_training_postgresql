@@ -1,15 +1,17 @@
 import pytest
 from sqlalchemy_utils import database_exists, create_database, drop_database # type: ignore
-from python.shared.databases import DatabaseFactory
+from python.utils.database.sql import Database
 from python.shared import settings
 import secrets
+from typing import Generator
 
 
 @pytest.fixture()
-def database():
-    database = DatabaseFactory(
+def database() -> Generator[Database, None, None]:
+    database = Database(
         url=settings.DATABASE_URL,
         name=f"test_database_{secrets.token_hex(10)}",
+        debug=settings.DATABASE_DEBUG,
     )
 
     try:
@@ -22,6 +24,7 @@ def database():
 
 
 @pytest.fixture
-def session(database: DatabaseFactory):
-    with database.manager_to_get_session() as session:
+def session(database: Database):
+    
+    with database.get_core_session() as session:
         yield session

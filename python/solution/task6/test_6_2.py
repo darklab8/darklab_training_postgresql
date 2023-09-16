@@ -2,6 +2,7 @@ from python.utils.database.sql import Database
 from ..task2.factories import TypeFactories
 from ..task3.reusable_code import query, measure_time, Task
 import random
+from sqlalchemy import text
 
 task = Task.task6
 
@@ -29,5 +30,5 @@ def test_task6_2(database: Database, apply_task2_migrations, factories: TypeFact
         with measure_time(f"{Amount=}"):
             result = session.execute(query("query_6_2.sql", task, dict(N=10)))
 
-            assert (session.execute("SELECT COUNT(id) FROM post_edition;").fetchone())[0] == 50
-            assert (session.execute("SELECT COUNT(id) FROM post;").fetchone())[0] == 50
+            assert session.execute(text("SELECT COUNT(id) FROM post_edition;")).fetchone()[0] == 50 # type: ignore[index]
+            assert session.execute(text("SELECT COUNT(id) FROM post;")).fetchone()[0] == 50  # type: ignore[index]
