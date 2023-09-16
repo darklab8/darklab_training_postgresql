@@ -6,7 +6,6 @@ import (
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
-	"fmt"
 )
 
 var (
@@ -20,8 +19,6 @@ func init() {
 }
 
 func FixtureTask2Migrations(conn *sql.DB) {
-	fmt.Println()
-
 	utils.MustExec(conn, Migration1)
 	utils.MustExec(conn, Migration2)
 }

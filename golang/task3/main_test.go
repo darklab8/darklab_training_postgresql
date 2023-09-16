@@ -22,6 +22,8 @@ var (
 	Query3 string
 	Query4 string
 	Query5 string
+
+	MigrationAddIndexes string
 )
 
 func init() {
@@ -30,6 +32,8 @@ func init() {
 	Query3 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_3.sql"))
 	Query4 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_4.sql"))
 	Query5 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_5.sql"))
+
+	MigrationAddIndexes = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/migrations/task3_7.sql"))
 }
 
 func FixtureDefaultData(dbname types.Dbname, conn *sql.DB) {
@@ -161,5 +165,12 @@ func TestQuery4(t *testing.T) {
 			count_rows += 1
 		}
 		assert.Equal(t, N, count_rows)
+	})
+}
+
+func TestMigration(t *testing.T) {
+	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+		task2.FixtureTask2Migrations(conn)
+		utils.MustExec(conn, MigrationAddIndexes)
 	})
 }

@@ -42,7 +42,7 @@ CREATE TABLE post_edition
 	FOREIGN KEY (user_id) REFERENCES user_ (id) ON DELETE CASCADE,
 
 	-- New Content Of Edition
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    edited_at TIMESTAMP NOT NULL DEFAULT NOW(),
 	title VARCHAR(255) NOT NULL,
 	content VARCHAR(20000) NOT NULL,
 	tags VARCHAR(50)[],
