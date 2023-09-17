@@ -1,4 +1,4 @@
-package task3
+package golang
 
 import (
 	"darklab_training_postgres/golang/shared"
@@ -7,10 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
-	"os"
 	"testing"
-
-	"darklab_training_postgres/golang/task2"
 
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
@@ -22,8 +19,6 @@ var (
 	Query3 string
 	Query4 string
 	Query5 string
-
-	MigrationAddIndexes string
 )
 
 func init() {
@@ -32,67 +27,23 @@ func init() {
 	Query3 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_3.sql"))
 	Query4 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_4.sql"))
 	Query5 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_5.sql"))
-
-	MigrationAddIndexes = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/migrations/task3_7.sql"))
-}
-
-func FixtureDefaultData(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-	task2.FixtureTask2Migrations(conn)
-
-	task2.FixtureFillWithData(
-		dbname,
-		temporal_max_users,
-		temporal_posts_per_users,
-	)
-
-	// utils.MustExec(conn, MigrationAddIndexes)
-	res := conn_orm.Raw(MigrationAddIndexes)
-	if res.Error != nil {
-		panic(res.Error)
-	}
-}
-
-var temporal_max_users types.MaxUsers = 1000
-var temporal_posts_per_users types.PostsPerUser = 5
-var temporal_dbname types.Dbname
-
-func TestMain(m *testing.M) {
-	fmt.Println("seting")
-	var code int
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		FixtureDefaultData(dbname, conn, conn_orm)
-		temporal_dbname = dbname
-		code = m.Run()
-		fmt.Println("teardown")
-	})
-	os.Exit(code)
-}
-
-func TestQueryReuseSetup1(t *testing.T) {
-	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		var count int
-		rows, _ := conn.Query("SELECT count(*) FROM user_")
-		rows.Next()
-		rows.Scan(&count)
-		assert.Equal(t, count, 1000)
-	})
 }
 
 func TestQueryReuseSetup2(t *testing.T) {
-	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		var count int
 		rows, _ := conn.Query("SELECT count(*) FROM post")
 		rows.Next()
 		rows.Scan(&count)
-		assert.Equal(t, count, 1000*5)
+		assert.Equal(t, int(TempDb.MaxUsers)*int(TempDb.PostsPerUser), count)
 	})
 }
 
 func TestQuery1(t *testing.T) {
-	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
 		fmt.Println()
-		author_id := 1 + rand.Intn(int(temporal_max_users)-1)
+		author_id := 1 + rand.Intn(int(TempDb.MaxUsers)-1)
 		result := conn_orm.Raw(Query1, sql.Named("author_id", author_id))
 		// rows, err := conn.Query(Query1, row)
 		if result.Error != nil {
@@ -101,15 +52,15 @@ func TestQuery1(t *testing.T) {
 
 		var count int
 		result.Scan(&count)
-		assert.Equal(t, int(temporal_posts_per_users), count)
+		assert.Equal(t, int(TempDb.PostsPerUser), count)
 	})
 }
 
 func TestQuery2(t *testing.T) {
-	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
 		fmt.Println()
-		N := rand.Intn(int(temporal_max_users) + int(temporal_posts_per_users))
+		N := rand.Intn(int(TempDb.MaxUsers) + int(TempDb.PostsPerUser))
 		result := conn_orm.Raw(Query2, sql.Named("N", N))
 		if result.Error != nil {
 			panic(result.Error)
@@ -129,10 +80,10 @@ func TestQuery2(t *testing.T) {
 }
 
 func TestQuery3(t *testing.T) {
-	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
 		fmt.Println()
-		N := (rand.Intn(int(temporal_max_users)+int(temporal_posts_per_users)) / 4)
+		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
 		result := conn_orm.Raw(Query3, sql.Named("N", N))
 		if result.Error != nil {
 			panic(result.Error)
@@ -152,10 +103,10 @@ func TestQuery3(t *testing.T) {
 }
 
 func TestQuery4(t *testing.T) {
-	shared.FixtureConn(temporal_dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
 		fmt.Println()
-		N := (rand.Intn(int(temporal_max_users)+int(temporal_posts_per_users)) / 4)
+		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
 		result := conn_orm.Raw(Query3, sql.Named("N", N))
 		if result.Error != nil {
 			panic(result.Error)
@@ -176,6 +127,6 @@ func TestQuery4(t *testing.T) {
 
 func TestMigration(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		task2.FixtureTask2Migrations(conn)
+		FixtureTask2Migrations(conn)
 	})
 }

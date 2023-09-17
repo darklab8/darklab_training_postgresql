@@ -1,4 +1,4 @@
-package task2
+package golang
 
 import (
 	"darklab_training_postgres/golang/shared"
@@ -9,18 +9,20 @@ import (
 )
 
 var (
-	Migration1 string
-	Migration2 string
+	Migration1          string
+	Migration2          string
+	MigrationAddIndexes string
 )
 
 func init() {
 	Migration1 = utils.ReadProjectFile("sql/task2/migrations/task2_1.sql")
 	Migration2 = utils.ReadProjectFile("sql/task2/migrations/task2_2_disable_triggers_for_tests.sql")
+	MigrationAddIndexes = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/migrations/task3_7.sql"))
 }
 
 func FixtureTask2Migrations(conn *sql.DB) {
 	utils.MustExec(conn, Migration1)
-	utils.MustExec(conn, Migration2)
+	// utils.MustExec(conn, Migration2)
 }
 
 func FixtureFillWithData(

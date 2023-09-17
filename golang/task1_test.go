@@ -1,4 +1,4 @@
-package task1
+package golang
 
 import (
 	"darklab_training_postgres/golang/shared"
@@ -11,9 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestMigrate(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbpath types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		fmt.Println(dbpath)
+func TestSelect1(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		rows, err := conn.Query("SELECT 1")
 		if err != nil {
 			panic(err)
@@ -24,6 +23,5 @@ func TestMigrate(t *testing.T) {
 		fmt.Println(answer)
 
 		assert.Equal(t, 1, answer)
-		fmt.Println("running testmigrate")
 	})
 }
