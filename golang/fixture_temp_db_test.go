@@ -32,11 +32,7 @@ func FixtureFillTemporalDB(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB)
 		TempDb.PostsPerUser,
 	)
 	TempDb.Dbname = dbname
-
-	res := conn_orm.Raw(MigrationAddIndexes)
-	if res.Error != nil {
-		panic(res.Error)
-	}
+	FixtureTask3Migrations(conn_orm)
 }
 
 func TestMain(m *testing.M) {

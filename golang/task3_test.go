@@ -128,5 +128,6 @@ func TestQuery4(t *testing.T) {
 func TestMigration(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		FixtureTask2Migrations(conn)
+		FixtureTask3Migrations(conn_orm)
 	})
 }

@@ -6,6 +6,8 @@ import (
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
+
+	"gorm.io/gorm"
 )
 
 var (
@@ -23,6 +25,13 @@ func init() {
 func FixtureTask2Migrations(conn *sql.DB) {
 	utils.MustExec(conn, Migration1)
 	// utils.MustExec(conn, Migration2)
+}
+
+func FixtureTask3Migrations(conn_orm *gorm.DB) {
+	res := conn_orm.Raw(MigrationAddIndexes)
+	if res.Error != nil {
+		panic(res.Error)
+	}
 }
 
 func FixtureFillWithData(
