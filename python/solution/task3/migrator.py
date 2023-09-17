@@ -1,5 +1,3 @@
-from pathlib import Path
 from python.shared.settings import sql_folder
 
-# order does not matter
-migrations = (sql_folder / "task3" / "migrations").glob("*.sql")
+create_indexes = sql_folder / "task3" / "migrations" / "task3_7.sql"

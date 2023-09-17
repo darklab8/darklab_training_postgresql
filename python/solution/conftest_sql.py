@@ -4,7 +4,20 @@ from python.shared import settings
 import secrets
 from typing import Generator
 import psycopg2
+from contextlib import contextmanager
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from psycopg2._psycopg import _Cursor
 
+@contextmanager
+def raw_connection(full_url: str) -> Generator["_Cursor", None, None]:
+    conn = psycopg2.connect(full_url)
+    try:
+        conn.set_session(autocommit=True)
+        with conn.cursor() as cur:
+            yield cur
+    finally:
+        conn.close()
 
 @pytest.fixture()
 def database() -> Generator[Database, None, None]:
@@ -20,18 +33,13 @@ def database() -> Generator[Database, None, None]:
         debug=settings.DATABASE_DEBUG,
     )
 
-    conn = psycopg2.connect(system_db.full_url)
-    try:
-        conn.set_session(autocommit=True)
-        with conn.cursor() as cur:
-            try:
-                cur.execute(f"CREATE DATABASE {database.name}")
-                yield database
-            finally:
-                cur.execute(f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{database.name}'")
-                cur.execute(f"DROP DATABASE {database.name}")
-    finally:
-        conn.close()
+    with raw_connection(system_db.full_url) as cur:
+        try:
+            cur.execute(f"CREATE DATABASE {database.name}")
+            yield database
+        finally:
+            cur.execute(f"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{database.name}'")
+            cur.execute(f"DROP DATABASE {database.name}")
 
 @pytest.fixture
 def session(database: Database):

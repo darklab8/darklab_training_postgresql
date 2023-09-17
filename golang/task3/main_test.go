@@ -36,7 +36,7 @@ func init() {
 	MigrationAddIndexes = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/migrations/task3_7.sql"))
 }
 
-func FixtureDefaultData(dbname types.Dbname, conn *sql.DB) {
+func FixtureDefaultData(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 	task2.FixtureTask2Migrations(conn)
 
 	task2.FixtureFillWithData(
@@ -44,6 +44,12 @@ func FixtureDefaultData(dbname types.Dbname, conn *sql.DB) {
 		temporal_max_users,
 		temporal_posts_per_users,
 	)
+
+	// utils.MustExec(conn, MigrationAddIndexes)
+	res := conn_orm.Raw(MigrationAddIndexes)
+	if res.Error != nil {
+		panic(res.Error)
+	}
 }
 
 var temporal_max_users types.MaxUsers = 1000
@@ -54,7 +60,7 @@ func TestMain(m *testing.M) {
 	fmt.Println("seting")
 	var code int
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		FixtureDefaultData(dbname, conn)
+		FixtureDefaultData(dbname, conn, conn_orm)
 		temporal_dbname = dbname
 		code = m.Run()
 		fmt.Println("teardown")
@@ -171,6 +177,5 @@ func TestQuery4(t *testing.T) {
 func TestMigration(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 		task2.FixtureTask2Migrations(conn)
-		utils.MustExec(conn, MigrationAddIndexes)
 	})
 }
