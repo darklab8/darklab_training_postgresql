@@ -6,7 +6,7 @@ import random
 
 task = Task.task4
 
-def test_task4_3(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task4_3(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     "3. Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей."
 
     N=100

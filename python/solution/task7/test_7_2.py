@@ -4,7 +4,7 @@ from ..task3.reusable_code import query, measure_time, Task
 
 task = Task.task7
 
-def test_task7_2(database: Database, apply_task2_migrations, factories: TypeFactories, task_7_setup):
+def test_task7_2(database: Database, apply_task2_migrations: None, factories: TypeFactories, task_7_setup: tuple[int]) -> None:
     """
     Вывести суммарное накопленное количество тегов на текущую дату по каждому пользователю.
     """

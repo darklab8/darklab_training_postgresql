@@ -1,12 +1,12 @@
 from python.utils.database.sql import Database
-from ..task2.factories import TypeFactories, UserTemplate
+from ..task2.factories import TypeFactories, UserTemplate, PostTemplateRaw
 from ..task3.reusable_code import query, measure_time, Task
 import random
 from sqlalchemy import text
 
 task = Task.task6
 
-def test_task6_1(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task6_1(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     """
     Копировать пост по id вместе со связанными авторами и тэгами, но без статистики, комментариев и рейтинга.
     Скопированный пост должен быть в статусе черновик.
@@ -16,7 +16,7 @@ def test_task6_1(database: Database, apply_task2_migrations, factories: TypeFact
     post_id=6
 
     target_user: UserTemplate = factories.user.create_one(factories.user.template())
-    target_post: UserTemplate = factories.post.create_one(factories.post.template(author_id=target_user.id,id=post_id))
+    target_post: PostTemplateRaw = factories.post.create_one(factories.post.template(author_id=target_user.id,id=post_id))
 
     # noise
     noise_users = list(factories.user.create_batch((factories.user.template() for i in range(N))))

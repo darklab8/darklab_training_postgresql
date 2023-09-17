@@ -5,7 +5,7 @@ from sqlalchemy import text
 
 task = Task.task6
 
-def test_task6_4(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task6_4(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     """
     Добавить следующие столбцы к таблицам, используя alter table:
     Статус пользователей. Статус может иметь значения активен или заблокирован. Новый столбец должен быть заполнен значением активен.

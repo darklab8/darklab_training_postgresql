@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from contextlib import contextmanager
 import argparse
 import sys
+from typing import TYPE_CHECKING, Generator
+if TYPE_CHECKING:
+    from psycopg2._psycopg import _Connection, _Cursor
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--db_name", type=str, default="default")
@@ -25,7 +28,7 @@ class DatabaseParams:
 
 
 @contextmanager
-def open_database(params: DatabaseParams):
+def open_database(params: DatabaseParams) -> Generator["_Connection", None, None]:
     database = psycopg2.connect(
         " ".join(
             [
@@ -44,7 +47,7 @@ def open_database(params: DatabaseParams):
 
 
 @contextmanager
-def open_cursor(database):
+def open_cursor(database: "_Connection") -> Generator["_Cursor", None, None]:
     with database.cursor() as cursor:
         yield cursor
         database.commit()

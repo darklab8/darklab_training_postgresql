@@ -5,7 +5,7 @@ from .reusable_code import query, measure_time, Task
 
 task = Task.task3
 
-def base_test(database: Database, factories: TypeFactories, N: int):
+def base_test(database: Database, factories: TypeFactories, N: int) -> None:
     user = factories.user.create_one(factories.user.template())
     draft_posts = factories.post.create_batch((factories.post.template(status='draft', author_id=user.id)for i in range(N)))
     published_posts = factories.post.create_batch((factories.post.template(status='published', author_id=user.id)for i in range(N)))
@@ -20,7 +20,7 @@ def base_test(database: Database, factories: TypeFactories, N: int):
         
         assert len(fetched_rows) == len(draft_posts[:N_to_query])
 
-def test_task3_3_get_drafts(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task3_3_get_drafts(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     "3. Выбрать N постов в статусе 'ожидает публикации', отсортированных в порядке возрастания даты создания;"
 
     base_test(database, factories, N=5)

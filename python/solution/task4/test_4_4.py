@@ -7,7 +7,7 @@ import datetime as dt
 
 task = Task.task4
 
-def test_task4_4(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task4_4(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     "4. Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей младше K лет."
 
     N=100

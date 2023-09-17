@@ -6,7 +6,7 @@ import random
 
 task = Task.task4
 
-def test_task4_5(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task4_5(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     "5. Найти N пользователей с наибольшим рейтингом."
 
     N=100

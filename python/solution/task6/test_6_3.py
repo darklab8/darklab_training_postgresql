@@ -4,7 +4,7 @@ from ..task3.reusable_code import query, measure_time, Task
 
 task = Task.task6
 
-def test_task6_3(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task6_3(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     """
     Добавить следующие столбцы к таблицам, используя alter table:
     Статус пользователей. Статус может иметь значения активен или заблокирован. Новый столбец должен быть заполнен значением активен.

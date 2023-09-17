@@ -5,7 +5,7 @@ from .reusable_code import query, measure_time, Task
 
 task = Task.task3
 
-def base_test(database: Database, factories: TypeFactories, N, enable_sorting=False):
+def base_test(database: Database, factories: TypeFactories, N: int, enable_sorting: bool=False) -> None:
     "2. Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;"
     user = factories.user.create_one(factories.user.template())
     posts = factories.post.create_batch((factories.post.template(author_id=user.id) for i in range(N*2)))
@@ -26,5 +26,5 @@ def base_test(database: Database, factories: TypeFactories, N, enable_sorting=Fa
 
         assert sorted_posts == fetched_posts
 
-def test_task3_2_get_n_ordered_posts(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task3_2_get_n_ordered_posts(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     base_test(database, factories, 10)

@@ -6,7 +6,7 @@ from sqlalchemy import text
 
 task = Task.task6
 
-def test_task6_2(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task6_2(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     """
     Удалить всех пользователей, у который рейтинг меньше чем N , вместе со всеми постами и комментариями.
     Порядок удаления сущностей: комментарии к постам пользователя, комментарии пользователя, посты пользователя, пользователь.

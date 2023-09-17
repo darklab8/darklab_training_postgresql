@@ -8,7 +8,7 @@ import datetime as dt
 
 task = Task.task4
 
-def test_task4_6(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task4_6(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     "6. Найти N тэгов, для которых суммарное количество посещений связанных с ними постов наибольшее за неделю."
 
     N=100

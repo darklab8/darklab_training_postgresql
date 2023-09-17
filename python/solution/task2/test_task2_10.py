@@ -3,7 +3,7 @@ from .factories import TypeFactories
 import random
 
 
-def test_generate_data(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_generate_data(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     class Consts:
         users_total_amount: int = 100
         users_per_post: int = 50

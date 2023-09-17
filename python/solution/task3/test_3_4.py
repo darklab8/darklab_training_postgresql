@@ -6,7 +6,7 @@ import random
 
 task = Task.task3
 
-def base_test(database: Database, factories: TypeFactories, N: int):
+def base_test(database: Database, factories: TypeFactories, N: int) -> None:
     "4. Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов)."
     tag_to_find = "target"
     
@@ -32,6 +32,6 @@ def base_test(database: Database, factories: TypeFactories, N: int):
         
         assert len(fetched_rows) == N_to_query
 
-def test_task3_4(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task3_4(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     
     base_test(database, factories, N=10)

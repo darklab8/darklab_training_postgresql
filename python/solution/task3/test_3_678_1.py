@@ -12,7 +12,7 @@ class Params:
 
 @pytest.mark.performance
 @pytest.mark.parametrize(Params.variables, Params.amounts)
-def test_task3_1_performance_no_index(database: Database, apply_task2_migrations, factories: TypeFactories, amount_of_posts):
+def test_task3_1_performance_no_index(database: Database, apply_task2_migrations: None, factories: TypeFactories, amount_of_posts: int) -> None:
     """
     measured_time=0.0013275146484375 for 3_1, amount_of_posts=10
     .measured_time=0.0011966228485107422 for 3_1, amount_of_posts=1000
@@ -25,7 +25,7 @@ def test_task3_1_performance_no_index(database: Database, apply_task2_migrations
 
 @pytest.mark.performance
 @pytest.mark.parametrize(Params.variables, Params.amounts)
-def test_task3_1_performance_with_index(database: Database, apply_task3_migrations, factories: TypeFactories, amount_of_posts):
+def test_task3_1_performance_with_index(database: Database, apply_task3_migrations: None, factories: TypeFactories, amount_of_posts: int) -> None:
     """
     measured_time=0.0006289482116699219 for 3_1, amount_of_posts=10
     .measured_time=0.001100301742553711 for 3_1, amount_of_posts=1000

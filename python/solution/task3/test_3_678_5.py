@@ -10,12 +10,12 @@ class Params:
 
 @pytest.mark.performance
 @pytest.mark.parametrize(Params.variables, Params.amounts)
-def test_task3_5_performance_no_index(database: Database, apply_task2_migrations, factories: TypeFactories, N):
+def test_task3_5_performance_no_index(database: Database, apply_task2_migrations: None, factories: TypeFactories, N: int) -> None:
     base_test(database, factories, N)
 
 @pytest.mark.performance
 @pytest.mark.parametrize(Params.variables, Params.amounts)
-def test_task3_5_performance_with_index(database: Database, apply_task3_migrations, factories: TypeFactories, N):
+def test_task3_5_performance_with_index(database: Database, apply_task3_migrations: None, factories: TypeFactories, N: int) -> None:
     base_test(database, factories, N)
 
 """

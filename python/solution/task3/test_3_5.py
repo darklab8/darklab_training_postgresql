@@ -5,7 +5,7 @@ from .reusable_code import query, measure_time, Task
 
 task = Task.task3
 
-def base_test(database: Database, factories: TypeFactories, N: int):
+def base_test(database: Database, factories: TypeFactories, N: int) -> None:
     "5. Найти N постов с наибольшим рейтингом за день/месяц/год."
     approving_users = list(factories.user.create_batch((factories.user.template(id=i) for i in range(N))))
     posts = factories.post.create_batch((factories.post.template(author_id=approving_users[i].id) for i in range(N)))
@@ -29,7 +29,7 @@ def base_test(database: Database, factories: TypeFactories, N: int):
         for i, post in enumerate(fetched_posts[1:]):
             assert fetched_posts[i-1].rating >= post.rating
 
-def test_task3_5(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task3_5(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     base_test(database=database, factories=factories, N=500)
     
 

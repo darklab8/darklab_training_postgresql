@@ -4,7 +4,7 @@ import random
 import pytest
 
 @pytest.fixture
-def task_7_setup(database: Database, apply_task2_migrations, factories: TypeFactories):
+def task_7_setup(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> tuple[int]:
     N=50
     tag_generator = lambda: random.choices(
         list([f"a{i}" for i in range(100)]),k=random.randint(1,16)

@@ -15,6 +15,9 @@ from random import randrange
 from datetime import timedelta, datetime, date
 from python.solution.task3.reusable_code import measure_time
 from typing import Protocol, TypeVar, Generic, Type, Iterator
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from _typeshed import Incomplete
 
 random_date_start = datetime.strptime("2020/01/01 16:30", "%Y/%m/%d %H:%M")
 random_date_end = datetime.strptime("2022/01/01 16:30", "%Y/%m/%d %H:%M")
@@ -29,13 +32,13 @@ def random_date() -> datetime:
     random_second = randrange(int_delta)
     return random_date_start + timedelta(seconds=random_second)
 
-def random_int_generator():
+def random_int_generator() -> Iterator[int]:
     for i in range(sys.maxsize):
         yield i
 
 rand = random_int_generator()
 
-def rnd_int():
+def rnd_int() -> int:
     return next(rand)
 
 def increasing_date() -> datetime:
@@ -95,12 +98,12 @@ class PostVisitsTemplateRaw:
 Template = TypeVar("Template")
 
 class FactoryConveyor(Generic[Template]):
-    def __init__(self, database: Database, db_model, template: Type[Template]):
+    def __init__(self, database: Database, db_model: "Incomplete", template: Type[Template]):
         self.database: Database = database
         self.db_model = db_model
         self.template = template
 
-    def create_one(self, template: Template):
+    def create_one(self, template: Template) -> Template:
         with self.database.get_core_session() as session:
             session.add(
                 self.db_model(
@@ -123,7 +126,7 @@ class FactoryConveyor(Generic[Template]):
             session.commit()
         return list_templates
 
-    def create_batch_in_chunks(self, templates: Iterator[Template]):
+    def create_batch_in_chunks(self, templates: Iterator[Template]) -> Iterator[Template]:
         with self.database.get_core_session() as session:
             with measure_time(f"query"):
                 try:

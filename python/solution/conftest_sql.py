@@ -6,6 +6,7 @@ from typing import Generator
 import psycopg2
 from contextlib import contextmanager
 from typing import TYPE_CHECKING
+from sqlalchemy.orm import Session
 if TYPE_CHECKING:
     from psycopg2._psycopg import _Cursor
 
@@ -42,7 +43,7 @@ def database() -> Generator[Database, None, None]:
             cur.execute(f"DROP DATABASE {database.name}")
 
 @pytest.fixture
-def session(database: Database):
+def session(database: Database) -> Generator[Session, None, None]:
     
     with database.get_core_session() as session:
         yield session

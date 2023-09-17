@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from python.shared.settings import sql_folder
 from enum import Enum, auto
 import time
+from typing import Generator
 
 class Task(Enum):
     task3 = auto()
@@ -12,7 +13,7 @@ class Task(Enum):
     task6 = auto()
     task7 = auto()
 
-def query(query_filename: str, task: Task, params = None) -> TextClause:
+def query(query_filename: str, task: Task, params: dict | None = None) -> TextClause:
     if params is None:
         params = dict()
 
@@ -22,7 +23,7 @@ def query(query_filename: str, task: Task, params = None) -> TextClause:
     return text(schema_sql_code).bindparams(**params)
 
 @contextmanager
-def measure_time(obj="uknown"):
+def measure_time(obj: str="uknown") -> Generator[None,None,None]:
     start = time.time()
     yield
     end = time.time()

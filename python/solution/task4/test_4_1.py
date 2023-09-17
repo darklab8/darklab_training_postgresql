@@ -5,7 +5,7 @@ from ..task3.reusable_code import query, measure_time, Task
 
 task = Task.task4
 
-def test_task4_1(database: Database, apply_task2_migrations, factories: TypeFactories):
+def test_task4_1(database: Database, apply_task2_migrations: None, factories: TypeFactories) -> None:
     "1. Найти N наиболее посещаемых постов за день/месяц/год.;"
 
     amount_of_posts=50
