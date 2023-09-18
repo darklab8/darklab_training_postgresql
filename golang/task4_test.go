@@ -115,3 +115,17 @@ func TestTask4Query2MostVisitedPostsForAuthor(t *testing.T) {
 		})
 	})
 }
+
+func TestTask4Query3(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+		N := 50
+		result := conn_orm.Raw(
+			Task4Query3,
+			sql.Named("N", N),
+		)
+		utils.Check(result.Error)
+
+		count := CountRows(result)
+		assert.Equal(t, N, count)
+	})
+}
