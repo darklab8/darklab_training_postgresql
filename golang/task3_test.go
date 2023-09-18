@@ -2,6 +2,7 @@ package golang
 
 import (
 	"darklab_training_postgres/golang/shared"
+	"darklab_training_postgres/golang/shared/model"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
@@ -31,11 +32,9 @@ func init() {
 
 func TestQueryReuseSetup2(t *testing.T) {
 	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		var count int
-		rows, _ := conn.Query("SELECT count(*) FROM post")
-		rows.Next()
-		rows.Scan(&count)
-		assert.Equal(t, int(TempDb.MaxUsers)*int(TempDb.PostsPerUser), count)
+		var count int64
+		conn_orm.Model(&model.Post{}).Count(&count)
+		assert.Equal(t, int(TempDb.MaxUsers)*int(TempDb.PostsPerUser), int(count))
 	})
 }
 

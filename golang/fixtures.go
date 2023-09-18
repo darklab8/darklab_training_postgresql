@@ -2,7 +2,7 @@ package golang
 
 import (
 	"darklab_training_postgres/golang/shared"
-	"darklab_training_postgres/golang/shared/orm"
+	"darklab_training_postgres/golang/shared/model"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
@@ -39,22 +39,23 @@ func FixtureFillWithData(
 	max_users types.MaxUsers,
 	posts_per_user types.PostsPerUser,
 ) {
+	PostsAmount := int(max_users) * int(posts_per_user)
 	shared.FixtureTimeMeasure(func() {
-		user_bulker := shared.Bulker[orm.User]{
+		user_bulker := shared.Bulker[model.User]{
 			Amount_to_create: types.AmountCreate(max_users),
 			Bulk_max:         types.BulkMax(8000),
 			Dbname:           dbname,
 		}
-		user_bulker.Init().BulkCreate(func(u *orm.User) { u.Fill() })
+		user_bulker.Init().BulkCreate(func(u *model.User) { u.Fill() })
 
-		post_bulker := shared.Bulker[orm.Post]{
-			Amount_to_create: types.AmountCreate(int(max_users) * int(posts_per_user)),
+		post_bulker := shared.Bulker[model.Post]{
+			Amount_to_create: types.AmountCreate(PostsAmount),
 			Bulk_max:         types.BulkMax(16000),
 			Dbname:           dbname,
 		}
 
 		postCounter := 1
-		post_bulker.Init().BulkCreate(func(p *orm.Post) {
+		post_bulker.Init().BulkCreate(func(p *model.Post) {
 			p.Fill(postCounter)
 			postCounter++
 			if postCounter > int(max_users) {
