@@ -3,7 +3,6 @@ package model
 import (
 	"darklab_training_postgres/golang/shared/utils"
 	"fmt"
-	"time"
 
 	"gorm.io/datatypes"
 )
@@ -37,7 +36,7 @@ func (u *User) Fill() {
 	u.ID = utils.GetNext(&UserIDSeq)
 	u.FirstName = fmt.Sprintf("first_name%d", utils.GetNext(&UserFirstNameSeq))
 	u.SecondName = fmt.Sprintf("second_name%d", utils.GetNext(&UserSecondNameSeq))
-	u.Birth_date = datatypes.Date(time.Now())
+	u.Birth_date = GerRandomTime()
 	u.Email = fmt.Sprintf("email%d", utils.GetNext(&UserEmailSeq))
 	u.Password = fmt.Sprintf("password%d", utils.GetNext(&UserPasswordSeq))
 	u.Address = fmt.Sprintf("address%d", utils.GetNext(&UserAddressSeq))
