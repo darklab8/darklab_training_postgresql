@@ -9,7 +9,6 @@ import (
 
 var (
 	// Sequence counter which user to create
-	UserIDSeq         = 0
 	UserFirstNameSeq  = 0
 	UserSecondNameSeq = 0
 	UserEmailSeq      = 0
@@ -33,7 +32,6 @@ func (u User) TableName() string {
 }
 
 func (u *User) Fill() {
-	u.ID = utils.GetNext(&UserIDSeq)
 	u.FirstName = fmt.Sprintf("first_name%d", utils.GetNext(&UserFirstNameSeq))
 	u.SecondName = fmt.Sprintf("second_name%d", utils.GetNext(&UserSecondNameSeq))
 	u.Birth_date = GerRandomTime()

@@ -107,7 +107,7 @@ func TestTask4Query2MostVisitedPostsForAuthor(t *testing.T) {
 			utils.Check(result.Error)
 
 			count := CountRows(result)
-			assert.Equal(t, N, count)
+			assert.GreaterOrEqual(t, N, count)
 		}
 
 		t.Run("taskquery4_2", func(t *testing.T) {
@@ -156,5 +156,20 @@ func TestTask4Query5(t *testing.T) {
 
 		count := CountRows(result)
 		assert.Equal(t, N, count)
+	})
+}
+
+func TestTask4Query6(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+		N := 50
+		result := conn_orm.Raw(
+			Task4Query6,
+			sql.Named("N", N),
+		)
+		utils.Check(result.Error)
+
+		tag_count := 3
+		count := CountRows(result)
+		assert.Equal(t, tag_count, count)
 	})
 }

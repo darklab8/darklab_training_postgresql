@@ -13,7 +13,6 @@ import (
 
 var (
 	// Sequence counter which user to create
-	PostEditionIDSeq      = 0
 	PostEditionTitleSeq   = 0
 	PostEditionContentSeq = 0
 )
@@ -21,7 +20,7 @@ var (
 type PostEdition struct {
 	bun.BaseModel `bun:"table:post_edition"`
 
-	ID       int       `bun:"id,pk"`
+	ID       int       `bun:"id,pk,autoincrement"`
 	PostID   int       `bun:"post_id"`
 	UserID   int       `bun:"user_id"`
 	EditedAt time.Time `bun:"edited_at"`
@@ -35,7 +34,6 @@ var (
 )
 
 func (p *PostEdition) Fill(postID int, UserID int) {
-	p.ID = utils.GetNext(&PostEditionIDSeq)
 	p.PostID = postID
 	p.UserID = UserID
 
@@ -59,7 +57,6 @@ func (p PostEditionGorm) TableName() string {
 }
 
 func (p *PostEditionGorm) Fill(postID int, UserID int) {
-	p.ID = utils.GetNext(&PostEditionIDSeq)
 	p.PostID = postID
 	p.UserID = UserID
 

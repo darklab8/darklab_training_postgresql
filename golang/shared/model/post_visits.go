@@ -1,15 +1,9 @@
 package model
 
 import (
-	"darklab_training_postgres/golang/shared/utils"
 	"math/rand"
 
 	"gorm.io/datatypes"
-)
-
-var (
-	// Sequence counter which user to create
-	PostVisitIDSeq = 0
 )
 
 type PostVisits struct {
@@ -24,7 +18,6 @@ func (p PostVisits) TableName() string {
 }
 
 func (p *PostVisits) Fill(postID int) {
-	p.ID = utils.GetNext(&PostVisitIDSeq)
 	p.PostID = postID
 	p.DayDate = GerRandomTime()
 	p.Visits = rand.Intn(1000)

@@ -59,7 +59,6 @@ func TestInsertTags(t *testing.T) {
 
 		fmt.Println("teardown")
 	})
-
 }
 
 func TestInsertTags2(t *testing.T) {

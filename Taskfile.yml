@@ -21,3 +21,8 @@ tasks:
   db:down:
     cmds:
       - docker-compose down --remove-orphans --volumes
+
+  git:add_push:
+    cmds:
+      - git remote set-url git@github.com-dd84ai:darklab8/darklab_training_postgresql.git
+      - git remote add noveo git@gitlab-noveo:trainings-anovoselov/trainings-anovoselov-postgersql.git
