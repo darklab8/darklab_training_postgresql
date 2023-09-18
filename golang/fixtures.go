@@ -40,6 +40,7 @@ func FixtureFillWithData(
 	posts_per_user types.PostsPerUser,
 ) {
 	PostsAmount := int(max_users) * int(posts_per_user)
+	PostVisitCount := 5000
 	shared.FixtureTimeMeasure(func() {
 		user_bulker := shared.Bulker[model.User]{
 			Amount_to_create: types.AmountCreate(max_users),
@@ -54,8 +55,22 @@ func FixtureFillWithData(
 			Dbname:           dbname,
 		}
 
-		postCounter := 1
+		userCounter := 1
 		post_bulker.Init().BulkCreate(func(p *model.Post) {
+			p.Fill(userCounter)
+			userCounter++
+			if userCounter > int(max_users) {
+				userCounter = 1
+			}
+		})
+
+		post_visit_bulker := shared.Bulker[model.PostVisits]{
+			Amount_to_create: types.AmountCreate(PostVisitCount),
+			Bulk_max:         types.BulkMax(16000),
+			Dbname:           dbname,
+		}
+		postCounter := 1
+		post_visit_bulker.Init().BulkCreate(func(p *model.PostVisits) {
 			p.Fill(postCounter)
 			postCounter++
 			if postCounter > int(max_users) {

@@ -6,7 +6,6 @@ import (
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
-	"fmt"
 	"math/rand"
 	"testing"
 
@@ -15,19 +14,19 @@ import (
 )
 
 var (
-	Query1 string
-	Query2 string
-	Query3 string
-	Query4 string
-	Query5 string
+	Task3Query1 string
+	Task3Query2 string
+	Task3Query3 string
+	Task3Query4 string
+	Task3Query5 string
 )
 
 func init() {
-	Query1 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_1.sql"))
-	Query2 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_2.sql"))
-	Query3 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_3.sql"))
-	Query4 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_4.sql"))
-	Query5 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_5.sql"))
+	Task3Query1 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_1.sql"))
+	Task3Query2 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_2.sql"))
+	Task3Query3 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_3.sql"))
+	Task3Query4 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_4.sql"))
+	Task3Query5 = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/queries/query3_5.sql"))
 }
 
 func TestQueryReuseSetup2(t *testing.T) {
@@ -40,11 +39,8 @@ func TestQueryReuseSetup2(t *testing.T) {
 
 func TestQuery1(t *testing.T) {
 	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-
-		fmt.Println()
 		author_id := 1 + rand.Intn(int(TempDb.MaxUsers)-1)
-		result := conn_orm.Raw(Query1, sql.Named("author_id", author_id))
-		// rows, err := conn.Query(Query1, row)
+		result := conn_orm.Raw(Task3Query1, sql.Named("author_id", author_id))
 		if result.Error != nil {
 			panic(result.Error)
 		}
@@ -57,10 +53,8 @@ func TestQuery1(t *testing.T) {
 
 func TestQuery2(t *testing.T) {
 	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-
-		fmt.Println()
 		N := rand.Intn(int(TempDb.MaxUsers) + int(TempDb.PostsPerUser))
-		result := conn_orm.Raw(Query2, sql.Named("N", N))
+		result := conn_orm.Raw(Task3Query2, sql.Named("N", N))
 		if result.Error != nil {
 			panic(result.Error)
 		}
@@ -81,9 +75,8 @@ func TestQuery2(t *testing.T) {
 func TestQuery3(t *testing.T) {
 	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
-		fmt.Println()
 		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
-		result := conn_orm.Raw(Query3, sql.Named("N", N))
+		result := conn_orm.Raw(Task3Query3, sql.Named("N", N))
 		if result.Error != nil {
 			panic(result.Error)
 		}
@@ -104,9 +97,8 @@ func TestQuery3(t *testing.T) {
 func TestQuery4(t *testing.T) {
 	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
 
-		fmt.Println()
 		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
-		result := conn_orm.Raw(Query3, sql.Named("N", N))
+		result := conn_orm.Raw(Task3Query3, sql.Named("N", N))
 		if result.Error != nil {
 			panic(result.Error)
 		}

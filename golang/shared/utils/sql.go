@@ -2,7 +2,6 @@ package utils
 
 import (
 	"database/sql"
-	"strings"
 )
 
 func MustExec(conn *sql.DB, query string) {
@@ -13,5 +12,19 @@ func MustExec(conn *sql.DB, query string) {
 }
 
 func GetSQLFile(data string) string {
-	return strings.ReplaceAll(data, ":", "@")
+	targetSymbol := rune(':')
+	runes := []rune(data)
+	for pos, char := range runes {
+
+		if char != targetSymbol {
+			continue
+		}
+
+		if runes[pos-1] == targetSymbol || runes[pos+1] == targetSymbol {
+			continue
+		}
+
+		runes[pos] = rune('@')
+	}
+	return string(runes)
 }
