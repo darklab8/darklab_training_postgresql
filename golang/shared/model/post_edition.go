@@ -46,8 +46,6 @@ func (p *PostEdition) Fill(postID int, UserID int) {
 }
 
 type PostEditionGorm struct {
-	bun.BaseModel `bun:"table:post_edition"`
-
 	ID       int            `gorm:"column:id;primaryKey"`
 	PostID   int            `gorm:"column:post_id"`
 	UserID   int            `gorm:"column:user_id"`
