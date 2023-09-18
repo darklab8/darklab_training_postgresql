@@ -95,27 +95,41 @@ func TestQuery3PostsAwaitingPublishing(t *testing.T) {
 	})
 }
 
-// func TestQuery4RecentlyUpdatedPostsByTag(t *testing.T) {
-// 	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+func TestQuery4RecentlyUpdatedPostsByTag(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
-// 		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
-// 		result := conn_orm.Raw(Task3Query4, sql.Named("N", N))
-// 		if result.Error != nil {
-// 			panic(result.Error)
-// 		}
+		raw_sql := conn_orm.ToSQL(func(tx *gorm.DB) *gorm.DB {
+			return tx.Raw(Task3Query4,
+				sql.Named("N", 20),
+				sql.Named("K", 1),
+				sql.Named("L", 10),
+				sql.Named("tag", "a1"),
+			)
+		})
+		result, err := conn.Exec(raw_sql)
 
-// 		rows, err := result.Rows()
-// 		if err != nil {
-// 			panic(err)
-// 		}
+		utils.Check(err)
 
-// 		count_rows := 0
-// 		for rows.Next() {
-// 			count_rows += 1
-// 		}
-// 		assert.Equal(t, N, count_rows)
-// 	})
-// }
+		count_rows, err := result.RowsAffected()
+		utils.Check(err)
+
+		assert.Equal(t, 20, count_rows)
+	})
+}
+
+func TestQuery5FindNPostsWithMostRating(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+
+		result := conn_orm.Raw(Task3Query5,
+			sql.Named("N", 20),
+		)
+
+		utils.Check(result.Error)
+		count_rows := CountRows(result)
+
+		assert.Equal(t, 20, count_rows)
+	})
+}
 
 func TestMigration(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
