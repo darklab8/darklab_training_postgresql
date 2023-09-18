@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/uptrace/bun"
 	"gorm.io/gorm"
 )
 
@@ -30,15 +31,15 @@ func init() {
 }
 
 func TestQueryReuseSetup2(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		var count int64
 		conn_orm.Model(&model.Post{}).Count(&count)
 		assert.Equal(t, int(TempDb.MaxUsers)*int(TempDb.PostsPerUser), int(count))
 	})
 }
 
-func TestQuery1(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+func TestQuery1UserPostCount(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		author_id := 1 + rand.Intn(int(TempDb.MaxUsers)-1)
 		result := conn_orm.Raw(Task3Query1, sql.Named("author_id", author_id))
 		if result.Error != nil {
@@ -51,8 +52,8 @@ func TestQuery1(t *testing.T) {
 	})
 }
 
-func TestQuery2(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+func TestQuery2PublishedOrderedPosts(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		N := rand.Intn(int(TempDb.MaxUsers) + int(TempDb.PostsPerUser))
 		result := conn_orm.Raw(Task3Query2, sql.Named("N", N))
 		if result.Error != nil {
@@ -72,8 +73,8 @@ func TestQuery2(t *testing.T) {
 	})
 }
 
-func TestQuery3(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+func TestQuery3PostsAwaitingPublishing(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
 		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
 		result := conn_orm.Raw(Task3Query3, sql.Named("N", N))
@@ -94,31 +95,31 @@ func TestQuery3(t *testing.T) {
 	})
 }
 
-func TestQuery4(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+// func TestQuery4RecentlyUpdatedPostsByTag(t *testing.T) {
+// 	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
-		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
-		result := conn_orm.Raw(Task3Query3, sql.Named("N", N))
-		if result.Error != nil {
-			panic(result.Error)
-		}
+// 		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
+// 		result := conn_orm.Raw(Task3Query4, sql.Named("N", N))
+// 		if result.Error != nil {
+// 			panic(result.Error)
+// 		}
 
-		rows, err := result.Rows()
-		if err != nil {
-			panic(err)
-		}
+// 		rows, err := result.Rows()
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		count_rows := 0
-		for rows.Next() {
-			count_rows += 1
-		}
-		assert.Equal(t, N, count_rows)
-	})
-}
+// 		count_rows := 0
+// 		for rows.Next() {
+// 			count_rows += 1
+// 		}
+// 		assert.Equal(t, N, count_rows)
+// 	})
+// }
 
 func TestMigration(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		FixtureTask2Migrations(conn)
-		FixtureTask3Migrations(conn_orm)
+		FixtureTask3Migrations(conn_orm, bundb)
 	})
 }

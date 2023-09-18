@@ -1,6 +1,7 @@
 package shared
 
 import (
+	"crypto/tls"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
@@ -14,9 +15,13 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
 )
 
-func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB)) {
+func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB)) {
 
 	connStr := fmt.Sprintf("postgres://postgres:postgres@localhost/%s?sslmode=disable", dbname)
 	db, err := sql.Open("postgres", connStr)
@@ -38,13 +43,31 @@ func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *s
 	}
 
 	defer db.Close()
-	callback(dbname, db, gormDB)
+
+	timeout := time.Duration(30) * time.Second
+	bundb1 := sql.OpenDB(pgdriver.NewConnector(
+		// pgdriver.WithDSN(connStr)
+		pgdriver.WithNetwork("tcp"),
+		pgdriver.WithAddr("localhost:5432"),
+		pgdriver.WithUser("postgres"),
+		pgdriver.WithPassword("postgres"),
+		pgdriver.WithTLSConfig(&tls.Config{InsecureSkipVerify: true}),
+		pgdriver.WithInsecure(true),
+		pgdriver.WithDatabase(string(dbname)),
+		pgdriver.WithTimeout(timeout),
+		pgdriver.WithDialTimeout(timeout),
+		pgdriver.WithReadTimeout(timeout),
+		pgdriver.WithWriteTimeout(timeout),
+	))
+	bundb := bun.NewDB(bundb1, pgdialect.New())
+
+	callback(dbname, db, gormDB, bundb)
 	fmt.Println("The database is connected")
 }
 
 func FixtureDatabase(callback func(dbname types.Dbname)) {
 	new_dbname := types.Dbname(utils.TokenWord(8))
-	FixtureConn("postgres", func(dbpath types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	FixtureConn("postgres", func(dbpath types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
 		_, err := conn.Exec(fmt.Sprintf("CREATE DATABASE %s", new_dbname))
 		if err != nil {
@@ -62,10 +85,10 @@ func FixtureDatabase(callback func(dbname types.Dbname)) {
 	})
 }
 
-func FixtureConnTestDB(callback func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB)) {
+func FixtureConnTestDB(callback func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB)) {
 	FixtureDatabase(func(dbname types.Dbname) {
-		FixtureConn(dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-			callback(dbname, conn, conn_orm)
+		FixtureConn(dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			callback(dbname, conn, conn_orm, bundb)
 		})
 	})
 }

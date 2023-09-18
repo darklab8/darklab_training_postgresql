@@ -8,11 +8,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/uptrace/bun"
 	"gorm.io/gorm"
 )
 
 func TestSelect1(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		rows, err := conn.Query("SELECT 1")
 		if err != nil {
 			panic(err)

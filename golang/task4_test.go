@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/uptrace/bun"
 	"gorm.io/gorm"
 )
 
@@ -43,8 +44,8 @@ func CountRows(result *gorm.DB) int {
 	return count_rows
 }
 
-func TestTask4Query1(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+func TestTask4Query1MostVisitedPostInAYear(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
 		Query1Test := func(query1 string) {
 			N := 50

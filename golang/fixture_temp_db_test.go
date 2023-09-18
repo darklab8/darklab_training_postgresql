@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/uptrace/bun"
 	"gorm.io/gorm"
 )
 
@@ -24,7 +25,7 @@ var (
 	}
 )
 
-func FixtureFillTemporalDB(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
+func FixtureFillTemporalDB(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 	FixtureTask2Migrations(conn)
 	FixtureFillWithData(
 		dbname,
@@ -32,14 +33,14 @@ func FixtureFillTemporalDB(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB)
 		TempDb.PostsPerUser,
 	)
 	TempDb.Dbname = dbname
-	FixtureTask3Migrations(conn_orm)
+	FixtureTask3Migrations(conn_orm, bundb)
 }
 
 func TestMain(m *testing.M) {
 	fmt.Println("seting")
 	var code int
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB) {
-		FixtureFillTemporalDB(dbname, conn, conn_orm)
+	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+		FixtureFillTemporalDB(dbname, conn, conn_orm, bundb)
 		code = m.Run()
 		fmt.Println("teardown")
 	})

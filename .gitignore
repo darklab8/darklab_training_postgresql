@@ -1,10 +1,15 @@
+# hugo
 node_modules/
 docs/public/
 resources/
 .hugo_build.lock
 *.deb
 
+# python
 .venv/
 site/
 __pycache__/
 venv/
+
+# goland
+__debug_*
