@@ -34,3 +34,37 @@ func TestTask6Query1(t *testing.T) {
 		utils.Check(result.Error)
 	})
 }
+
+func TestTask6Query2(t *testing.T) {
+	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+		result := conn_orm.Raw(
+			Task6Query2,
+			sql.Named("N", 10),
+		)
+		utils.Check(result.Error)
+	})
+}
+
+func TestTask6Query3(t *testing.T) {
+	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+		FixtureTask2Migrations(conn)
+		FixtureTask3Migrations(conn_orm, bundb)
+
+		result := conn_orm.Raw(Task6Query3)
+		utils.Check(result.Error)
+	})
+}
+
+func TestTask6Query4(t *testing.T) {
+	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+		res := conn_orm.Raw(`
+		CREATE TABLE post
+		(
+			id SERIAL PRIMARY KEY,
+		)
+		`)
+		utils.Check(res.Error)
+		result := conn_orm.Raw(Task6Query4)
+		utils.Check(result.Error)
+	})
+}
