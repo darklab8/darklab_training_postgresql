@@ -7,7 +7,7 @@ jobs:
   unit-tests:
     runs-on: ubuntu-22.04
     name: Unit tests
-    container: python:1.21-bullseye
+    container: golang:1.21-bullseye
     services:
       postgres:
         image: postgres
