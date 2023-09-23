@@ -1,17 +1,20 @@
 package model
 
 import (
+	"database/sql"
 	"math/rand"
 	"time"
 
-	"gorm.io/datatypes"
+	"github.com/uptrace/bun"
 )
 
 type Post struct {
-	ID        int            `gorm:"column:id;primaryKey"`
-	AuthorID  int            `gorm:"column:author_id"`
-	Status    string         `gorm:"column:status"`
-	CreatedAt datatypes.Date `gorm:"column:created_at"`
+	bun.BaseModel `bun:"table:post"`
+	ID            *sql.NullInt32 `bun:"id,pk,autoincrement,scanonly"`
+	AuthorID      int            `bun:"author_id"`
+	Status        string         `bun:"status"`
+	CreatedAt     time.Time      `bun:"created_at"`
+	Rating        int            `bun:"rating"`
 }
 
 var Statuses []string = []string{"published", "draft", "archived"}
@@ -20,14 +23,15 @@ func (p Post) TableName() string {
 	return "post"
 }
 
-func GerRandomTime() datatypes.Date {
+func GerRandomTime() time.Time {
 	curTime := time.Now()
 	curTime = curTime.Add(time.Hour * time.Duration(-rand.Intn(24*365)))
-	return datatypes.Date(curTime)
+	return curTime
 }
 
 func (p *Post) Fill(authorID int) {
 	p.AuthorID = authorID
 	p.Status = Statuses[rand.Intn(3)]
-	p.CreatedAt = datatypes.Date(GerRandomTime())
+	p.CreatedAt = GerRandomTime()
+	p.Rating = rand.Intn(100)
 }

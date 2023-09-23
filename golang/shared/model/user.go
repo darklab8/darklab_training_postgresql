@@ -2,9 +2,11 @@ package model
 
 import (
 	"darklab_training_postgres/golang/shared/utils"
+	"database/sql"
 	"fmt"
+	"time"
 
-	"gorm.io/datatypes"
+	"github.com/uptrace/bun"
 )
 
 var (
@@ -17,14 +19,15 @@ var (
 )
 
 type User struct {
-	ID         int            `gorm:"column:id;primaryKey"`
-	FirstName  string         `gorm:"column:first_name"`
-	SecondName string         `gorm:"column:second_name"`
-	Birth_date datatypes.Date `gorm:"column:birth_date"`
-	Email      string         `gorm:"column:email"`
-	Password   string         `gorm:"column:password"`
-	Address    string         `gorm:"column:address"`
-	Rating     int            `gorm:"column:rating"`
+	bun.BaseModel `bun:"table:user_"`
+	ID            *sql.NullInt32 `gorm:"id,pk,autoincrement"`
+	FirstName     string         `gorm:"first_name"`
+	SecondName    string         `gorm:"second_name"`
+	Birth_date    time.Time      `gorm:"birth_date"`
+	Email         string         `gorm:"email"`
+	Password      string         `gorm:"password"`
+	Address       string         `gorm:"address"`
+	Rating        int            `gorm:"rating"`
 }
 
 func (u User) TableName() string {

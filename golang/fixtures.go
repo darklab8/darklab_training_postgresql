@@ -97,7 +97,6 @@ func FixtureFillWithData(
 			Amount_to_create: types.AmountCreate(1000),
 			Bulk_max:         types.BulkMax(4000),
 			Dbname:           dbname,
-			Is_bun:           true,
 		}
 		user_counter = NewCounter(int(max_users))
 		post_counter = NewCounter(post_amount)

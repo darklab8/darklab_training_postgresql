@@ -13,3 +13,6 @@ venv/
 
 # goland
 __debug_*
+
+# sql
+*experimental_answer.sql

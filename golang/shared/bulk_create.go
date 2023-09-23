@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"math"
 
-	"log/slog"
-
 	"github.com/uptrace/bun"
 	"gorm.io/gorm"
 )
@@ -18,25 +16,15 @@ type BulkJob[T any] struct {
 	done   bool
 	Ptrs   []*T
 	dbname types.Dbname
-	Is_bun bool
 }
 
 func (data *BulkJob[T]) runJob(worker_id int) StatusCode {
 	FixtureTimeMeasure(func() {
 		// fmt.Println("worker", worker_id, "started  job", data.id)
 		FixtureConn(data.dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-
-			if data.Is_bun {
-				_, err := bundb.NewInsert().Model(&data.Ptrs).Exec(context.TODO())
-				if err != nil {
-					panic(err)
-				}
-			} else {
-				result := conn_orm.Create(data.Ptrs)
-				if result.Error != nil {
-					slog.Error("failed to create bulk objects")
-					panic(result.Error)
-				}
+			_, err := bundb.NewInsert().Model(&data.Ptrs).Exec(context.TODO())
+			if err != nil {
+				panic(err)
 			}
 		})
 	}, fmt.Sprintf("worker %d finished job %d", worker_id, data.id))
@@ -56,8 +44,6 @@ type Bulker[T any] struct {
 
 	bulk_times int
 	Dbname     types.Dbname
-
-	Is_bun bool
 }
 
 func (b *Bulker[T]) Init() *Bulker[T] {
@@ -112,7 +98,6 @@ func (b *Bulker[T]) BulkCreate(
 					Ptrs:   obj_ptrs,
 					dbname: b.Dbname,
 					id:     i,
-					Is_bun: b.Is_bun,
 				})
 
 				left_to_create -= creating_count

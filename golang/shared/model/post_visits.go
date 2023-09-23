@@ -1,20 +1,19 @@
 package model
 
 import (
+	"database/sql"
 	"math/rand"
+	"time"
 
-	"gorm.io/datatypes"
+	"github.com/uptrace/bun"
 )
 
 type PostVisits struct {
-	ID      int            `gorm:"column:id;primaryKey"`
-	PostID  int            `gorm:"column:post_id"`
-	DayDate datatypes.Date `gorm:"column:day_date"`
-	Visits  int            `gorm:"column:visits"`
-}
-
-func (p PostVisits) TableName() string {
-	return "post_visits_per_day"
+	bun.BaseModel `bun:"table:post_visits_per_day"`
+	ID            *sql.NullInt32 `bun:"id,pk,autoincrement,scanonly"`
+	PostID        int            `bun:"post_id"`
+	DayDate       time.Time      `bun:"day_date"`
+	Visits        int            `bun:"visits"`
 }
 
 func (p *PostVisits) Fill(postID int) {

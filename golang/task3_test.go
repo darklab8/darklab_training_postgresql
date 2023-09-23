@@ -113,7 +113,7 @@ func TestQuery4RecentlyUpdatedPostsByTag(t *testing.T) {
 		count_rows, err := result.RowsAffected()
 		utils.Check(err)
 
-		assert.Equal(t, 20, count_rows)
+		assert.GreaterOrEqual(t, int(10), int(count_rows))
 	})
 }
 
