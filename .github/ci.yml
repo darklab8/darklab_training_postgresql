@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push: {}
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-22.04
+    name: Unit tests
+    container: python:1.21-bullseye
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      APP_DATABASE_HOST: postgres
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install deps
+        run: go mod download -x
+      - name: Run tests
+        run: go test ./...
