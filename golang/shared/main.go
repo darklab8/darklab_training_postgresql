@@ -61,9 +61,9 @@ func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *s
 		pgdriver.WithWriteTimeout(timeout),
 	))
 	bundb := bun.NewDB(bundb1, pgdialect.New())
+	defer bundb.Close()
 
 	callback(dbname, db, gormDB, bundb)
-	fmt.Println("The database is connected")
 }
 
 func FixtureDatabase(callback func(dbname types.Dbname)) {

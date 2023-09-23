@@ -29,9 +29,7 @@ func FixtureTask2Migrations(conn *sql.DB) {
 
 func FixtureTask3Migrations(conn_orm *gorm.DB, bundb *bun.DB) {
 	res := conn_orm.Raw(MigrationAddIndexes)
-	if res.Error != nil {
-		panic(res.Error)
-	}
+	utils.Check(res.Error)
 }
 
 type ModelCounter struct {
@@ -62,7 +60,9 @@ func FixtureFillWithData(
 	posts_per_user types.PostsPerUser,
 ) {
 	post_amount := int(max_users) * int(posts_per_user)
-	PostVisitCount := 5000
+	post_visit_rows_count := types.AmountCreate(5000)
+	post_edition_amount := types.AmountCreate(1000)
+
 	shared.FixtureTimeMeasure(func() {
 		user_bulker := shared.Bulker[model.User]{
 			Amount_to_create: types.AmountCreate(max_users),
@@ -82,7 +82,7 @@ func FixtureFillWithData(
 		})
 
 		post_visit_bulker := shared.Bulker[model.PostVisits]{
-			Amount_to_create: types.AmountCreate(PostVisitCount),
+			Amount_to_create: types.AmountCreate(post_visit_rows_count),
 			Bulk_max:         types.BulkMax(16000),
 			Dbname:           dbname,
 		}
@@ -93,7 +93,7 @@ func FixtureFillWithData(
 
 		// TODO try to achieve high performance despite trigger for post_edition :/
 		post_edition_bulker := shared.Bulker[model.PostEdition]{
-			Amount_to_create: types.AmountCreate(1000),
+			Amount_to_create: post_edition_amount,
 			Bulk_max:         types.BulkMax(4000),
 			Dbname:           dbname,
 		}
@@ -102,5 +102,6 @@ func FixtureFillWithData(
 		post_edition_bulker.Init().BulkCreate(func(p *model.PostEdition) {
 			p.Fill(post_counter.Next(), user_counter.Next())
 		})
+
 	}, "database filling with data")
 }

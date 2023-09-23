@@ -39,37 +39,58 @@ func TestQueryReuseSetup2(t *testing.T) {
 }
 
 func TestQuery1UserPostCount(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-		author_id := 1 + rand.Intn(int(TempDb.MaxUsers)-1)
-		result := conn_orm.Raw(Task3Query1, sql.Named("author_id", author_id))
-		if result.Error != nil {
-			panic(result.Error)
-		}
+	run_test := func(db_params TemporalDB) {
 
-		var count int
-		result.Scan(&count)
-		assert.Equal(t, int(TempDb.PostsPerUser), count)
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			author_id := 1 + rand.Intn(int(db_params.MaxUsers)-1)
+			result := conn_orm.Raw(Task3Query1, sql.Named("author_id", author_id))
+			utils.Check(result.Error)
+
+			var count int
+			result.Scan(&count)
+			assert.Equal(t, int(db_params.PostsPerUser), count)
+		})
+	}
+
+	t.Run("test3_1_without_index", func(t *testing.T) {
+		shared.FixtureTimeMeasure(func() {
+			run_test(TempDbIndexless)
+		}, "test3_1_without_index")
+		run_test(TempDbIndexless)
+	})
+	t.Run("test3_1_with_index", func(t *testing.T) {
+		shared.FixtureTimeMeasure(func() {
+			run_test(TempDb)
+		}, "test3_1_with_index")
+		run_test(TempDb)
 	})
 }
 
 func TestQuery2PublishedOrderedPosts(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-		N := rand.Intn(int(TempDb.MaxUsers) + int(TempDb.PostsPerUser))
-		result := conn_orm.Raw(Task3Query2, sql.Named("N", N))
-		if result.Error != nil {
-			panic(result.Error)
-		}
+	test1 := func(dbname types.Dbname) {
+		shared.FixtureConn(dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			N := rand.Intn(int(TempDb.MaxUsers) + int(TempDb.PostsPerUser))
+			result := conn_orm.Raw(Task3Query2, sql.Named("N", N))
+			if result.Error != nil {
+				panic(result.Error)
+			}
 
-		rows, err := result.Rows()
-		if err != nil {
-			panic(err)
-		}
+			rows, err := result.Rows()
+			if err != nil {
+				panic(err)
+			}
 
-		count_rows := 0
-		for rows.Next() {
-			count_rows += 1
-		}
-		assert.Equal(t, N, count_rows)
+			count_rows := 0
+			for rows.Next() {
+				count_rows += 1
+			}
+			assert.Equal(t, N, count_rows)
+
+		})
+	}
+
+	t.Run("taskquery4_2", func(t *testing.T) {
+		test1(TempDb.Dbname)
 	})
 }
 
