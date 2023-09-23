@@ -2,6 +2,7 @@ package shared
 
 import (
 	"crypto/tls"
+	"darklab_training_postgres/golang/settings"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
@@ -23,7 +24,7 @@ import (
 
 func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB)) {
 
-	connStr := fmt.Sprintf("postgres://postgres:postgres@localhost/%s?sslmode=disable", dbname)
+	connStr := fmt.Sprintf("postgres://postgres:postgres@%s/%s?sslmode=disable", settings.DatabaseHost, dbname)
 	db, err := sql.Open("postgres", connStr)
 
 	if err != nil {
@@ -48,7 +49,7 @@ func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *s
 	bundb1 := sql.OpenDB(pgdriver.NewConnector(
 		// pgdriver.WithDSN(connStr)
 		pgdriver.WithNetwork("tcp"),
-		pgdriver.WithAddr("localhost:5432"),
+		pgdriver.WithAddr(fmt.Sprintf(settings.DatabaseHost+":5432")),
 		pgdriver.WithUser("postgres"),
 		pgdriver.WithPassword("postgres"),
 		pgdriver.WithTLSConfig(&tls.Config{InsecureSkipVerify: true}),
