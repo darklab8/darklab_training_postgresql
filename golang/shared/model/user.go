@@ -27,7 +27,6 @@ type User struct {
 	Email         string         `gorm:"email"`
 	Password      string         `gorm:"password"`
 	Address       string         `gorm:"address"`
-	Rating        int            `gorm:"rating"`
 }
 
 func (u User) TableName() string {
@@ -41,5 +40,4 @@ func (u *User) Fill() {
 	u.Email = fmt.Sprintf("email%d", utils.GetNext(&UserEmailSeq))
 	u.Password = fmt.Sprintf("password%d", utils.GetNext(&UserPasswordSeq))
 	u.Address = fmt.Sprintf("address%d", utils.GetNext(&UserAddressSeq))
-	u.Rating = 0
 }

@@ -3,6 +3,7 @@ package golang
 import (
 	"darklab_training_postgres/golang/shared"
 	"darklab_training_postgres/golang/shared/types"
+	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
 	"fmt"
 	"os"
@@ -32,6 +33,9 @@ func FixtureFillTemporalDB(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB,
 		TempDb.MaxUsers,
 		TempDb.PostsPerUser,
 	)
+	_, err := conn.Exec("REFRESH MATERIALIZED VIEW user_ratings")
+	utils.Check(err)
+
 	TempDb.Dbname = dbname
 	FixtureTask3Migrations(conn_orm, bundb)
 }

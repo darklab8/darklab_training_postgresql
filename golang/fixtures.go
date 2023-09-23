@@ -19,7 +19,6 @@ var (
 
 func init() {
 	Migration1 = utils.ReadProjectFile("sql/task2/migrations/task2_1.sql")
-	Migration2 = utils.ReadProjectFile("sql/task2/migrations/task2_2_disable_triggers_for_tests.sql")
 	MigrationAddIndexes = utils.GetSQLFile(utils.ReadProjectFile("sql/task3/migrations/task3_7.sql"))
 }
 
@@ -103,6 +102,5 @@ func FixtureFillWithData(
 		post_edition_bulker.Init().BulkCreate(func(p *model.PostEdition) {
 			p.Fill(post_counter.Next(), user_counter.Next())
 		})
-
 	}, "database filling with data")
 }
