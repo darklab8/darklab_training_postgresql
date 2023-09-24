@@ -11,6 +11,7 @@ import (
 	"darklab_training_postgres/golang/shared/model"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
+	"darklab_training_postgres/golang/testdb"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/uptrace/bun"
@@ -65,9 +66,13 @@ func TestInsertTags2(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		golang.FixtureTask2Migrations(conn)
 		golang.FixtureFillWithData(
-			dbname,
-			types.MaxUsers(1000),
-			types.PostsPerUser(5),
+			testdb.DBParams{
+				Dbname:       dbname,
+				MaxUsers:     1000,
+				PostsPerUser: 5,
+				PostVisits:   100,
+				PostEditions: 100,
+			},
 		)
 		golang.FixtureTask3Migrations(conn)
 

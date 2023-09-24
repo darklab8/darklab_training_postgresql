@@ -68,36 +68,32 @@ func (m *ModelCounter) Next() int {
 }
 
 func FixtureFillWithData(
-	dbname types.Dbname,
-	max_users types.MaxUsers,
-	posts_per_user types.PostsPerUser,
+	params testdb.DBParams,
 ) {
-	post_amount := int(max_users) * int(posts_per_user)
-	post_visit_rows_count := types.AmountCreate(1000)
-	post_edition_amount := types.AmountCreate(1000)
+	post_amount := int(params.MaxUsers) * int(params.PostsPerUser)
 
 	shared.FixtureTimeMeasure(func() {
 		user_bulker := shared.Bulker[model.User]{
-			Amount_to_create: types.AmountCreate(max_users),
+			Amount_to_create: types.AmountCreate(params.MaxUsers),
 			Bulk_max:         types.BulkMax(8000),
-			Dbname:           dbname,
+			Dbname:           params.Dbname,
 		}
 		user_bulker.Init().BulkCreate(func(u *model.User) { u.Fill() })
 
 		post_bulker := shared.Bulker[model.Post]{
 			Amount_to_create: types.AmountCreate(post_amount),
 			Bulk_max:         types.BulkMax(16000),
-			Dbname:           dbname,
+			Dbname:           params.Dbname,
 		}
-		user_counter := NewCounter(int(max_users))
+		user_counter := NewCounter(int(params.MaxUsers))
 		post_bulker.Init().BulkCreate(func(p *model.Post) {
 			p.Fill(user_counter.Next())
 		})
 
 		post_visit_bulker := shared.Bulker[model.PostVisits]{
-			Amount_to_create: types.AmountCreate(post_visit_rows_count),
+			Amount_to_create: types.AmountCreate(params.PostVisits),
 			Bulk_max:         types.BulkMax(16000),
-			Dbname:           dbname,
+			Dbname:           params.Dbname,
 		}
 		post_counter := NewCounter(post_amount)
 		post_visit_bulker.Init().BulkCreate(func(p *model.PostVisits) {
@@ -106,11 +102,11 @@ func FixtureFillWithData(
 
 		// TODO try to achieve high performance despite trigger for post_edition :/
 		post_edition_bulker := shared.Bulker[model.PostEdition]{
-			Amount_to_create: post_edition_amount,
+			Amount_to_create: types.AmountCreate(params.PostEditions),
 			Bulk_max:         types.BulkMax(4000),
-			Dbname:           dbname,
+			Dbname:           params.Dbname,
 		}
-		user_counter = NewCounter(int(max_users))
+		user_counter = NewCounter(int(params.MaxUsers))
 		post_counter = NewCounter(post_amount)
 		post_edition_bulker.Init().BulkCreate(func(p *model.PostEdition) {
 			p.Fill(post_counter.Next(), user_counter.Next())
@@ -130,12 +126,12 @@ func RunSubTests(task_number string, t *testing.T, test_func func(db_params test
 		t.Run(task_name+"_perf_with_index", func(t *testing.T) {
 			shared.FixtureTimeMeasure(func() {
 				test_func(testdb.PerformanceWithIndexes)
-			}, task_name+"_perf_with_index")
+			}, fmt.Sprintf("%s_perf_with_index, params=%v", task_name, testdb.PerformanceWithIndexes.ToStr()))
 		})
 		t.Run(task_name+"_perf__without_index", func(t *testing.T) {
 			shared.FixtureTimeMeasure(func() {
 				test_func(testdb.PerformanceIndexless)
-			}, task_name+"_perf__without_index")
+			}, fmt.Sprintf("%s_perf_without_index, params=%v", task_name, testdb.PerformanceIndexless.ToStr()))
 		})
 	}
 }

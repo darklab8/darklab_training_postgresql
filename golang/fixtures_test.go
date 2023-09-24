@@ -26,25 +26,18 @@ func TestMain(m *testing.M) {
 	shared.FixtureConnTestDBWithName(types.Dbname(fmt.Sprintf("%s_unit_tests", testdbname)), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		// Unit tests db
 		FixtureTask2Migrations(conn)
-		FixtureFillWithData(
-			dbname,
-			testdb.UnitTests.MaxUsers,
-			testdb.UnitTests.PostsPerUser,
-		)
+		testdb.UnitTests.Dbname = dbname
+		FixtureFillWithData(testdb.UnitTests)
 		_, err := conn.Exec("REFRESH MATERIALIZED VIEW user_ratings")
 		utils.Check(err)
 		FixtureTask3Migrations(conn)
-		testdb.UnitTests.Dbname = dbname
 
 		shared.FixtureConnTestDBWithName(types.Dbname(fmt.Sprintf("%s_indexes", testdbname)), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
 			if settings.ENABLED_PERFORMANCE_TESTS {
 				FixtureTask2Migrations(conn)
-				FixtureFillWithData(
-					dbname,
-					testdb.PerformanceWithIndexes.MaxUsers,
-					testdb.PerformanceWithIndexes.PostsPerUser,
-				)
+				testdb.PerformanceWithIndexes.Dbname = dbname
+				FixtureFillWithData(testdb.PerformanceWithIndexes)
 				_, err := conn.Exec("REFRESH MATERIALIZED VIEW user_ratings")
 				utils.Check(err)
 
@@ -54,7 +47,7 @@ func TestMain(m *testing.M) {
 				utils.Check(err)
 
 				FixtureTask3Migrations(conn)
-				testdb.PerformanceWithIndexes.Dbname = dbname
+
 			}
 			code = m.Run()
 		})
