@@ -55,7 +55,7 @@ func TestInsertTags(t *testing.T) {
 		res, err = bundb.NewInsert().Model(&post_editions_ptrs).Exec(context.TODO())
 		_ = res
 		utils.Check(err)
-		golang.FixtureTask3Migrations(conn_orm, bundb)
+		golang.FixtureTask3Migrations(conn)
 
 		fmt.Println("teardown")
 	})
@@ -69,7 +69,7 @@ func TestInsertTags2(t *testing.T) {
 			types.MaxUsers(1000),
 			types.PostsPerUser(5),
 		)
-		golang.FixtureTask3Migrations(conn_orm, bundb)
+		golang.FixtureTask3Migrations(conn)
 
 		fmt.Println("teardown")
 	})
