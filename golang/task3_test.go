@@ -7,7 +7,6 @@ import (
 	"darklab_training_postgres/golang/shared/utils"
 	"darklab_training_postgres/golang/testdb"
 	"database/sql"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -36,109 +35,6 @@ func TestQueryReuseSetup2(t *testing.T) {
 		var count int64
 		conn_orm.Model(&model.Post{}).Count(&count)
 		assert.Equal(t, int(testdb.UnitTests.MaxUsers)*int(testdb.UnitTests.PostsPerUser), int(count))
-	})
-}
-
-func TestQuery1UserPostCount(t *testing.T) {
-	RunSubTests("3_1", t, func(db_params testdb.DBParams) {
-		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-			author_id := 1 + rand.Intn(int(db_params.MaxUsers)-1)
-			result := conn_orm.Raw(Task3Query1, sql.Named("author_id", author_id))
-			utils.Check(result.Error)
-
-			var count int
-			result.Scan(&count)
-			assert.Equal(t, int(db_params.PostsPerUser), count)
-		})
-	})
-}
-
-func TestQuery2PublishedOrderedPosts(t *testing.T) {
-
-	RunSubTests("3_2", t, func(db_params testdb.DBParams) {
-		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-			N := rand.Intn(int(db_params.MaxUsers) + int(db_params.PostsPerUser))
-			result := conn_orm.Raw(Task3Query2, sql.Named("N", N))
-			if result.Error != nil {
-				panic(result.Error)
-			}
-
-			rows, err := result.Rows()
-			if err != nil {
-				panic(err)
-			}
-
-			count_rows := 0
-			for rows.Next() {
-				count_rows += 1
-			}
-			assert.Equal(t, N, count_rows)
-
-		})
-	})
-}
-
-func TestQuery3PostsAwaitingPublishing(t *testing.T) {
-	RunSubTests("3_3", t, func(db_params testdb.DBParams) {
-		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-
-			N := (rand.Intn(int(db_params.MaxUsers)+int(db_params.PostsPerUser)) / 4)
-			result := conn_orm.Raw(Task3Query3, sql.Named("N", N))
-			if result.Error != nil {
-				panic(result.Error)
-			}
-
-			rows, err := result.Rows()
-			if err != nil {
-				panic(err)
-			}
-
-			count_rows := 0
-			for rows.Next() {
-				count_rows += 1
-			}
-			assert.Equal(t, N, count_rows)
-		})
-	})
-}
-
-func TestQuery4RecentlyUpdatedPostsByTag(t *testing.T) {
-	RunSubTests("3_4", t, func(db_params testdb.DBParams) {
-		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-
-			raw_sql := conn_orm.ToSQL(func(tx *gorm.DB) *gorm.DB {
-				return tx.Raw(Task3Query4,
-					sql.Named("N", 20),
-					sql.Named("K", 1),
-					sql.Named("L", 10),
-					sql.Named("tag", "a1"),
-				)
-			})
-			result, err := conn.Exec(raw_sql)
-
-			utils.Check(err)
-
-			count_rows, err := result.RowsAffected()
-			utils.Check(err)
-
-			assert.GreaterOrEqual(t, int(10), int(count_rows))
-		})
-	})
-}
-
-func TestQuery5FindNPostsWithMostRating(t *testing.T) {
-	RunSubTests("3_5", t, func(db_params testdb.DBParams) {
-		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-
-			result := conn_orm.Raw(Task3Query5,
-				sql.Named("N", 20),
-			)
-
-			utils.Check(result.Error)
-			count_rows := CountRows(result)
-
-			assert.Equal(t, 20, count_rows)
-		})
 	})
 }
 

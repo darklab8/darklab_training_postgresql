@@ -25,8 +25,8 @@
 --8<-- "sql/task3/queries/query3_1.sql"
 ```
 
-```py
---8<-- "python/solution/task3/test_3_1.py"
+```go
+--8<-- "golang/task3_1_test.go"
 ```
 
 ## 2. Выбрать N опубликованных постов, отсортированных в порядке убывания даты создания;
@@ -35,8 +35,8 @@
 --8<-- "sql/task3/queries/query3_2.sql"
 ```
 
-```py
---8<-- "python/solution/task3/test_3_2.py"
+```go
+--8<-- "golang/task3_2_test.go"
 ```
 
 ## 3. Выбрать N постов в статусе "ожидает публикации", отсортированных в порядке возрастания даты создания;
@@ -45,8 +45,8 @@
 --8<-- "sql/task3/queries/query3_3.sql"
 ```
 
-```py
---8<-- "python/solution/task3/test_3_3.py"
+```go
+--8<-- "golang/task3_3_test.go"
 ```
 
 ## 4. Найти N недавно обновленных постов определенного тэга для K страницы (в каждой странице L постов).
@@ -55,8 +55,8 @@
 --8<-- "sql/task3/queries/query3_4.sql"
 ```
 
-```py
---8<-- "python/solution/task3/test_3_4.py"
+```go
+--8<-- "golang/task3_4_test.go"
 ```
 
 ## 5. Найти N постов с наибольшим рейтингом за день/месяц/год.
@@ -65,8 +65,8 @@
 --8<-- "sql/task3/queries/query3_5.sql"
 ```
 
-```py
---8<-- "python/solution/task3/test_3_5.py"
+```go
+--8<-- "golang/task3_5_test.go"
 ```
 
 `6.` Оценить время выполнения запросов (на достаточном количестве тестовых данных) и проанализировать план выполнения запросов.
@@ -78,28 +78,3 @@
 Выполним вместе с 8 пунктом
 
 `8.` Оценить размер используемых индексов. При возможности - сократить размер созданных индексов.
-
-## Task 678_1 performance
-```py
---8<-- "python/solution/task3/test_3_678_1.py"
-```
-
-## Task 678_2 performance
-```py
---8<-- "python/solution/task3/test_3_678_2.py"
-```
-
-## Task 678_3 performance
-```py
---8<-- "python/solution/task3/test_3_678_3.py"
-```
-
-## Task 678_4 performance
-```py
---8<-- "python/solution/task3/test_3_678_4.py"
-```
-
-## Task 678_5 performance
-```py
---8<-- "python/solution/task3/test_3_678_5.py"
-```

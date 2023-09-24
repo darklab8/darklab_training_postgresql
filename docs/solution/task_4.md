@@ -17,16 +17,16 @@
 ```sql
 --8<-- "sql/task4/queries/query_4_1.sql"
 ```
-```py
---8<-- "python/solution/task4/test_4_1.py"
+```go
+--8<-- "golang/task4_1_test.go"
 ```
 ## Task 4_2 Найти N наиболее посещаемых постов для заданного пользователя за все время, которые создал не он, но которые он редактировал.
 
 ```sql
 --8<-- "sql/task4/queries/query_4_2.sql"
 ```
-```py
---8<-- "python/solution/task4/test_4_2.py"
+```go
+--8<-- "golang/task4_2_test.go"
 ```
 
 ## Task 4_3 Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей.
@@ -34,8 +34,8 @@
 ```sql
 --8<-- "sql/task4/queries/query_4_3.sql"
 ```
-```py
---8<-- "python/solution/task4/test_4_3.py"
+```go
+--8<-- "golang/task4_3_test.go"
 ```
 
 ## Task 4_4 Найти N пользователей, для которых суммарный рейтинг для всех созданных ими постов максимальный среди всех пользователей младше K лет.
@@ -43,8 +43,8 @@
 ```sql
 --8<-- "sql/task4/queries/query_4_4.sql"
 ```
-```py
---8<-- "python/solution/task4/test_4_4.py"
+```go
+--8<-- "golang/task4_4_test.go"
 ```
 
 ## Task 4_5 Найти N пользователей с наибольшим рейтингом.
@@ -52,8 +52,8 @@
 ```sql
 --8<-- "sql/task4/queries/query_4_5.sql"
 ```
-```py
---8<-- "python/solution/task4/test_4_5.py"
+```go
+--8<-- "golang/task4_5_test.go"
 ```
 
 ## Task 4_6 Найти N тэгов, для которых суммарное количество посещений связанных с ними постов наибольшее за неделю.
@@ -61,6 +61,6 @@
 ```sql
 --8<-- "sql/task4/queries/query_4_6.sql"
 ```
-```py
---8<-- "python/solution/task4/test_4_6.py"
+```go
+--8<-- "golang/task4_6_test.go"
 ```
