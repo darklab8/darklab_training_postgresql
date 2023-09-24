@@ -39,7 +39,7 @@ func TestQueryReuseSetup2(t *testing.T) {
 }
 
 func TestMigration(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConnTestDB(types.AutodestroyDB(true), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		FixtureTask2Migrations(conn)
 		FixtureTask3Migrations(conn)
 	})

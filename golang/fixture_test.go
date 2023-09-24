@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 	var code int
 
 	testdbname := types.Dbname(utils.TokenWord(8))
-	shared.FixtureConnTestDBWithName(types.Dbname(fmt.Sprintf("%s_unit_tests", testdbname)), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConnTestDBWithName(types.AutodestroyDB(true), types.Dbname(fmt.Sprintf("%s_unit_tests", testdbname)), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		// Unit tests db
 		FixtureTask2Migrations(conn)
 		testdb.UnitTests.Dbname = dbname
@@ -32,7 +32,7 @@ func TestMain(m *testing.M) {
 		utils.Check(err)
 		FixtureTask3Migrations(conn)
 
-		shared.FixtureConnTestDBWithName(types.Dbname(fmt.Sprintf("%s_indexes", testdbname)), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+		shared.FixtureConnTestDBWithName(types.AutodestroyDB(false), types.Dbname(fmt.Sprintf("%s_indexes", testdbname)), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
 			if settings.ENABLED_PERFORMANCE_TESTS {
 				FixtureTask2Migrations(conn)
@@ -41,7 +41,7 @@ func TestMain(m *testing.M) {
 				_, err := conn.Exec("REFRESH MATERIALIZED VIEW user_ratings")
 				utils.Check(err)
 
-				// Indexless
+				// Indexless test db. Not autodestroyed
 				testdb.PerformanceIndexless.Dbname = types.Dbname(fmt.Sprintf("%s_indexless", testdbname))
 				_, err = conn.Exec(fmt.Sprintf("CREATE DATABASE %s WITH TEMPLATE %s", testdb.PerformanceIndexless.Dbname, dbname))
 				utils.Check(err)

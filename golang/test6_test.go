@@ -47,7 +47,7 @@ func TestTask6Query2(t *testing.T) {
 }
 
 func TestTask6Query3(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConnTestDB(types.AutodestroyDB(true), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		FixtureTask2Migrations(conn)
 		FixtureTask3Migrations(conn)
 
@@ -57,7 +57,7 @@ func TestTask6Query3(t *testing.T) {
 }
 
 func TestTask6Query4(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConnTestDB(types.AutodestroyDB(true), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		res := conn_orm.Raw(`
 		CREATE TABLE post
 		(

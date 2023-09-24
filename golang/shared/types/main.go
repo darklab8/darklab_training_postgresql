@@ -13,3 +13,5 @@ type PostsPerUser int
 type PostVisitsAmount int
 
 type PostEditionAmount int
+
+type AutodestroyDB bool

@@ -29,7 +29,7 @@ func TestCount(t *testing.T) {
 }
 
 func TestInsertTags(t *testing.T) {
-	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConnTestDB(types.AutodestroyDB(true), func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		golang.FixtureTask2Migrations(conn)
 
 		user := model.User{}
