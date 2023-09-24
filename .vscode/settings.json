@@ -7,5 +7,11 @@
     "mypy.targets": [
         ".",
     ],
-    "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy"
+    "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy",
+    "go.testEnvVars": {
+        "ENABLE_PERFORMANCE_TESTS": "true"
+    },
+    "terminal.integrated.env.linux": {
+        "ENABLE_PERFORMANCE_TESTS":  "true"
+    }
 }

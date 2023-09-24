@@ -15,6 +15,9 @@ import (
 	"gorm.io/gorm"
 )
 
+/*
+This function signature must be located in file ending with _test.go :)
+*/
 func TestMain(m *testing.M) {
 	fmt.Println("seting")
 	var code int

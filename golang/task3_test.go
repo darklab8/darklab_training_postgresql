@@ -1,14 +1,12 @@
 package golang
 
 import (
-	"darklab_training_postgres/golang/settings"
 	"darklab_training_postgres/golang/shared"
 	"darklab_training_postgres/golang/shared/model"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"darklab_training_postgres/golang/testdb"
 	"database/sql"
-	"fmt"
 	"math/rand"
 	"testing"
 
@@ -39,27 +37,6 @@ func TestQueryReuseSetup2(t *testing.T) {
 		conn_orm.Model(&model.Post{}).Count(&count)
 		assert.Equal(t, int(testdb.UnitTests.MaxUsers)*int(testdb.UnitTests.PostsPerUser), int(count))
 	})
-}
-
-func RunSubTests(task_number string, t *testing.T, test_func func(db_params testdb.DBParams)) {
-	task_name := fmt.Sprintf("test%s", task_number)
-
-	t.Run(task_name+"_unit_test", func(t *testing.T) {
-		test_func(testdb.UnitTests)
-	})
-
-	if settings.ENABLED_PERFORMANCE_TESTS {
-		t.Run(task_name+"_perf_with_index", func(t *testing.T) {
-			shared.FixtureTimeMeasure(func() {
-				test_func(testdb.PerformanceWithIndexes)
-			}, task_name+"_perf_with_index")
-		})
-		t.Run(task_name+"_perf__without_index", func(t *testing.T) {
-			shared.FixtureTimeMeasure(func() {
-				test_func(testdb.PerformanceIndexless)
-			}, task_name+"_perf__without_index")
-		})
-	}
 }
 
 func TestQuery1UserPostCount(t *testing.T) {
