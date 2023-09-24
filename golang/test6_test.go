@@ -48,7 +48,7 @@ func TestTask6Query2(t *testing.T) {
 func TestTask6Query3(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		FixtureTask2Migrations(conn)
-		FixtureTask3Migrations(conn_orm, bundb)
+		FixtureTask3Migrations(conn)
 
 		result := conn_orm.Raw(Task6Query3)
 		utils.Check(result.Error)

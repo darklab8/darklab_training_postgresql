@@ -6,9 +6,7 @@ import (
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
-
-	"github.com/uptrace/bun"
-	"gorm.io/gorm"
+	"strings"
 )
 
 var (
@@ -27,9 +25,20 @@ func FixtureTask2Migrations(conn *sql.DB) {
 	utils.MustExec(conn, Migration2)
 }
 
-func FixtureTask3Migrations(conn_orm *gorm.DB, bundb *bun.DB) {
-	res := conn_orm.Raw(MigrationAddIndexes)
-	utils.Check(res.Error)
+func FixtureTask3Migrations(conn *sql.DB) {
+
+	lines := strings.Split(MigrationAddIndexes, "\n")
+	for _, line := range lines {
+
+		if strings.HasPrefix(line, "--") {
+			continue
+		}
+		if line == "" {
+			continue
+		}
+
+		utils.MustExec(conn, line)
+	}
 }
 
 type ModelCounter struct {
@@ -60,7 +69,7 @@ func FixtureFillWithData(
 	posts_per_user types.PostsPerUser,
 ) {
 	post_amount := int(max_users) * int(posts_per_user)
-	post_visit_rows_count := types.AmountCreate(5000)
+	post_visit_rows_count := types.AmountCreate(1000)
 	post_edition_amount := types.AmountCreate(1000)
 
 	shared.FixtureTimeMeasure(func() {

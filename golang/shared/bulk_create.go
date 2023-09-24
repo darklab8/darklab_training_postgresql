@@ -22,7 +22,7 @@ func (data *BulkJob[T]) runJob(worker_id int) StatusCode {
 	FixtureTimeMeasure(func() {
 		// fmt.Println("worker", worker_id, "started  job", data.id)
 		FixtureConn(data.dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-			_, err := bundb.NewInsert().Model(&data.Ptrs).Exec(context.TODO())
+			_, err := bundb.NewInsert().On("CONFLICT DO NOTHING").Model(&data.Ptrs).Exec(context.TODO())
 			if err != nil {
 				panic(err)
 			}

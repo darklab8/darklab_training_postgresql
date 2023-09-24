@@ -6,6 +6,7 @@ import (
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
 	"database/sql"
+	"fmt"
 	"math/rand"
 	"testing"
 
@@ -38,9 +39,22 @@ func TestQueryReuseSetup2(t *testing.T) {
 	})
 }
 
-func TestQuery1UserPostCount(t *testing.T) {
-	run_test := func(db_params TemporalDB) {
+func PerformanceCheck(task_number string, t *testing.T, test_func func(db_params TemporalDB)) {
+	task_name := fmt.Sprintf("test%s", task_number)
+	t.Run(task_name+"_without_index", func(t *testing.T) {
+		shared.FixtureTimeMeasure(func() {
+			test_func(TempDbIndexless)
+		}, task_name+"_without_index")
+	})
+	t.Run(task_name+"_with_index", func(t *testing.T) {
+		shared.FixtureTimeMeasure(func() {
+			test_func(TempDb)
+		}, task_name+"_with_index")
+	})
+}
 
+func TestQuery1UserPostCount(t *testing.T) {
+	PerformanceCheck("3_1", t, func(db_params TemporalDB) {
 		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 			author_id := 1 + rand.Intn(int(db_params.MaxUsers)-1)
 			result := conn_orm.Raw(Task3Query1, sql.Named("author_id", author_id))
@@ -50,26 +64,14 @@ func TestQuery1UserPostCount(t *testing.T) {
 			result.Scan(&count)
 			assert.Equal(t, int(db_params.PostsPerUser), count)
 		})
-	}
-
-	t.Run("test3_1_without_index", func(t *testing.T) {
-		shared.FixtureTimeMeasure(func() {
-			run_test(TempDbIndexless)
-		}, "test3_1_without_index")
-		run_test(TempDbIndexless)
-	})
-	t.Run("test3_1_with_index", func(t *testing.T) {
-		shared.FixtureTimeMeasure(func() {
-			run_test(TempDb)
-		}, "test3_1_with_index")
-		run_test(TempDb)
 	})
 }
 
 func TestQuery2PublishedOrderedPosts(t *testing.T) {
-	test1 := func(dbname types.Dbname) {
-		shared.FixtureConn(dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-			N := rand.Intn(int(TempDb.MaxUsers) + int(TempDb.PostsPerUser))
+
+	PerformanceCheck("3_2", t, func(db_params TemporalDB) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			N := rand.Intn(int(db_params.MaxUsers) + int(db_params.PostsPerUser))
 			result := conn_orm.Raw(Task3Query2, sql.Named("N", N))
 			if result.Error != nil {
 				panic(result.Error)
@@ -87,10 +89,6 @@ func TestQuery2PublishedOrderedPosts(t *testing.T) {
 			assert.Equal(t, N, count_rows)
 
 		})
-	}
-
-	t.Run("taskquery4_2", func(t *testing.T) {
-		test1(TempDb.Dbname)
 	})
 }
 
@@ -155,6 +153,6 @@ func TestQuery5FindNPostsWithMostRating(t *testing.T) {
 func TestMigration(t *testing.T) {
 	shared.FixtureConnTestDB(func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		FixtureTask2Migrations(conn)
-		FixtureTask3Migrations(conn_orm, bundb)
+		FixtureTask3Migrations(conn)
 	})
 }

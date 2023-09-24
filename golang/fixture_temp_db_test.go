@@ -20,13 +20,15 @@ type TemporalDB struct {
 }
 
 var (
-	TempDb = TemporalDB{
-		MaxUsers:     10000,
-		PostsPerUser: 50,
+	MaxUsers     types.MaxUsers     = 10000
+	PostsPerUser types.PostsPerUser = 50
+	TempDb                          = TemporalDB{
+		MaxUsers:     MaxUsers,
+		PostsPerUser: PostsPerUser,
 	}
 	TempDbIndexless = TemporalDB{
-		MaxUsers:     10000,
-		PostsPerUser: 50,
+		MaxUsers:     MaxUsers,
+		PostsPerUser: PostsPerUser,
 	}
 )
 
@@ -55,7 +57,7 @@ func TestMain(m *testing.M) {
 		_, err = conn.Exec(fmt.Sprintf("CREATE DATABASE %s WITH TEMPLATE %s", TempDbIndexless.Dbname, dbname))
 		utils.Check(err)
 
-		FixtureTask3Migrations(conn_orm, bundb)
+		FixtureTask3Migrations(conn)
 
 		code = m.Run()
 		fmt.Println("teardown")
