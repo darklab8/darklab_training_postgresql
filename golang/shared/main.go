@@ -66,8 +66,7 @@ func FixtureConn(dbname types.Dbname, callback func(dbname types.Dbname, conn *s
 	callback(dbname, db, gormDB, bundb)
 }
 
-func FixtureDatabase(callback func(dbname types.Dbname)) {
-	new_dbname := types.Dbname(utils.TokenWord(8))
+func FixtureDatabaseWithName(new_dbname types.Dbname, callback func(dbname types.Dbname)) {
 	FixtureConn("postgres", func(dbpath types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
 		_, err := conn.Exec(fmt.Sprintf("CREATE DATABASE %s", new_dbname))
@@ -83,6 +82,21 @@ func FixtureDatabase(callback func(dbname types.Dbname)) {
 		_ = err
 		_, err = conn.Exec(fmt.Sprintf("DROP DATABASE %s", new_dbname))
 		_ = err
+	})
+}
+
+func FixtureDatabase(callback func(dbname types.Dbname)) {
+	new_dbname := types.Dbname(utils.TokenWord(8))
+	FixtureDatabaseWithName(new_dbname, func(dbname types.Dbname) {
+		callback(dbname)
+	})
+}
+
+func FixtureConnTestDBWithName(new_dbname types.Dbname, callback func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB)) {
+	FixtureDatabaseWithName(new_dbname, func(dbname types.Dbname) {
+		FixtureConn(dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			callback(dbname, conn, conn_orm, bundb)
+		})
 	})
 }
 

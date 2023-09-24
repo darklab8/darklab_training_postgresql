@@ -4,6 +4,7 @@ import (
 	"darklab_training_postgres/golang/shared"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
+	"darklab_training_postgres/golang/testdb"
 	"database/sql"
 	"testing"
 
@@ -26,7 +27,7 @@ func init() {
 }
 
 func TestTask6Query1(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConn(testdb.UnitTests.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		result := conn_orm.Raw(
 			Task6Query1,
 			sql.Named("post_id", 10),
@@ -36,7 +37,7 @@ func TestTask6Query1(t *testing.T) {
 }
 
 func TestTask6Query2(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConn(testdb.UnitTests.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		result := conn_orm.Raw(
 			Task6Query2,
 			sql.Named("N", 10),

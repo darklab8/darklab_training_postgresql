@@ -3,6 +3,7 @@ package golang
 import (
 	"darklab_training_postgres/golang/shared"
 	"darklab_training_postgres/golang/shared/types"
+	"darklab_training_postgres/golang/testdb"
 	"database/sql"
 	"fmt"
 	"testing"
@@ -13,7 +14,7 @@ import (
 )
 
 func TestSelect1(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConn(testdb.UnitTests.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		rows, err := conn.Query("SELECT 1")
 		if err != nil {
 			panic(err)

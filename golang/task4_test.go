@@ -6,6 +6,7 @@ import (
 	"darklab_training_postgres/golang/shared/model"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
+	"darklab_training_postgres/golang/testdb"
 	"database/sql"
 	"math/rand"
 	"testing"
@@ -48,22 +49,24 @@ func CountRows(result *gorm.DB) int {
 }
 
 func TestTask4Query1MostVisitedPostInAYear(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	RunSubTests("4_1", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
-		Query1Test := func(query1 string) {
-			N := 50
-			result := conn_orm.Raw(query1, sql.Named("N", N))
-			utils.Check(result.Error)
+			Query1Test := func(query1 string) {
+				N := 50
+				result := conn_orm.Raw(query1, sql.Named("N", N))
+				utils.Check(result.Error)
 
-			count := CountRows(result)
-			assert.Equal(t, int(TempDb.PostsPerUser), count)
-		}
+				count := CountRows(result)
+				assert.Equal(t, int(db_params.PostsPerUser), count)
+			}
 
-		t.Run("taskquery4_1", func(t *testing.T) {
-			Query1Test(Task4Query1)
-		})
-		t.Run("taskquery4_2", func(t *testing.T) {
-			Query1Test(Task4Query1_2)
+			t.Run("4_1_1", func(t *testing.T) {
+				Query1Test(Task4Query1)
+			})
+			t.Run("4_1_2", func(t *testing.T) {
+				Query1Test(Task4Query1_2)
+			})
 		})
 	})
 }
@@ -75,101 +78,111 @@ func (m SaveNeverTestException) Error() string {
 }
 
 func TestTask4Query2MostVisitedPostsForAuthor(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-		N := 50
-		user_id := 10
+	RunSubTests("4_2", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			N := 50
+			user_id := 10
 
-		post_eds := make([]model.PostEdition, 100)
-		post_ed_ptrs := make([]*model.PostEdition, 100)
-		for i, _ := range post_ed_ptrs {
-			post_eds[i].Fill(rand.Intn(10)+1, user_id)
-			post_ed_ptrs[i] = &post_eds[i]
-		}
-		_, err := bundb.NewInsert().Model(&post_ed_ptrs).Exec(context.TODO())
-		utils.Check(err)
+			post_eds := make([]model.PostEdition, 100)
+			post_ed_ptrs := make([]*model.PostEdition, 100)
+			for i, _ := range post_ed_ptrs {
+				post_eds[i].Fill(rand.Intn(10)+1, user_id)
+				post_ed_ptrs[i] = &post_eds[i]
+			}
+			_, err := bundb.NewInsert().Model(&post_ed_ptrs).Exec(context.TODO())
+			utils.Check(err)
 
-		post_visits := make([]model.PostVisits, 100)
-		post_visits_ptrs := make([]*model.PostVisits, 100)
-		for i, _ := range post_visits_ptrs {
-			post_visits[i].Fill(rand.Intn(10) + 1)
-			post_visits_ptrs[i] = &post_visits[i]
-		}
-		_, err = bundb.NewInsert().On("CONFLICT DO NOTHING").Model(&post_visits_ptrs).Exec(context.TODO())
-		utils.Check(err)
+			post_visits := make([]model.PostVisits, 100)
+			post_visits_ptrs := make([]*model.PostVisits, 100)
+			for i, _ := range post_visits_ptrs {
+				post_visits[i].Fill(rand.Intn(10) + 1)
+				post_visits_ptrs[i] = &post_visits[i]
+			}
+			_, err = bundb.NewInsert().On("CONFLICT DO NOTHING").Model(&post_visits_ptrs).Exec(context.TODO())
+			utils.Check(err)
 
-		Query1Test := func(query1 string) {
+			Query1Test := func(query1 string) {
 
-			result := conn_orm.Raw(
-				query1,
-				sql.Named("N", N),
-				sql.Named("user_id", user_id),
-			)
-			utils.Check(result.Error)
+				result := conn_orm.Raw(
+					query1,
+					sql.Named("N", N),
+					sql.Named("user_id", user_id),
+				)
+				utils.Check(result.Error)
 
-			count := CountRows(result)
-			assert.GreaterOrEqual(t, N, count)
-		}
+				count := CountRows(result)
+				assert.GreaterOrEqual(t, N, count)
+			}
 
-		t.Run("taskquery4_2", func(t *testing.T) {
-			Query1Test(Task4Query2)
+			t.Run("taskquery4_2", func(t *testing.T) {
+				Query1Test(Task4Query2)
+			})
 		})
 	})
 }
 
 func TestTask4Query3(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-		N := 50
-		result := conn_orm.Raw(
-			Task4Query3,
-			sql.Named("N", N),
-		)
-		utils.Check(result.Error)
+	RunSubTests("4_3", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			N := 50
+			result := conn_orm.Raw(
+				Task4Query3,
+				sql.Named("N", N),
+			)
+			utils.Check(result.Error)
 
-		count := CountRows(result)
-		assert.Equal(t, N, count)
+			count := CountRows(result)
+			assert.Equal(t, N, count)
+		})
 	})
 }
 
 func TestTask4Query4(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-		N := 50
-		result := conn_orm.Raw(
-			Task4Query4,
-			sql.Named("N", N),
-			sql.Named("K", 2),
-		)
-		utils.Check(result.Error)
+	RunSubTests("4_4", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			N := 50
+			result := conn_orm.Raw(
+				Task4Query4,
+				sql.Named("N", N),
+				sql.Named("K", 2),
+			)
+			utils.Check(result.Error)
 
-		count := CountRows(result)
-		assert.Equal(t, N, count)
+			count := CountRows(result)
+			assert.Equal(t, N, count)
+		})
 	})
 }
 
 func TestTask4Query5(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-		N := 50
-		result := conn_orm.Raw(
-			Task4Query5,
-			sql.Named("N", N),
-		)
-		utils.Check(result.Error)
+	RunSubTests("4_5", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			N := 50
+			result := conn_orm.Raw(
+				Task4Query5,
+				sql.Named("N", N),
+			)
+			utils.Check(result.Error)
 
-		count := CountRows(result)
-		assert.Equal(t, N, count)
+			count := CountRows(result)
+			assert.Equal(t, N, count)
+		})
 	})
 }
 
 func TestTask4Query6(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
-		N := 50
-		result := conn_orm.Raw(
-			Task4Query6,
-			sql.Named("N", N),
-		)
-		utils.Check(result.Error)
+	RunSubTests("4_6", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+			N := 50
+			result := conn_orm.Raw(
+				Task4Query6,
+				sql.Named("N", N),
+			)
+			utils.Check(result.Error)
 
-		tag_count := 3
-		count := CountRows(result)
-		assert.Equal(t, tag_count, count)
+			tag_count := 3
+			count := CountRows(result)
+			assert.Equal(t, tag_count, count)
+		})
 	})
 }

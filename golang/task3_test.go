@@ -1,10 +1,12 @@
 package golang
 
 import (
+	"darklab_training_postgres/golang/settings"
 	"darklab_training_postgres/golang/shared"
 	"darklab_training_postgres/golang/shared/model"
 	"darklab_training_postgres/golang/shared/types"
 	"darklab_training_postgres/golang/shared/utils"
+	"darklab_training_postgres/golang/testdb"
 	"database/sql"
 	"fmt"
 	"math/rand"
@@ -32,29 +34,36 @@ func init() {
 }
 
 func TestQueryReuseSetup2(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	shared.FixtureConn(testdb.UnitTests.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 		var count int64
 		conn_orm.Model(&model.Post{}).Count(&count)
-		assert.Equal(t, int(TempDb.MaxUsers)*int(TempDb.PostsPerUser), int(count))
+		assert.Equal(t, int(testdb.UnitTests.MaxUsers)*int(testdb.UnitTests.PostsPerUser), int(count))
 	})
 }
 
-func PerformanceCheck(task_number string, t *testing.T, test_func func(db_params TemporalDB)) {
+func RunSubTests(task_number string, t *testing.T, test_func func(db_params testdb.DBParams)) {
 	task_name := fmt.Sprintf("test%s", task_number)
-	t.Run(task_name+"_without_index", func(t *testing.T) {
-		shared.FixtureTimeMeasure(func() {
-			test_func(TempDbIndexless)
-		}, task_name+"_without_index")
+
+	t.Run(task_name+"_unit_test", func(t *testing.T) {
+		test_func(testdb.UnitTests)
 	})
-	t.Run(task_name+"_with_index", func(t *testing.T) {
-		shared.FixtureTimeMeasure(func() {
-			test_func(TempDb)
-		}, task_name+"_with_index")
-	})
+
+	if settings.ENABLED_PERFORMANCE_TESTS {
+		t.Run(task_name+"_perf_with_index", func(t *testing.T) {
+			shared.FixtureTimeMeasure(func() {
+				test_func(testdb.PerformanceWithIndexes)
+			}, task_name+"_perf_with_index")
+		})
+		t.Run(task_name+"_perf__without_index", func(t *testing.T) {
+			shared.FixtureTimeMeasure(func() {
+				test_func(testdb.PerformanceIndexless)
+			}, task_name+"_perf__without_index")
+		})
+	}
 }
 
 func TestQuery1UserPostCount(t *testing.T) {
-	PerformanceCheck("3_1", t, func(db_params TemporalDB) {
+	RunSubTests("3_1", t, func(db_params testdb.DBParams) {
 		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 			author_id := 1 + rand.Intn(int(db_params.MaxUsers)-1)
 			result := conn_orm.Raw(Task3Query1, sql.Named("author_id", author_id))
@@ -69,7 +78,7 @@ func TestQuery1UserPostCount(t *testing.T) {
 
 func TestQuery2PublishedOrderedPosts(t *testing.T) {
 
-	PerformanceCheck("3_2", t, func(db_params TemporalDB) {
+	RunSubTests("3_2", t, func(db_params testdb.DBParams) {
 		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 			N := rand.Intn(int(db_params.MaxUsers) + int(db_params.PostsPerUser))
 			result := conn_orm.Raw(Task3Query2, sql.Named("N", N))
@@ -93,60 +102,66 @@ func TestQuery2PublishedOrderedPosts(t *testing.T) {
 }
 
 func TestQuery3PostsAwaitingPublishing(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	RunSubTests("3_3", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
-		N := (rand.Intn(int(TempDb.MaxUsers)+int(TempDb.PostsPerUser)) / 4)
-		result := conn_orm.Raw(Task3Query3, sql.Named("N", N))
-		if result.Error != nil {
-			panic(result.Error)
-		}
+			N := (rand.Intn(int(db_params.MaxUsers)+int(db_params.PostsPerUser)) / 4)
+			result := conn_orm.Raw(Task3Query3, sql.Named("N", N))
+			if result.Error != nil {
+				panic(result.Error)
+			}
 
-		rows, err := result.Rows()
-		if err != nil {
-			panic(err)
-		}
+			rows, err := result.Rows()
+			if err != nil {
+				panic(err)
+			}
 
-		count_rows := 0
-		for rows.Next() {
-			count_rows += 1
-		}
-		assert.Equal(t, N, count_rows)
+			count_rows := 0
+			for rows.Next() {
+				count_rows += 1
+			}
+			assert.Equal(t, N, count_rows)
+		})
 	})
 }
 
 func TestQuery4RecentlyUpdatedPostsByTag(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	RunSubTests("3_4", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
-		raw_sql := conn_orm.ToSQL(func(tx *gorm.DB) *gorm.DB {
-			return tx.Raw(Task3Query4,
-				sql.Named("N", 20),
-				sql.Named("K", 1),
-				sql.Named("L", 10),
-				sql.Named("tag", "a1"),
-			)
+			raw_sql := conn_orm.ToSQL(func(tx *gorm.DB) *gorm.DB {
+				return tx.Raw(Task3Query4,
+					sql.Named("N", 20),
+					sql.Named("K", 1),
+					sql.Named("L", 10),
+					sql.Named("tag", "a1"),
+				)
+			})
+			result, err := conn.Exec(raw_sql)
+
+			utils.Check(err)
+
+			count_rows, err := result.RowsAffected()
+			utils.Check(err)
+
+			assert.GreaterOrEqual(t, int(10), int(count_rows))
 		})
-		result, err := conn.Exec(raw_sql)
-
-		utils.Check(err)
-
-		count_rows, err := result.RowsAffected()
-		utils.Check(err)
-
-		assert.GreaterOrEqual(t, int(10), int(count_rows))
 	})
 }
 
 func TestQuery5FindNPostsWithMostRating(t *testing.T) {
-	shared.FixtureConn(TempDb.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
+	RunSubTests("3_5", t, func(db_params testdb.DBParams) {
+		shared.FixtureConn(db_params.Dbname, func(dbname types.Dbname, conn *sql.DB, conn_orm *gorm.DB, bundb *bun.DB) {
 
-		result := conn_orm.Raw(Task3Query5,
-			sql.Named("N", 20),
-		)
+			result := conn_orm.Raw(Task3Query5,
+				sql.Named("N", 20),
+			)
 
-		utils.Check(result.Error)
-		count_rows := CountRows(result)
+			utils.Check(result.Error)
+			count_rows := CountRows(result)
 
-		assert.Equal(t, 20, count_rows)
+			assert.Equal(t, 20, count_rows)
+		})
 	})
 }
 
