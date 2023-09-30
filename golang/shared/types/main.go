@@ -14,4 +14,6 @@ type PostVisitsAmount int
 
 type PostEditionAmount int
 
+type PostApprovalAmount int
+
 type AutodestroyDB bool

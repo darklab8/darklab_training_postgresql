@@ -9,7 +9,7 @@ tasks:
     cmds:
       - go clean -cache
       - go clean -testcache
-      - go test ./... -count=1 -a {{.CLI_ARGS}}
+      - go test -v ./... -count=1 -a {{.CLI_ARGS}}
 
   golang:test:create:
     cmds:

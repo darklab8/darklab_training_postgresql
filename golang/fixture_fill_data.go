@@ -7,6 +7,7 @@ import (
 	"darklab_training_postgres/golang/shared/utils"
 	"darklab_training_postgres/golang/testdb"
 	"database/sql"
+	"fmt"
 	"strings"
 )
 
@@ -29,7 +30,7 @@ func FixtureTask2Migrations(conn *sql.DB) {
 func FixtureTask3Migrations(conn *sql.DB) {
 
 	lines := strings.Split(MigrationAddIndexes, "\n")
-	for _, line := range lines {
+	for number, line := range lines {
 
 		if strings.HasPrefix(line, "--") {
 			continue
@@ -39,6 +40,7 @@ func FixtureTask3Migrations(conn *sql.DB) {
 		}
 
 		utils.MustExec(conn, line)
+		fmt.Println("applied migration 3_", number)
 	}
 }
 
@@ -97,15 +99,25 @@ func FixtureFillWithData(
 			p.Fill(post_counter.Next())
 		})
 
-		// TODO try to achieve high performance despite trigger for post_edition :/
 		post_edition_bulker := shared.Bulker[model.PostEdition]{
 			Amount_to_create: types.AmountCreate(params.PostEditions),
-			Bulk_max:         types.BulkMax(4000),
+			Bulk_max:         types.BulkMax(10000),
 			Dbname:           params.Dbname,
 		}
 		user_counter = NewCounter(int(params.MaxUsers))
 		post_counter = NewCounter(post_amount)
 		post_edition_bulker.Init().BulkCreate(func(p *model.PostEdition) {
+			p.Fill(post_counter.Next(), user_counter.Next())
+		})
+
+		post_approval_bulker := shared.Bulker[model.PostApproval]{
+			Amount_to_create: types.AmountCreate(params.PostApprovals),
+			Bulk_max:         types.BulkMax(16000),
+			Dbname:           params.Dbname,
+		}
+		user_counter = NewCounter(int(params.MaxUsers))
+		post_counter = NewCounter(post_amount)
+		post_approval_bulker.Init().BulkCreate(func(p *model.PostApproval) {
 			p.Fill(post_counter.Next(), user_counter.Next())
 		})
 

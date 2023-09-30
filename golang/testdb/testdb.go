@@ -7,11 +7,12 @@ import (
 )
 
 type DBParams struct {
-	Dbname       types.Dbname
-	MaxUsers     types.MaxUsers
-	PostsPerUser types.PostsPerUser
-	PostVisits   types.PostVisitsAmount
-	PostEditions types.PostEditionAmount
+	Dbname        types.Dbname
+	MaxUsers      types.MaxUsers
+	PostsPerUser  types.PostsPerUser
+	PostVisits    types.PostVisitsAmount
+	PostEditions  types.PostEditionAmount
+	PostApprovals types.PostApprovalAmount
 }
 
 func (d DBParams) ToStr() string {
@@ -26,16 +27,18 @@ func (d DBParams) ToStr() string {
 
 var (
 	UnitTests = DBParams{
-		MaxUsers:     10000,
-		PostsPerUser: 50,
-		PostVisits:   1000,
-		PostEditions: 1000,
+		MaxUsers:      10000,
+		PostsPerUser:  50,
+		PostVisits:    1000,
+		PostEditions:  1000,
+		PostApprovals: 1000,
 	}
 	PerformanceIndexless = DBParams{
-		MaxUsers:     20000,
-		PostsPerUser: 50,
-		PostVisits:   1000,
-		PostEditions: 1000,
+		MaxUsers:      50000,
+		PostsPerUser:  50,
+		PostVisits:    50000 * 10,
+		PostEditions:  50000 * 10,
+		PostApprovals: 10000,
 	}
 	PerformanceWithIndexes = DBParams{
 		MaxUsers:     PerformanceIndexless.MaxUsers,
