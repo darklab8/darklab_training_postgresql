@@ -2,7 +2,7 @@
 -- 4. Добавление нового индекса в таблицу не должно блокировать ее и ее записи.
 -- https://www.postgresql.org/docs/current/sql-createindex.html#SQL-CREATEINDEX-CONCURRENTLY
 
-CREATE INDEX CONCURRENTLY idx_post_author_id ON post USING BTREE (author_id); -- 3_1 // replace to HASH
+CREATE INDEX CONCURRENTLY idx_post_author_id ON post USING HASH (author_id); -- 3_1 // replace to HASH
 CREATE INDEX CONCURRENTLY idx_post_created ON post USING BTREE (created_at); -- 3_2, 3_3, 3_5
 CREATE INDEX CONCURRENTLY idx_post_status ON post USING BTREE (status); -- 3_3
 CREATE INDEX CONCURRENTLY idx_post_rating ON post USING BTREE (rating); -- 4_3 ORDER

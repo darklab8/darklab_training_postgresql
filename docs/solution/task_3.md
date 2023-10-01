@@ -189,20 +189,88 @@ LIMIT 50
 
 Судя по Explain плану, большинству цены затрачено на сортировку по ключу post.created_at DESC 🤔
 CREATE INDEX CONCURRENTLY idx_post_created ON post USING BTREE (created_at);
-
 idx_post_created CREATE INDEX idx_post_created ON public.post USING btree (created_at)
-
 post_pkey CREATE UNIQUE INDEX post_pkey ON public.post USING btree (id)
 idx_post_approval_post_id CREATE INDEX idx_post_approval_post_id ON public.post_approval USING hash (post_id) # post.id = pr.post_id Merge cond
-- Try adding hash on post.id?
-- try going btree onto post_approval.post_Id ?
-- may be special hash for order by desc?
-- may be better index for post.created_at between dates?
-- try SUM(COALESCE(change,0)) onto calculated rating? :smile:
+
+Улучшил скорость выполнения 100мс.
+Забыл что добавлял уже денормализацию рейтинга к посту :)
+
+```sql
+SELECT
+id,
+rating,
+created_at
+FROM post
+WHERE created_at BETWEEN NOW() - interval '1 year' and NOW()
+-- WHERE created_at BETWEEN NOW() - interval '1 month' and NOW()
+-- WHERE created_at BETWEEN NOW() - interval '1 day' and NOW()
+ORDER BY created_at DESC
+LIMIT :N
+```
 
 
+| test_number | without indexes time | with indexes time | comment                                                                           |
+| ------------- | ---------------------- | ------------------- | ----------------------------------------------------------------------------------- |
+| test3_1     | 65.486489ms          | 63.537003ms       |                                                                                   |
+| test3_2     | 217ms                | 30ms              |                                                                                   |
+| test3_3     | 140ms                | 8ms               |                                                                                   |
+| test3_4     | 254ms                | 240ms             |                                                                                   |
+| test3_5     | 353ms                | 11ms              |                                                                                   |
+| test4_1     | 97ms                 | 54ms              |                                                                                   |
+| test4_2     | 122ms                | 89ms              |                                                                                   |
+| test4_3     | 768ms                | 300m              |                                                                                   |
+| test4_4     | 592ms                | 500ms             | здесь немного долговато, попробуем улучшить |
+| test4_5     | 17ms                 | 8ms               |                                                                                   |
+| test4_6     | 677ms                | 274ms             |                                                                                   |
 
-`8.` Оценить размер используемых индексов. При возможности - сократить размер созданных индексов.
+test 4_4
+
+```sql
+EXPLAIN ANALYZE SELECT u.id, u.birth_date::date, SUM(p.rating) as summed_rating FROM post p
+JOIN user_ u ON u.id = p.author_id
+WHERE (NOW()::date - u.birth_date::date) < 365 * 1
+GROUP BY u.id
+ORDER BY summed_rating DESC
+LIMIT 50
+```
+
+
+| QUERY PLAN                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------- |
+| Limit  (cost=40585.83..40585.96 rows=50 width=16) (actual time=572.909..572.982 rows=50 loops=1)                            |
+| ->  Sort  (cost=40585.83..40627.50 rows=16667 width=16) (actual time=572.908..572.978 rows=50 loops=1)                      |
+| Sort Key: (sum(p.rating)) DESC                                                                                              |
+| Sort Method: top-N heapsort  Memory: 29kB                                                                                   |
+| ->  Finalize HashAggregate  (cost=39865.50..40032.17 rows=16667 width=16) (actual time=562.265..568.745 rows=49873 loops=1) |
+| Group Key: u.id                                                                                                             |
+| Batches: 1  Memory Usage: 5649kB                                                                                            |
+| ->  Gather  (cost=36198.76..39698.83 rows=33334 width=16) (actual time=504.063..521.788 rows=149619 loops=1)                |
+| Workers Planned: 2                                                                                                          |
+| Workers Launched: 2                                                                                                         |
+| ->  Partial HashAggregate  (cost=35198.76..35365.43 rows=16667 width=16) (actual time=502.114..511.672 rows=49873 loops=3)  |
+| Group Key: u.id                                                                                                             |
+| Batches: 1  Memory Usage: 5649kB                                                                                            |
+| Worker 0:  Batches: 1  Memory Usage: 5649kB                                                                                 |
+| Worker 1:  Batches: 1  Memory Usage: 5649kB                                                                                 |
+| ->  Hash Join  (cost=1923.34..33462.61 rows=347229 width=12) (actual time=18.477..311.918 rows=831217 loops=3)              |
+| Hash Cond: (p.author_id = u.id)                                                                                             |
+| ->  Parallel Seq Scan on post p  (cost=0.00..28804.67 rows=1041667 width=8) (actual time=0.015..87.856 rows=833333 loops=3) |
+| ->  Hash  (cost=1715.00..1715.00 rows=16667 width=8) (actual time=18.378..18.379 rows=49873 loops=3)                        |
+| Buckets: 65536 (originally 32768)  Batches: 1 (originally 1)  Memory Usage: 2461kB                                          |
+| ->  Seq Scan on user_ u  (cost=0.00..1715.00 rows=16667 width=8) (actual time=0.009..11.232 rows=49873 loops=3)             |
+| Filter: (((now())::date - birth_date) < 365)                                                                                |
+| Rows Removed by Filter: 127                                                                                                 |
+| Planning Time: 0.170 ms                                                                                                     |
+| Execution Time: 573.991 ms                                                                                                  |
+
+Основное время занимает уже hash indexed JOINs и аггрегация. Особо не ускоришь за счет индексов
+
+Можно ускорить с материальный view на SUM rating 🤔
+
+А в целом 500мс не так уж то и долго пока что чтобы ускорять 😄 на том и завершим оптимизации
+
+8.`Оценить размер используемых индексов. При возможности - сократить размер созданных индексов.
 
 hpemdfwd_indexes=# \di+
 
@@ -240,3 +308,7 @@ hpemdfwd_indexes=# \di+
 
 - Btree на datetime намного более требует места чем btree на integer судя по таблицу Post
 - Hash индекс может потреблять места больше чем Btree по таблицу post_edition и post_visits_per_day
+
+Варианты оптимизации?
+
+ID и datetime индексы можно бы все заменить на BRIN для экономии места

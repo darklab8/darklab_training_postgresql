@@ -1,12 +1,12 @@
 -- 5. Найти N постов с наибольшим рейтингом за день/месяц/год.
 
 SELECT
-	post.id,
-	SUM(COALESCE(change,0)) as calculated_rating,
-	post.created_at as created
+	id,
+	rating,
+	created_at 
 FROM post
-LEFT JOIN post_approval pr ON pr.post_id = post.id
-WHERE post.created_at BETWEEN NOW() - interval '3 year' and NOW()
-GROUP BY post.id
-ORDER BY created DESC
+WHERE created_at BETWEEN NOW() - interval '1 year' and NOW()
+-- WHERE created_at BETWEEN NOW() - interval '1 month' and NOW()
+-- WHERE created_at BETWEEN NOW() - interval '1 day' and NOW()
+ORDER BY created_at DESC
 LIMIT :N
