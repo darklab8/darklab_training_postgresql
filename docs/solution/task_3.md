@@ -69,11 +69,11 @@
 --8<-- "golang/task3_5_test.go"
 ```
 
-`6.` Оценить время выполнения запросов (на достаточном количестве тестовых данных) и проанализировать план выполнения запросов.
+# 6. Оценить время выполнения запросов (на достаточном количестве тестовых данных) и проанализировать план выполнения запросов.
 
 Выполним вместе с 7м пунктом
 
-`7.` Сократить время на выполнение запросов, используя подходящие индексы. Сравнить время выполнения и план запросов после создания индексов.
+# 7. Сократить время на выполнение запросов, используя подходящие индексы. Сравнить время выполнения и план запросов после создания индексов.
 
 Выполним вместе с 8 пунктом.1.1 Древние индексы, версия первая
 
@@ -270,7 +270,7 @@ LIMIT 50
 
 А в целом 500мс не так уж то и долго пока что чтобы ускорять 😄 на том и завершим оптимизации
 
-8.`Оценить размер используемых индексов. При возможности - сократить размер созданных индексов.
+# 8. Оценить размер используемых индексов. При возможности - сократить размер созданных индексов.
 
 hpemdfwd_indexes=# \di+
 
@@ -311,4 +311,36 @@ hpemdfwd_indexes=# \di+
 
 Варианты оптимизации?
 
-ID и datetime индексы можно бы все заменить на BRIN для экономии места
+- datetime индексы можно бы все заменить на BRIN для экономии места, они на реальных данных обычно хорошо корелируют в физическом плане места
+- и выкинул Hash, поменяв на Btree
+
+kmtunrkg_indexes=# \di+
+List of relations
+
+
+| Name                                     | Table               | Access method | Size       |
+| ------------------------------------------ | --------------------- | --------------- | ------------ |
+| comment_approval_pkey                    | comment_approval    | btree         | 8192 bytes |
+| comment_pkey                             | comment             | btree         | 8192 bytes |
+| idx_expression_post_approval_change_coal | post_approval       | btree         | 8192 bytes |
+| idx_post_approval_post_id                | post_approval       | hash          | 80 kB      |
+| idx_post_author_id                       | post                | hash          | 88 MB      |
+| idx_post_created                         | post                | brin          | 48 kB      |
+| idx_post_edition_edited                  | post_edition        | brin          | 48 kB      |
+| idx_post_edition_post_id                 | post_edition        | hash          | 16 MB      |
+| idx_post_edition_tags                    | post_edition        | gin           | 600 kB     |
+| idx_post_edition_user_id                 | post_edition        | hash          | 16 MB      |
+| idx_post_rating                          | post                | btree         | 17 MB      |
+| idx_post_status                          | post                | btree         | 17 MB      |
+| idx_post_visits_day_date                 | post_visits_per_day | brin          | 48 kB      |
+| idx_post_visits_post_id                  | post_visits_per_day | hash          | 16 MB      |
+| idx_post_visits_visits                   | post_visits_per_day | btree         | 3576 kB    |
+| idx_user_ratings_ratings                 | user_ratings        | btree         | 2224 kB    |
+| one_approval_only_per_comment_for_user   | comment_approval    | btree         | 8192 bytes |
+| one_approval_only_per_post_for_user      | post_approval       | btree         | 8192 bytes |
+| only_one_visit_counter_per_post          | post_visits_per_day | btree         | 18 MB      |
+| post_approval_pkey                       | post_approval       | btree         | 8192 bytes |
+| post_edition_pkey                        | post_edition        | btree         | 11 MB      |
+| post_pkey                                | post                | btree         | 54 MB      |
+| post_visits_per_day_pkey                 | post_visits_per_day | btree         | 11 MB      |
+| user__pkey                               | user_               | btree         | 1112 kB    |
